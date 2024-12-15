@@ -10,4 +10,6 @@
 @use "./contact/form";
 
 @use "./layout/main-content-layout";
-@use "./pages/main-panel/main-panel";
+@use "./pages/main/main-panel";
+@use "./pages/archive/archive-panel";
+@use "./pages/tasks/tasks-panel";

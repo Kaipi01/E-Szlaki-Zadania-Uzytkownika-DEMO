@@ -1,0 +1,26 @@
+@use "../../functions/toRem" as *;
+@use "../../base/variables" as *;
+
+#user-private-tasks-module-e-szlaki {
+  .tasks-panel {
+    .actions-card {
+      min-height: toRem(300);
+      margin-bottom: $main-content-layout-gap-small;
+
+      @media (min-width: $content-breakpoint-desktop) {
+        margin-bottom: $main-content-layout-gap;
+      }
+    }
+
+    .tasks-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(toRem(400), 1fr));
+      min-height: toRem(800);
+      gap: $main-content-layout-gap-small;
+
+      @media (min-width: $content-breakpoint-desktop) {
+        gap: $main-content-layout-gap;
+      }
+    }
+  }
+}
