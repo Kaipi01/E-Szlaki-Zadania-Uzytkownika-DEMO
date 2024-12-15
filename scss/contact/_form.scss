@@ -1,0 +1,136 @@
+#user-private-tasks-module-e-szlaki {
+  .faq-contact-form {
+    $contact-form-breakpoint: 55em;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: center;
+
+    @media (min-width: $contact-form-breakpoint) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .faq-contact-form-question {
+      @media (min-width: $contact-form-breakpoint) {
+        grid-column: span 2;
+      }
+    }
+
+    .faq-contact-form-submit {
+      padding-inline: 3rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      place-self: end;
+    }
+  }
+
+  textarea.faq-form-control {
+    font-family: inherit;
+    resize: vertical;
+  }
+
+  .faq-form-control {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    transition: 0.2s;
+    border-radius: 0.375em;
+    background: hsla(0, 0%, 100%, 0.75);
+    box-shadow: inset 0 0 0 1px hsl(240, 4%, 85%);
+    font-family: inherit;
+    font-size: 1em;
+    line-height: 1.2;
+  }
+
+  .faq-form-control::placeholder {
+    opacity: 1;
+    color: hsl(0, 0%, 50%);
+  }
+
+  .faq-form-control:focus,
+  .faq-form-control:focus-within {
+    outline: none;
+    background: #fff;
+    box-shadow: inset 0 0 0 1px hsla(240, 4%, 85%, 0), 0 0 0 2px var(--green),
+      0 0.3px 0.4px hsla(230, 13%, 9%, 0.025),
+      0 0.9px 1.5px hsla(230, 13%, 9%, 0.05),
+      0 3.5px 6px hsla(230, 13%, 9%, 0.1);
+  }
+
+  .faq-icon {
+    --size: 1em;
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center; 
+    fill: currentColor;
+    color: inherit; 
+    font-size: 1.2rem;
+    font-size: var(--size);
+    line-height: 1;
+  }   
+
+  .floating-label-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .floating-label {
+    position: absolute;
+    top: 0;
+    left: calc(1rem - 0.5rem);
+    padding: 0.25rem 0.5rem;
+    clip: auto;
+    transform: translateY(-50%);
+    transition: transform 0.2s cubic-bezier(0.215, 0.61, 0.355, 1), color 0.2s;
+    border-radius: 0.375em;
+    background: #fff;
+    color: hsl(0, 0%, 50%);
+    font-size: 0.9375rem;
+    line-height: 1;
+    -webkit-clip-path: none;
+    clip-path: none;
+  }
+
+  .floating-label-control {
+    padding: 0.75rem calc(1rem + 24px) 0.75rem 1rem;
+    background-color: hsla(0, 0%, 100%, 0.75);
+  }
+
+  .floating-label-control:placeholder-shown {
+    background-color: hsla(0, 0%, 100%, 0.75);
+  }
+
+  .floating-label-control:placeholder-shown + .floating-label {
+    clip: rect(1px, 1px, 1px, 1px);
+    -webkit-clip-path: inset(50%);
+    clip-path: inset(50%);
+    transform: translateY(-25%);
+  }
+
+  .floating-label-control ~ .faq-icon {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    color: hsl(225, 4%, 47%); 
+    font-size: 1.2rem;
+    pointer-events: none;
+  }
+
+  .floating-label-control:focus {
+    background-color: #fff;
+  }
+  .floating-label-control:focus ~ .faq-icon {
+    color: var(--green);
+  }
+  .floating-label-control:focus + .floating-label {
+    color: var(--green);
+  } 
+  .faq-form-field {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

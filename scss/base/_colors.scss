@@ -1,0 +1,30 @@
+#user-private-tasks-module-e-szlaki {
+
+    /* blue */
+    --blue: #008be2; 
+    --light-blue: #14a5ff; 
+    --light-blue-opacity: #14a5ffb6; 
+    /* green */
+    --light-green: #00ff57;
+    --light-green-30: #00ff555c;
+    --green: #00c821;
+    --dark-green: #155a2c;
+    --very-light-green: #37ff7a;
+    /* gray */
+    --very-light-gray: #efefef;
+    --gray: #3f624a;
+    --dark-gray: #1d2d2b; 
+    --very-dark-gray: #252525; 
+
+    /* base */
+    --background: #fff;
+    --background-opacity: #ffffffb5;
+    --background-opacity-30: #ffffff54;
+    --background-gray: var(--very-light-gray);
+    --font-color: var(--dark-gray);
+    --font-color-gray: var(--gray);
+    --font-color-green: var(--dark-green);
+    --font-color-green-hover: var(--green);
+    --background-green: var(--dark-green);
+    --background-green-hover: var(--green);
+}  

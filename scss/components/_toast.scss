@@ -1,0 +1,201 @@
+@use "../functions/toRem" as fun;
+
+#user-private-tasks-module-e-szlaki {
+  .faq-contact-form-toast {
+    display: flex;
+    position: fixed;
+    z-index: 110;
+    top: 1.5rem;
+    right: 1.5rem;
+    align-items: center;
+    justify-content: space-between;
+    width: fit-content;
+    max-width: fun.toRem(600);
+    padding: 0.75rem 1rem;
+    overflow: hidden;
+    border-radius: 15px;
+    background: white;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+
+    &.success {
+      --primary: #2dd743;
+      --secondary: #e3fee6;
+    }
+    &.success .icon {
+      transform: rotate(-45deg);
+    }
+    &.success .icon::before {
+      width: fun.toRem(10);
+      height: fun.toRem(3);
+      transform: translate(calc(-50% + 1px), calc(-50% + 1px));
+    }
+    &.success .icon::after {
+      width: fun.toRem(3);
+      height: fun.toRem(6);
+      transform: translate(calc(-50% - 3px), calc(-50% - 1px));
+    }
+
+    &.warning {
+      --primary: #f29208;
+      --secondary: #ffeedf;
+    }
+    &.warning .icon::before {
+      width: fun.toRem(3);
+      height: fun.toRem(3);
+      transform: translate(-50%, calc(-50% + 4px));
+    }
+    &.warning .icon::after {
+      width: fun.toRem(3);
+      height: fun.toRem(7);
+      transform: translate(-50%, calc(-50% - 2px));
+    }
+
+    &.error {
+      --primary: #e63435;
+      --secondary: #ffeaec;
+    }
+    &.error .icon::before {
+      width: fun.toRem(3);
+      height: fun.toRem(3);
+      transform: translate(-50%, calc(-50% + 4px));
+    }
+    &.error .icon::after {
+      width: fun.toRem(3);
+      height: fun.toRem(7);
+      transform: translate(-50%, calc(-50% - 2px));
+    }
+
+    .icon-wrapper {
+      box-sizing: border-box;
+      width: fun.toRem(30);
+      height: fun.toRem(30);
+      padding: fun.toRem(5);
+      border-radius: 5px;
+      background: var(--secondary);
+    }
+
+    .icon {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+    .icon::before,
+    .icon::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      border-radius: 5px;
+      background: var(--secondary);
+    }
+
+    .toast-message {
+      padding: fun.toRem(5) fun.toRem(20) fun.toRem(5) fun.toRem(10);
+    }
+    .toast-message .toast-message-title,
+    .toast-message .toast-message-text {
+      margin: 0;
+      line-height: 1.2em;
+    }
+    .toast-message .toast-message-title {
+      color: #404040;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    .toast-message .toast-message-text {
+      color: #606060;
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .toast-close {
+      position: relative;
+      padding: fun.toRem(12);
+      transition: background 0.2s ease-in-out;
+      border: none;
+      border-radius: 5px;
+      background: rgba(0, 0, 0, 0);
+      cursor: pointer;
+    }
+    .toast-close:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+    .toast-close::before,
+    .toast-close::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: fun.toRem(1);
+      height: fun.toRem(12);
+      transition: background 0.2s ease-in-out;
+      border-radius: 5px;
+      background: #606060;
+    }
+    .toast-close:hover::before,
+    .toast-close:hover::after {
+      background: #404040;
+    }
+    .toast-close::before {
+      transform: translate(-50%, -50%) rotate(45deg);
+    }
+    .toast-close::after {
+      transform: translate(-50%, -50%) rotate(-45deg);
+    }
+
+    @keyframes close {
+      from {
+        visibility: visible;
+        top: fun.toRem(5);
+        transform: scale(1);
+        opacity: 1;
+      }
+      to {
+        visibility: hidden;
+        top: fun.toRem(-25);
+        transform: scale(0.5);
+        opacity: 0;
+      }
+    }
+
+    @keyframes open {
+      from {
+        visibility: hidden;
+        top: fun.toRem(-25);
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      to {
+        visibility: visible;
+        top: fun.toRem(5);
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .timer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: fun.toRem(4);
+      border-top-right-radius: 5px;
+      background: var(--primary);
+      box-shadow: 0 0 8px var(--primary);
+    }
+    .timer-animation {
+      animation: countdown 5s linear forwards;
+    }
+    @keyframes countdown {
+      from {
+        width: 100%;
+      }
+      to {
+        width: 0%;
+      }
+    }
+  }
+}

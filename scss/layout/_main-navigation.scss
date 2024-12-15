@@ -1,0 +1,8 @@
+@use "../functions/toRem" as *;
+
+#user-private-tasks-module-e-szlaki {
+    .main-navigation {
+        min-height: toRem(100);
+        background-color: green;color: #fff;
+    }
+}

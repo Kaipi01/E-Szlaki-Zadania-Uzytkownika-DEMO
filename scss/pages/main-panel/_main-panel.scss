@@ -1,0 +1,58 @@
+@use "../../functions/toRem" as *;
+@use "../../base/variables" as *;
+
+#user-private-tasks-module-e-szlaki {
+  .main-panel {
+    display: grid;
+    gap: $main-content-layout-gap-small;
+    grid-template-columns: 1fr;
+
+    @media (min-width: $content-breakpoint-tablet) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (min-width: $content-breakpoint-desktop) {
+      grid-template-columns: repeat(3, 1fr);
+      gap: $main-content-layout-gap;
+    }
+
+    .statistics-card {
+      min-height: toRem(300);
+
+      @media (min-width: $content-breakpoint-tablet) {
+        grid-column: span 2;
+      }
+    }
+    .start-action-card {
+      min-height: toRem(300);
+    }
+    .help-informations-card {
+      min-height: toRem(300);
+    }
+    .categories-card {
+      min-height: toRem(300);
+
+      @media (min-width: $content-breakpoint-tablet) {
+        grid-column: span 2;
+      }
+
+      @media (min-width: $content-breakpoint-desktop) {
+        grid-column: span 1;
+        grid-row: span 1;
+      }
+    }
+    .daily-tasks-card {
+    }
+    .main-tasks-card {
+    }
+
+    .daily-tasks-card,
+    .main-tasks-card {
+      min-height: toRem(700);
+
+      @media (min-width: $content-breakpoint-tablet) {
+        grid-row: span 2;
+      }
+    }
+  }
+}

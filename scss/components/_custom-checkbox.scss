@@ -1,0 +1,71 @@
+@use "../components/sr-only";
+@use "../functions/toRem" as fun;
+
+#user-private-tasks-module-e-szlaki {
+
+.custom-checkbox-group {
+  display: block;
+
+  .custom-checkbox-input {
+    @extend .visually-hidden;
+    width: initial;
+    height: initial;
+    margin-bottom: 0;
+    padding: 0;
+    cursor: pointer;
+
+    &:checked + label:after {
+      opacity: 1;
+    }
+
+    &:hover + label, 
+    &:focus + label {
+      color: var(--font-color-green);
+    }
+
+    &:hover + label:before, 
+    &:focus + label:before {
+      box-shadow: var(--font-color-green) 0px 0px 0px 1px;
+    }
+  }
+}
+
+.custom-checkbox-label {
+  position: relative;
+  cursor: pointer; 
+  transition: 0.3s;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    position: relative;
+    margin-right: fun.toRem(5);
+    padding: fun.toRem(10);
+    border: fun.toRem(3) solid var(--font-color-green);
+    border-radius: fun.toRem(5);
+    background-color: transparent;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05),
+      inset 0px -15px 10px -12px rgba(0, 0, 0, 0.05);
+    vertical-align: middle;
+    transition: 0.1s;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: fun.toRem(2);
+    left: fun.toRem(9);
+    width: fun.toRem(6);
+    height: fun.toRem(14);
+    transform: rotate(45deg);
+    transition: 0.3s;
+    border: solid var(--font-color-green);
+    border-width: 0 fun.toRem(3) fun.toRem(3) 0;
+    opacity: 0;
+  }
+}
+}
