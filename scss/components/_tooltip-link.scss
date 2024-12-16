@@ -1,0 +1,45 @@
+#user-private-tasks-module-e-szlaki {
+  .tooltip-link {
+    position: relative;
+
+    & > span {
+      display: none;
+
+      @media (min-width: 35em) {
+        display: block;
+        position: absolute;
+        top: -2.1rem;
+        left: 50%;
+        width: -webkit-max-content;
+        width: -moz-max-content;
+        width: max-content;
+        padding: 0.25rem 0.5rem;
+        transform: translateX(-50%) translateY(0.5rem);
+        transition: 0.3s;
+        border-radius: 5px;
+        opacity: 0;
+        background-color: var(--dark-green);
+        color: #fff;
+        text-align: center;
+
+        &::after {
+          content: "";
+          position: absolute;
+          bottom: -5px;
+          left: 50%;
+          width: 10px;
+          height: 10px;
+          transform: translateX(-50%) rotate(45deg);
+          background-color: var(--dark-green);
+        }
+      }
+    }
+
+    &:hover > span,
+    &:focus > span,
+    &:active > span {
+      transform: translateX(-50%);
+      opacity: 1;
+    }
+  }
+}

@@ -6,8 +6,12 @@
 @use "./components/toast";
 @use "./components/modal";
 @use "./components/custom-checkbox"; 
-@use "./components/sidebar-menu";
+@use "./components/circular-progress-bar"; 
+@use "./components/custom-pie-chart"; 
+@use "./components/custom-select"; 
+@use "./components/tooltip-link"; 
 @use "./contact/form";
+@use "./components/search-form";
 
 @use "./layout/main-content-layout";
 @use "./pages/main/main-panel";

@@ -1,0 +1,26 @@
+#user-private-tasks-module-e-szlaki {
+  .circular-progress-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      text {
+        fill: var(--font-color);
+        font-size: 1rem;
+      }
+
+      circle {
+        stroke-width: 12;
+      }
+    }
+
+    .progress-desc {
+      padding-top: 1rem;
+      font-weight: bold;
+      text-align: center;
+      text-transform: capitalize;
+    }
+  }
+}

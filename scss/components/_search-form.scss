@@ -1,0 +1,35 @@
+@use "../functions/toRem" as *;
+
+#user-private-tasks-module-e-szlaki {
+  .upt-search-form {
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    .upt-search-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: toRem(47);
+      padding: 0 1rem !important;
+      border-radius: 0.375em;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      font-size: 1.15rem;
+    }
+  }
+
+  .upt-search-box {
+    position: relative;
+    width: 100%;
+
+    input[type="search"] {
+      width: 100%;
+      min-height: toRem(47);
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border-color: var(--light-green);
+      box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    }
+  }
+}

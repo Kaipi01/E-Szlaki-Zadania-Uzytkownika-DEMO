@@ -1,5 +1,5 @@
 #user-private-tasks-module-e-szlaki {
-  .faq-contact-form {
+  .upt-contact-form {
     $contact-form-breakpoint: 55em;
 
     display: grid;
@@ -11,13 +11,13 @@
       grid-template-columns: repeat(2, 1fr);
     }
 
-    .faq-contact-form-question {
+    .upt-contact-form-question {
       @media (min-width: $contact-form-breakpoint) {
         grid-column: span 2;
       }
     }
 
-    .faq-contact-form-submit {
+    .upt-contact-form-submit {
       padding-inline: 3rem;
       letter-spacing: 1px;
       text-transform: uppercase;
@@ -25,12 +25,12 @@
     }
   }
 
-  textarea.faq-form-control {
+  textarea.upt-form-control {
     font-family: inherit;
     resize: vertical;
   }
 
-  .faq-form-control {
+  .upt-form-control {
     width: 100%;
     padding: 0.5rem 0.75rem;
     transition: 0.2s;
@@ -42,13 +42,13 @@
     line-height: 1.2;
   }
 
-  .faq-form-control::placeholder {
+  .upt-form-control::placeholder {
     opacity: 1;
     color: hsl(0, 0%, 50%);
   }
 
-  .faq-form-control:focus,
-  .faq-form-control:focus-within {
+  .upt-form-control:focus,
+  .upt-form-control:focus-within {
     outline: none;
     background: #fff;
     box-shadow: inset 0 0 0 1px hsla(240, 4%, 85%, 0), 0 0 0 2px var(--green),
@@ -57,7 +57,7 @@
       0 3.5px 6px hsla(230, 13%, 9%, 0.1);
   }
 
-  .faq-icon {
+  .upt-icon {
     --size: 1em;
     display: inline-flex;
     flex-shrink: 0;
@@ -108,7 +108,7 @@
     transform: translateY(-25%);
   }
 
-  .floating-label-control ~ .faq-icon {
+  .floating-label-control ~ .upt-icon {
     position: absolute;
     top: 50%;
     right: 1rem;
@@ -121,13 +121,13 @@
   .floating-label-control:focus {
     background-color: #fff;
   }
-  .floating-label-control:focus ~ .faq-icon {
+  .floating-label-control:focus ~ .upt-icon {
     color: var(--green);
   }
   .floating-label-control:focus + .floating-label {
     color: var(--green);
   } 
-  .faq-form-field {
+  .upt-form-field {
     display: flex;
     position: relative;
     align-items: center;

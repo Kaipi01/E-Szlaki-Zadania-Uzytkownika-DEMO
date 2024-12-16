@@ -1,3 +1,5 @@
+@use "../base/variables" as *;
+
 %modern-card {
   width: 100%;
   padding: 1rem;
@@ -7,7 +9,11 @@
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 #user-private-tasks-module-e-szlaki {
-.modern-card {
-  @extend %modern-card;
-}
+  .modern-card {
+    @extend %modern-card;
+
+    @media (min-width: $content-breakpoint-tablet) {
+      padding: 2rem;
+    }
+  }
 }
