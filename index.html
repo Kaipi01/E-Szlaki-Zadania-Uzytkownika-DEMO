@@ -19,7 +19,7 @@
         <!-- USER PRIVATE TASKS MODULE START -->
         <section id="user-private-tasks-module-e-szlaki">
 
-            <section class="main-content-layout">
+            <div class="main-content-layout">
                 <nav main-navigation class="main-navigation modern-card">
                     <ul main-navigation-list class="main-navigation-list">
                         <li class="main-navigation-item">
@@ -29,17 +29,17 @@
                             </a>
                         </li>
                         <li class="main-navigation-item">
-                            <a main-navigation-link="zadania-codzienne" class="main-navigation-link"
-                                href="#zadania-codzienne">
-                                <i class="main-navigation-link-icon fa-solid fa-calendar-day"></i>
-                                <span class="main-navigation-link-text">Zadania Codzienne</span>
+                            <a main-navigation-link="zadania" class="main-navigation-link"
+                                href="#zadania">
+                                <i class="main-navigation-link-icon fa-solid fa-list-check"></i>
+                                <span class="main-navigation-link-text">Zadania</span>
                             </a>
                         </li>
                         <li class="main-navigation-item">
-                            <a main-navigation-link="zadania-glowne" class="main-navigation-link"
-                                href="#zadania-glowne">
-                                <i class="main-navigation-link-icon fa-solid fa-list-check"></i>
-                                <span class="main-navigation-link-text">Zadania Główne</span>
+                            <a main-navigation-link="kategorie" class="main-navigation-link"
+                                href="#kategorie">
+                                <i class="main-navigation-link-icon fa-solid fa-icons"></i>
+                                <span class="main-navigation-link-text">Kategorie</span>
                             </a>
                         </li>
                         <li class="main-navigation-item">
@@ -108,12 +108,32 @@
                                 natus aperiam enim nemo eveniet eum. Rerum nulla quidem odit ipsam nobis. Lorem ipsum
                                 dolor, sit amet consectetur adipisicing elit. Provident, beatae ex.</p>
                         </div>
-                        <div class="daily-tasks-card modern-card">Zadania dzienne</div>
-                        <div class="main-tasks-card modern-card">Zadanie główne</div>
-                        <div class="categories-card modern-card">Kategorie zadań</div>
+                        <div class="daily-tasks-card modern-card modern-card--opacity">
+                            <div class="upt-header">
+                                <p class="upt-small-header">Zadania dzienne</p>
+                                <a href="#zadania" class="link small variant2">Pokaż więcej</a>
+                            </div>
+                            <ul>
+                                <li class="task">
+
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="main-tasks-card modern-card modern-card--opacity">
+                            <div class="upt-header">
+                                <p class="upt-small-header">Zadania główne</p>
+                                <a href="#zadania" class="link small variant2">Pokaż więcej</a>
+                            </div>
+                        </div>
+                        <div class="categories-card modern-card">
+                            <div class="upt-header">
+                                <p class="upt-small-header">Kategorie zadań</p>
+                                <a href="#kategorie" class="link small variant2">Pokaż więcej</a>
+                            </div>
+                        </div>
                     </section>
 
-                    <section data-content-page="#zadania-codzienne" id="zadania-codzienne" class="tasks-panel panel">
+                    <section data-content-page="#zadania" id="zadania" class="tasks-panel panel">
                         <div class="actions-card modern-card">
                             <form class="upt-search-form">
                                 <button class="upt-search-btn link variant2" type="submit">
@@ -137,15 +157,13 @@
                         </div>
                     </section>
 
-                    <section data-content-page="#zadania-glowne" id="zadania-glowne" class="tasks-panel panel">
+                    <section data-content-page="#kategorie" id="kategorie" class="tasks-panel panel">
                         <div class="actions-card modern-card">Akcje</div>
                         <div class="tasks-list">
-                            <div class="task modern-card">Zadanie</div>
-                            <div class="task modern-card">Zadanie</div>
-                            <div class="task modern-card">Zadanie</div>
-                            <div class="task modern-card">Zadanie</div>
-                            <div class="task modern-card">Zadanie</div>
-                            <div class="task modern-card">Zadanie</div>
+                            <div class="task modern-card">kategoria</div>
+                            <div class="task modern-card">kategoria</div>
+                            <div class="task modern-card">kategoria</div>
+                            <div class="task modern-card">kategoria</div>
                         </div>
                     </section>
 
@@ -161,10 +179,10 @@
                         </div>
                     </section>
                 </div>
-                </div>
+            </div> 
 
-            </section>
-            <!-- USER PRIVATE TASKS MODULE END -->
+        </section>
+        <!-- USER PRIVATE TASKS MODULE END -->
     </main>
 
     <script src="./js/index.js"></script>

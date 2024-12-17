@@ -8,12 +8,17 @@
   background: var(--background);
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
-#user-private-tasks-module-e-szlaki {
+#user-private-tasks-module-e-szlaki { 
   .modern-card {
     @extend %modern-card;
 
     @media (min-width: $content-breakpoint-tablet) {
       padding: 2rem;
+    }
+
+    &--opacity {
+      background-color: transparent;
+      backdrop-filter: blur(2px);
     }
   }
 }

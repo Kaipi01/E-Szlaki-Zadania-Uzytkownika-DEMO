@@ -3,21 +3,22 @@
 
 #user-private-tasks-module-e-szlaki {
   .custom-pie-chart {
-    display: flex; 
+    display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
     gap: 2rem;
-    --pie-chart-box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px,
-      rgba(0, 0, 0, 0.22) 0px 15px 12px;
+    background-color: inherit;
+    --pie-chart-box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
     .pie-chart {
       width: 100%;
       max-width: toRem(200);
-      aspect-ratio: 1;
       border-radius: 50%;
-      will-change: transform, background-image;
+      background-color: inherit;
       box-shadow: var(--pie-chart-box-shadow);
+      aspect-ratio: 1;
+      will-change: transform, background-image;
     }
     .donut {
       position: relative;
@@ -30,16 +31,16 @@
       width: 60%;
       transform: translate(-50%, -50%);
       border-radius: 50%;
-      background-color: #fff;
+      background-color: inherit;
       box-shadow: inset var(--pie-chart-box-shadow);
       aspect-ratio: 1;
     }
 
     .legends {
-      display: flex; 
+      display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center; 
+      justify-content: center;
       font-size: 0.9rem;
       gap: 1rem;
     }

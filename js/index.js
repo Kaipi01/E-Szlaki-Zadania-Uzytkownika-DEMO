@@ -1,10 +1,10 @@
 const UPT_MODULE_ID_SELECTOR = "#user-private-tasks-module-e-szlaki";
 // const UPT_CONTACT_MODAL_ID_SELECTOR = "#UPT-modul-e-szlaki-contact-modal";
-const UPT_TOAST_MODULE_SELECTOR =
-  UPT_MODULE_ID_SELECTOR + " .upt-contact-form-toast";
 
 document.addEventListener("DOMContentLoaded", function () {
-  // const uptModuleToast = new UPTModuleToast(UPT_TOAST_MODULE_SELECTOR);
+
+  //(new UPTModuleToast(UPT_MODULE_ID_SELECTOR)).open(UPTModuleToast.TYPE_SUCCESS, 'Lorem ipsum dolor sit amet.');
+
 
   // new UPTModuleModal(UPT_CONTACT_MODAL_ID_SELECTOR);
 
@@ -69,13 +69,13 @@ class UPTDateTimeStatisics {
     ];
 
     const now = new Date();
-    const dayName = daysOfWeek[now.getDay()]; 
+    const dayName = daysOfWeek[now.getDay()];
     const day = now.getDate();
     const month = months[now.getMonth()];
     const year = now.getFullYear();
     const formattedDate = `${dayName}, ${day} ${month} ${year}`;
-   
-    this.currentDateEl.textContent = formattedDate; 
+
+    this.currentDateEl.textContent = formattedDate;
   }
 
   setTimeToEndDay() {
@@ -145,6 +145,7 @@ class UPTModuleMainNavigation {
     this.changeScreenEvent = new CustomEvent(
       UPTModuleMainNavigation.UPT_MODULE_CHANGE_PAGE_EVENT
     );
+    this.pageLinksArray;
     this.init();
   }
 
@@ -155,9 +156,27 @@ class UPTModuleMainNavigation {
     return baseFontSize * rem;
   }
 
+  showInitPage() {
+    const linkWithTheSameHash = this.pageLinksArray.find(
+      (a) => a.hash === location.hash
+    );
+
+    if (linkWithTheSameHash) {
+      this.showPage(linkWithTheSameHash);
+    } else if (location.hash === "") {
+      this.showPage(this.pageLinksArray.at(0));
+    }
+  }
+
   init() {
     this.pageLinks = this.navigation.querySelectorAll("[main-navigation-link]");
+    this.pageLinksArray = Array.from(this.pageLinks);
     this.bindPageLinks();
+    this.showInitPage();
+
+    window.addEventListener("hashchange", () => {
+      this.showInitPage();
+    });
 
     window.addEventListener("resize", () => {
       this.windowWidthIsLessThanBreakpoint =
@@ -231,7 +250,6 @@ class UPTModuleMainNavigation {
   }
 
   animateNavigation(pageNumber) {
-    const pageLinksArray = Array.from(this.pageLinks);
     let stylesForNavigationList = this.mainContainer.querySelector("style");
 
     if (!stylesForNavigationList) {
@@ -242,7 +260,7 @@ class UPTModuleMainNavigation {
     stylesForNavigationList.textContent = `#${
       this.mainContainer.id
     } [main-navigation-list]::after {left: ${
-      pageNumber * (100.0 / pageLinksArray.length)
+      pageNumber * (100.0 / this.pageLinksArray.length)
     }%;}`;
   }
 
@@ -272,17 +290,51 @@ class UPTModuleToast {
   static TYPE_WARNING = "warning";
   static TYPE_ERROR = "error";
   static TYPE_INFO = "info";
+  static SUCCESS_ICON = "fa-circle-check";
+  static ERROR_ICON = "fa-circle-exclamation";
+  static WARNING_ICON = "fa-triangle-exclamation";
+  static INFO_ICON = "fa-circle-info";
 
-  constructor(selector) {
-    this.toast = document.querySelector(selector);
+  constructor(containerSelector) {
+    this.container = document.querySelector(containerSelector);
+    this.toastId = this.generateToastId();
+    this.toast;
+    this.countdown;
+    this.init();
+  }
+
+  init() {
+    this.toast = this.generateToast();
+
     this.toastTimer = this.toast.querySelector(".timer");
     this.closeToastBtn = this.toast.querySelector(".toast-close");
-
+    this.toastIcon = this.toast.querySelector(".icon");
     this.toastTitle = this.toast.querySelector(".toast-message-title");
     this.toastMessage = this.toast.querySelector(".toast-message-text");
+    this.closeToastBtn.addEventListener("click", () => this.close());
+  }
 
-    this.countdown;
-    this.closeToastBtn.addEventListener("click", this.close);
+  generateToastId() {
+    return "upt-toast-" + Date.now().toString(36) + Math.random().toString(36);
+  }
+
+  generateToast() {
+    const toast = document.createElement("div");
+    toast.className = "upt-toast";
+    toast.id = this.toastId;
+    toast.style.display = "none";
+    toast.innerHTML = ` 
+                <i class="icon fa-solid"></i>
+                <div class="toast-message">
+                    <p class="toast-message-title"></p>
+                    <p class="toast-message-text"></p>
+                </div>
+                <button class="toast-close"><span class="sr-only">Zamknij</span></button>
+                <div class="timer"></div>
+          `;
+    this.container.append(toast);
+
+    return toast;
   }
 
   close() {
@@ -293,6 +345,7 @@ class UPTModuleToast {
 
     setTimeout(() => {
       this.toast.style.display = "none";
+      this.toast.remove();
     }, 300);
   }
 
@@ -300,30 +353,42 @@ class UPTModuleToast {
     if (this.toast.style.display != "none") return;
 
     let toastTitle;
+    let toastIcon;
     this.toast.classList.remove(
       UPTModuleToast.TYPE_SUCCESS,
       UPTModuleToast.TYPE_WARNING,
       UPTModuleToast.TYPE_ERROR,
       UPTModuleToast.TYPE_INFO
     );
+    this.toastIcon.classList.remove(
+      UPTModuleToast.SUCCESS_ICON,
+      UPTModuleToast.WARNING_ICON,
+      UPTModuleToast.ERROR_ICON,
+      UPTModuleToast.INFO_ICON
+    );
     this.toast.style.display = "flex";
 
     switch (type) {
       case UPTModuleToast.TYPE_SUCCESS:
         toastTitle = "Sukces!";
+        toastIcon = UPTModuleToast.SUCCESS_ICON;
         break;
-      case UPTModuleToast.TYPE_WARNING:
+      case UPTModuleToast.TYPE_ERROR:
         toastTitle = "Błąd!";
+        toastIcon = UPTModuleToast.ERROR_ICON;
         break;
       case UPTModuleToast.TYPE_WARNING:
         toastTitle = "Ostrzeżenie";
+        toastIcon = UPTModuleToast.WARNING_ICON;
         break;
       default:
         toastTitle = "Informacja";
+        toastIcon = UPTModuleToast.INFO_ICON;
     }
 
     this.toastTitle.textContent = toastTitle;
     this.toastMessage.textContent = message;
+    this.toastIcon.classList.add(toastIcon);
 
     setTimeout(() => {
       this.toast.classList.add(type);
