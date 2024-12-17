@@ -1,12 +1,12 @@
 const UPT_MODULE_ID_SELECTOR = "#user-private-tasks-module-e-szlaki";
-// const UPT_CONTACT_MODAL_ID_SELECTOR = "#UPT-modul-e-szlaki-contact-modal";
+const UPT_CONTACT_MODAL_ID_SELECTOR = "#user-private-tasks-module-e-szlaki-modal";
 
 document.addEventListener("DOMContentLoaded", function () {
 
   //(new UPTModuleToast(UPT_MODULE_ID_SELECTOR)).open(UPTModuleToast.TYPE_SUCCESS, 'Lorem ipsum dolor sit amet.');
 
 
-  // new UPTModuleModal(UPT_CONTACT_MODAL_ID_SELECTOR);
+  new UPTModuleModal(UPT_CONTACT_MODAL_ID_SELECTOR);
 
   new UPTModuleMainNavigation(UPT_MODULE_ID_SELECTOR);
 

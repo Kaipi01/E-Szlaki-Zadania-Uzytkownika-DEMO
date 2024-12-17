@@ -1,23 +1,23 @@
 #user-private-tasks-module-e-szlaki {
-  .upt-contact-form {
-    $contact-form-breakpoint: 55em;
+  .upt-add-tast-form {
+    $add-tast-form-breakpoint: 55em;
 
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.5rem;
     align-items: center;
 
-    @media (min-width: $contact-form-breakpoint) {
+    @media (min-width: $add-tast-form-breakpoint) {
       grid-template-columns: repeat(2, 1fr);
     }
 
-    .upt-contact-form-question {
-      @media (min-width: $contact-form-breakpoint) {
+    .upt-add-tast-form-question {
+      @media (min-width: $add-tast-form-breakpoint) {
         grid-column: span 2;
       }
     }
 
-    .upt-contact-form-submit {
+    .upt-add-tast-form-submit {
       padding-inline: 3rem;
       letter-spacing: 1px;
       text-transform: uppercase;

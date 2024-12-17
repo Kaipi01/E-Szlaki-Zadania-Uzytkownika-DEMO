@@ -100,11 +100,12 @@
                                     <label class="floating-label" for="input-search">Szukaj</label>
                                 </div>
                             </form>
-                            <button class="link link-100 variant2">Dodaj Nowe Zadanie</button>
+                            <button class="link link-100 variant2" aria-controls="user-private-tasks-module-e-szlaki-modal">Dodaj Nowe Zadanie</button>
                             <button class="link link-100 variant2">Dodaj Nową Kategorię</button>
                         </div>
-                        <div class="help-informations-card modern-card">
-                            <p>Witaj! Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iste placeat officia
+                        <div class="help-informations-card modern-card"> 
+                            <p> 
+                                Witaj! Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iste placeat officia
                                 natus aperiam enim nemo eveniet eum. Rerum nulla quidem odit ipsam nobis. Lorem ipsum
                                 dolor, sit amet consectetur adipisicing elit. Provident, beatae ex.</p>
                         </div>
@@ -181,6 +182,60 @@
                 </div>
             </div> 
 
+            <div id="user-private-tasks-module-e-szlaki-modal" data-modal-first-focus="#upt-add-tast-input-name" class="modal modal--animate-slide-up js-modal">
+                <div class="modal__content modern-card" role="alertdialog"
+                    aria-labelledby="user-private-tasks-module-e-szlaki-modal-title"> 
+                    <div class="modal__header pb-2">
+                        <p id="user-private-tasks-module-e-szlaki-modal-title" class="upt-small-header">Dodaj Nowe Zadanie</p>
+
+                        <button class="modal__close-btn modal__close-btn--inner js-modal__close js-tab-focus">
+                            <span class="sr-only">Zamknij</span>
+                            <img class="modal__close-btn-icon" src="./images/close-icon.svg" alt="x" aria-hidden="true">
+                        </button>
+                    </div>
+
+                    <form class="upt-add-tast-form">
+
+                        <div class="upt-form-field">
+                            <input class="floating-label-control upt-form-control " type="text" name="upt-add-tast-name"
+                                id="upt-add-tast-input-name" placeholder="Nazwa Zadania">
+                            <label class="floating-label" for="upt-add-tast-input-name">Nazwa Zadania</label>
+
+                            <i class="upt-icon fa-solid fa-id-card"></i>
+                        </div>
+
+                        <div class="upt-form-field">
+                            <input class="floating-label-control upt-form-control" type="email"
+                                name="upt-add-tast-email" id="upt-add-tast-input-email" placeholder="Adres Email">
+                            <label class="floating-label" for="upt-add-tast-input-email">Adres Email</label>
+
+                            <i class="upt-icon fa-solid fa-envelope"></i>
+                        </div>
+
+                        <div class="upt-form-field">
+                            <input class="floating-label-control upt-form-control" type="date" name="upt-add-tast-name"
+                                id="upt-add-tast-input-name" placeholder="Od kiedy">
+                            <label class="floating-label" for="upt-add-tast-input-name">Od kiedy</label> 
+                        </div>
+
+                        <div class="upt-form-field">
+                            <input class="floating-label-control upt-form-control" type="date" type="email"
+                                name="upt-add-tast-email" id="upt-add-tast-input-email" placeholder="Do kiedy">
+                            <label class="floating-label" for="upt-add-tast-input-email">Do kiedy</label> 
+                        </div>
+
+                        <div class="upt-add-tast-form-question upt-form-field">
+                            <label class="floating-label" for="upt-add-tast-input-desc">Treść pytania</label>
+                            <textarea rows="5" class="floating-label-control upt-form-control " name="upt-add-tast-desc"
+                                id="upt-add-tast-input-desc" placeholder="Maksymalnie 500 znaków"></textarea>
+                        </div>
+
+                        <button type="submit" class="upt-add-tast-form-submit link variant2">
+                            Dodaj
+                        </button>
+                    </form>
+                </div>
+            </div>
         </section>
         <!-- USER PRIVATE TASKS MODULE END -->
     </main>
