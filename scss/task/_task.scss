@@ -1,0 +1,39 @@
+@use "../functions/toRem" as *;
+@use "../base/variables" as *;
+
+#user-private-tasks-module-e-szlaki {
+  .task {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 10px;
+
+    &-checkbox {
+    }
+    &-header {
+    }
+    &-name {
+    }
+    &-date {
+    }
+    &-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: space-between;
+      justify-content: space-between;
+      height: 100%;
+      margin-left: auto;
+    }
+
+    &-action-btn {
+      padding: toRem(10);
+      border-radius: 5px;
+    }
+
+    &-edit-btn {
+    }
+    &-delete-btn {
+    }
+  }
+}

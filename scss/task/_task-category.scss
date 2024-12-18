@@ -1,0 +1,33 @@
+@use "../functions/toRem" as *;
+@use "../base/variables" as *;
+
+#user-private-tasks-module-e-szlaki {
+  .task-category-list {
+    background-color: var(--blue);
+    list-style: none;
+  }
+
+  .task-category-link {
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 1.25rem 2rem;
+    transition: all 0.4s ease-in-out;
+
+    cursor: pointer;
+
+    &-icon {
+      display: block;
+      color: inherit;
+      font-size: 1.5rem;
+    }
+
+    &:hover,
+    &:focus,
+    &:active {
+      transform: scale(1.025);
+    }
+  }
+}

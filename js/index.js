@@ -4,7 +4,7 @@ const UPT_CONTACT_MODAL_ID_SELECTOR = "#user-private-tasks-module-e-szlaki-modal
 document.addEventListener("DOMContentLoaded", function () {
 
   //(new UPTModuleToast(UPT_MODULE_ID_SELECTOR)).open(UPTModuleToast.TYPE_SUCCESS, 'Lorem ipsum dolor sit amet.');
-
+  CustomSelect.initAll();
 
   new UPTModuleModal(UPT_CONTACT_MODAL_ID_SELECTOR);
 
@@ -1155,5 +1155,92 @@ class CustomPieChart {
             ${pieCharAnimationKeyframes}
             ${pieCharLegendItems}
         `;
+  }
+}
+
+class CustomSelect {
+  constructor(selectElement) {
+    this.selectElement = selectElement;
+    this.numberOfOptions = selectElement.children.length;
+    this.createCustomElements();
+    this.attachEventListeners();
+  }
+
+  createCustomElements() {
+    this.selectElement.classList.add("custom-select-hidden");
+    this.wrapper = document.createElement("div");
+    this.wrapper.classList.add("custom-select");
+    this.selectElement.parentNode.insertBefore(
+      this.wrapper,
+      this.selectElement
+    );
+    this.wrapper.appendChild(this.selectElement);
+    this.styledSelect = document.createElement("div");
+    this.styledSelect.classList.add("custom-select-styled");
+    this.styledSelect.textContent = this.selectElement.options[0].textContent;
+    this.wrapper.appendChild(this.styledSelect);
+    this.optionList = document.createElement("ul");
+    this.optionList.classList.add("custom-select-options");
+    this.wrapper.appendChild(this.optionList);
+
+    for (let i = 0; i < this.numberOfOptions; i++) {
+      let listItem = document.createElement("li");
+      listItem.textContent = this.selectElement.options[i].textContent;
+      listItem.setAttribute("rel", this.selectElement.options[i].value);
+      this.optionList.appendChild(listItem);
+
+      if (this.selectElement.options[i].selected) {
+        listItem.classList.add("is-selected");
+      }
+    }
+
+    this.listItems = this.optionList.querySelectorAll("li");
+  }
+
+  attachEventListeners() {
+    this.styledSelect.addEventListener("click", (e) => {
+      e.stopPropagation();
+      document
+        .querySelectorAll("div.custom-select-styled.active")
+        .forEach((activeStyledSelect) => {
+          if (activeStyledSelect !== this.styledSelect) {
+            activeStyledSelect.classList.remove("active");
+            activeStyledSelect.nextElementSibling.style.display = "none";
+          }
+        });
+      this.styledSelect.classList.toggle("active");
+      this.optionList.style.display = this.styledSelect.classList.contains(
+        "active"
+      )
+        ? "block"
+        : "none";
+    });
+
+    this.listItems.forEach((listItem) => {
+      listItem.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.styledSelect.textContent = listItem.textContent;
+        this.styledSelect.classList.remove("active");
+        this.selectElement.value = listItem.getAttribute("rel");
+        this.optionList
+          .querySelector("li.is-selected")
+          .classList.remove("is-selected");
+        listItem.classList.add("is-selected");
+        this.optionList.style.display = "none";
+      });
+    });
+
+    document.addEventListener("click", () => {
+      this.styledSelect.classList.remove("active");
+      this.optionList.style.display = "none";
+    });
+  }
+
+  static initAll() {
+    document
+      .querySelectorAll("select[data-custom-select]")
+      .forEach((selectElement) => {
+        new CustomSelect(selectElement);
+      });
   }
 }

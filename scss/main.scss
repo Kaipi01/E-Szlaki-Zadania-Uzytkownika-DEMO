@@ -17,3 +17,6 @@
 @use "./pages/main/main-panel";
 @use "./pages/archive/archive-panel";
 @use "./pages/tasks/tasks-panel";
+
+@use "./task/task-category";
+@use "./task/task";
