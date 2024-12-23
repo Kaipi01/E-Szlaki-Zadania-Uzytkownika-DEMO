@@ -20,10 +20,10 @@
         transform: translateY(-100%);
         transition: 0.3s;
         border-radius: 5px;
+        padding: 0.5rem 0.75rem;
         opacity: 0;
         background-color: var(--dark-green);
-        color: #fff;
-        text-align: center;
+        color: #fff; 
         cursor: help;
       }
 

@@ -4,11 +4,19 @@
 #user-private-tasks-module-e-szlaki {
   .tasks-panel {
     .actions-card {
-      min-height: toRem(300);
       margin-bottom: $main-content-layout-gap-small;
 
       @media (min-width: $content-breakpoint-desktop) {
         margin-bottom: $main-content-layout-gap;
+      }
+
+      &-content-top {
+        display: grid;
+        grid-template-columns: 0.65fr 0.35fr;
+        align-items: center;
+      }
+      &-content-bottom {
+        display: flex;
       }
     }
 
