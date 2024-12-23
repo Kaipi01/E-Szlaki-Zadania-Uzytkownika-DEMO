@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   new CustomPieChart(UPT_MODULE_ID_SELECTOR + " .custom-pie-chart");
 
-  new UPTDateTimeStatisics(UPT_MODULE_ID_SELECTOR + " [date-time-statisics]");
+  new UPTDateTimeStatisics(UPT_MODULE_ID_SELECTOR + " [data-date-time-statisics]");
 
   // Inicjacja wszystkich animowantych kołowych progress barów z klasą "circular-progress-bar"
   CircularProgressBar.initAll();
@@ -22,13 +22,13 @@ class UPTDateTimeStatisics {
   constructor(containerSelector) {
     this.container = document.querySelector(containerSelector);
     this.currentTimeEl = this.container.querySelector(
-      "[statistic-current-time]"
+      "[data-statistic-current-time]"
     );
     this.currentDateEl = this.container.querySelector(
-      "[statistic-current-date]"
+      "[data-statistic-current-date]"
     );
     this.timeToEndDayEl = this.container.querySelector(
-      "[statistic-time-to-end-day]"
+      "[data-statistic-time-to-end-day]"
     );
 
     this.init();
@@ -131,9 +131,9 @@ class UPTModuleMainNavigation {
 
   constructor(mainContainerSelector) {
     this.mainContainer = document.querySelector(mainContainerSelector);
-    this.navigation = this.mainContainer.querySelector("[main-navigation]");
+    this.navigation = this.mainContainer.querySelector("[data-main-navigation]");
     this.navigationList = this.mainContainer.querySelector(
-      "[main-navigation-list]"
+      "[data-main-navigation-list]"
     );
     this.pages = this.mainContainer.querySelectorAll("[data-content-page]");
     this.pageLinks = [];
@@ -169,7 +169,7 @@ class UPTModuleMainNavigation {
   }
 
   init() {
-    this.pageLinks = this.navigation.querySelectorAll("[main-navigation-link]");
+    this.pageLinks = this.navigation.querySelectorAll("[data-main-navigation-link]");
     this.pageLinksArray = Array.from(this.pageLinks);
     this.bindPageLinks();
     this.showInitPage();
@@ -228,7 +228,7 @@ class UPTModuleMainNavigation {
     }
 
     const activeMenuLink = this.navigation.querySelector(
-      "[main-navigation-link].active"
+      "[data-main-navigation-link].active"
     );
     const prevActivePage = this.mainContainer.querySelector(
       "[data-content-page].active"
@@ -259,7 +259,7 @@ class UPTModuleMainNavigation {
 
     stylesForNavigationList.textContent = `#${
       this.mainContainer.id
-    } [main-navigation-list]::after {left: ${
+    } [data-main-navigation-list]::after {left: ${
       pageNumber * (100.0 / this.pageLinksArray.length)
     }%;}`;
   }
@@ -1162,25 +1162,26 @@ class CustomSelect {
   constructor(selectElement) {
     this.selectElement = selectElement;
     this.numberOfOptions = selectElement.children.length;
+    this.className = selectElement.dataset.className ? selectElement.dataset.className : "custom-select"
     this.createCustomElements();
     this.attachEventListeners();
   }
 
   createCustomElements() {
-    this.selectElement.classList.add("custom-select-hidden");
+    this.selectElement.classList.add(`${this.className}-hidden`);
     this.wrapper = document.createElement("div");
-    this.wrapper.classList.add("custom-select");
+    this.wrapper.classList.add(this.className);
     this.selectElement.parentNode.insertBefore(
       this.wrapper,
       this.selectElement
     );
     this.wrapper.appendChild(this.selectElement);
     this.styledSelect = document.createElement("div");
-    this.styledSelect.classList.add("custom-select-styled");
+    this.styledSelect.classList.add(`${this.className}-styled`);
     this.styledSelect.textContent = this.selectElement.options[0].textContent;
     this.wrapper.appendChild(this.styledSelect);
     this.optionList = document.createElement("ul");
-    this.optionList.classList.add("custom-select-options");
+    this.optionList.classList.add(`${this.className}-options`);
     this.wrapper.appendChild(this.optionList);
 
     for (let i = 0; i < this.numberOfOptions; i++) {
@@ -1201,7 +1202,7 @@ class CustomSelect {
     this.styledSelect.addEventListener("click", (e) => {
       e.stopPropagation();
       document
-        .querySelectorAll("div.custom-select-styled.active")
+        .querySelectorAll(`div.${this.className}-styled.active`)
         .forEach((activeStyledSelect) => {
           if (activeStyledSelect !== this.styledSelect) {
             activeStyledSelect.classList.remove("active");

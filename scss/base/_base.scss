@@ -17,11 +17,25 @@ html {
 }
 
 body {
-  padding: 4rem 0;
   background-color: #fff;
-  background-image: url(../images/topography.svg);
   color: #000;
   font-family: sans-serif;
+  background-image: url(../images/topography.svg);
+
+  // &::before {
+  //   content: "";
+  //   display: block;
+  //   position: fixed;
+  //   width: 100%;
+  //   height: 100%;
+  //   background-image: url(../images/bg.jpg);
+  //   background-repeat: no-repeat;
+  //   background-size: cover;
+  // }
+}
+
+main {
+  padding: 3rem 0;
 }
 
 .container {
@@ -135,13 +149,13 @@ body {
     text-transform: uppercase;
 
     @media (min-width: 31.25em) {
-      font-size: 1rem; 
+      font-size: 1rem;
     }
   }
 
   .upt-small-header {
     font-size: 1.1rem;
-    font-weight: bold;  
+    font-weight: bold;
     @media (min-width: 31.25em) {
       font-size: 1.2rem;
     }

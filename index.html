@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="./dist/main.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css"
         integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
+        crossorigin="anonymous" referrerpolicy="no-referrer">
     <title>Prywatne zadania użytkownika</title>
 </head>
 
@@ -19,44 +19,51 @@
         <!-- USER PRIVATE TASKS MODULE START -->
         <section id="user-private-tasks-module-e-szlaki">
 
+            <!-- MAIN CONTENT LAYOUT START -->
             <div class="main-content-layout">
-                <nav main-navigation class="main-navigation modern-card">
-                    <ul main-navigation-list class="main-navigation-list">
+
+                <!-- MAIN NAVIGATION START -->
+                <nav data-main-navigation class="main-navigation modern-card">
+                    <ul data-main-navigation-list class="main-navigation-list">
                         <li class="main-navigation-item">
-                            <a main-navigation-link="panel-glowny" class="main-navigation-link" href="#panel-glowny">
+                            <a data-main-navigation-link="panel-glowny" class="main-navigation-link"
+                                href="#panel-glowny">
                                 <i class="main-navigation-link-icon fa-solid fa-house"></i>
                                 <span class="main-navigation-link-text">Panel Główny</span>
                             </a>
                         </li>
                         <li class="main-navigation-item">
-                            <a main-navigation-link="zadania" class="main-navigation-link" href="#zadania">
+                            <a data-main-navigation-link="zadania" class="main-navigation-link" href="#zadania">
                                 <i class="main-navigation-link-icon fa-solid fa-list-check"></i>
                                 <span class="main-navigation-link-text">Zadania</span>
                             </a>
                         </li>
                         <li class="main-navigation-item">
-                            <a main-navigation-link="kategorie" class="main-navigation-link" href="#kategorie">
+                            <a data-main-navigation-link="kategorie" class="main-navigation-link" href="#kategorie">
                                 <i class="main-navigation-link-icon fa-solid fa-icons"></i>
                                 <span class="main-navigation-link-text">Kategorie</span>
                             </a>
                         </li>
                         <li class="main-navigation-item">
-                            <a main-navigation-link="archiwum" class="main-navigation-link" href="#archiwum">
+                            <a data-main-navigation-link="archiwum" class="main-navigation-link" href="#archiwum">
                                 <i class="main-navigation-link-icon fa-solid fa-folder"></i>
                                 <span class="main-navigation-link-text">Archiwum</span>
                             </a>
                         </li>
                     </ul>
                 </nav>
+                <!-- MAIN NAVIGATION START -->
 
                 <div class="main-content-wrapper">
+
+                    <!-- MAIN PANEL PAGE START -->
                     <section data-content-page="#panel-glowny" id="panel-glowny" class="main-panel panel active">
                         <div class="statistics-card modern-card">
 
-                            <div date-time-statisics>
-                                <p statistic-current-time class="upt-big-header"></p>
-                                <p statistic-current-date class="upt-sub-header">Sobota, 12 Styczeń 2022</p>
-                                <p>Do końca dnia zostało:<br><span statistic-time-to-end-day>06: 34: 43</span></p>
+                            <div data-date-time-statisics>
+                                <p data-statistic-current-time class="upt-big-header"></p>
+                                <p data-statistic-current-date class="upt-sub-header">Sobota, 12 Styczeń 2022</p>
+                                <p>Do końca dnia zostało:<br><span data-statistic-time-to-end-day>06: 34: 43</span></p>
                                 <p>Zostało dziś: <span>5</span> zadań do wykonania</p>
                             </div>
 
@@ -100,48 +107,118 @@
                             </form>
                             <button class="link link-100 variant2"
                                 aria-controls="user-private-tasks-module-e-szlaki-modal">Dodaj Nowe Zadanie</button>
-                            <button class="link link-100 variant2">Dodaj Nową Kategorię</button>
+                            <button class="link link-100 variant2">
+                                <i class="link-icon fa-solid fa-plus"></i>  Dodaj Nową Kategorię
+                            </button>
                         </div>
                         <div class="help-informations-card modern-card">
-                            <p>Witaj! Lorem ipsum, dolor sit amet consectetur adipisicing elit. Iste placeat officia
+                            <p class="information-message">Witaj! Lorem ipsum, dolor sit amet consectetur adipisicing
+                                elit. Iste placeat officia
                                 natus aperiam enim nemo eveniet eum. Rerum nulla quidem odit ipsam nobis. Lorem ipsum
                                 dolor, sit amet consectetur adipisicing elit. Provident, beatae ex.</p>
+                            <button class="dont-show-again-btn link small variant2">Nie pokazuj więcej</button>
                         </div>
-                        <div class="daily-tasks-card modern-card modern-card--opacity">
-                            <div class="upt-header pb-2">
+                        <div class="daily-tasks-card">
+                            <div class="upt-header modern-card">
                                 <p class="upt-small-header">Zadania dzienne</p>
                                 <a href="#zadania" class="link small variant2">Pokaż więcej</a>
                             </div>
                             <ul>
-                                <li class="task modern-card">
-                                    <div class="task-checkbox custom-checkbox-group">
-                                        <input class="custom-checkbox-input" type="checkbox" id="tenetur">
-                                        <label class="custom-checkbox-label" for="tenetur"><span class="sr-only">Oznacz jako wykonany</span></label>
-                                    </div>
-                                    <span class="task-header">
-                                        <p class="task-name">Zadanie numer 1</p>
-                                        <p class="task-date">Start: 10:30 23.12.24</p>
-                                        <p class="task-date">Koniec: 12:30 29.12.24</p>
+                                <li class="task modern-card modern-card--opacity">
+
+                                    <span
+                                        class="task-checkbox tooltip custom-checkbox-group custom-checkbox-group--big">
+                                        <input id="checks" type="checkbox">
+                                        <label class="custom-checkbox-label" for="checks">
+                                            <span class="tooltip-content">Oznacz jako wykonane</span>
+                                            <span class="custom-checkbox-icon" aria-hidden="true"></span>
+                                        </label>
                                     </span>
-                                    
-                                     <span class="task-actions">
-                                        <button class="task-action-btn task-edit-btn">
-                                            <span class="sr-only">Edytuj Zadania</span>
+
+                                    <span class="task-content">
+                                        <span class="task-priority"><i class="fa-solid fa-circle-chevron-up"></i> Wysoki
+                                            piorytet</span>
+                                        <span class="task-header">
+                                            <span class="task-name"><i class="fa-solid fa-briefcase"></i> Zadanie numer
+                                                1</span>
+                                            <span class="tooltip">
+                                                <span class="task-date-month">
+                                                    <i class="fa-regular fa-calendar"></i> 23 Paź
+                                                </span>
+                                                <span class="task-date-hours">
+                                                    <i class="fa-regular fa-clock"></i> 10:00 - 12:30
+                                                </span>
+                                                <span class="tooltip-content">Lorem ipsum dolor sit amet consectetur,
+                                                    adipisicing elit. Consequatur, quod quasi. Repellendus reiciendis
+                                                    officia repellat ipsam dignissimos magnam aliquam aspernatur,
+                                                    voluptatibus autem itaque.</span>
+                                            </span>
+                                        </span>
+                                    </span>
+
+                                    <span class="task-actions">
+                                        <button class="task-action-btn task-edit-btn tooltip">
+                                            <span class="tooltip-content">Edytuj Zadanie</span>
                                             <i class="fa-solid fa-pen-to-square"></i>
                                         </button>
-                                        <button class="task-action-btn task-delete-btn">
-                                            <span class="sr-only">Usuń Zadanie</span>
+                                        <button class="task-action-btn task-delete-btn tooltip">
+                                            <span class="tooltip-content">Usuń Zadanie</span>
                                             <i class="fa-solid fa-trash-can"></i>
                                         </button>
-                                     </span> 
+                                    </span>
                                 </li>
                             </ul>
                         </div>
-                        <div class="main-tasks-card modern-card modern-card--opacity">
-                            <div class="upt-header">
+                        <div class="main-tasks-card">
+                            <div class="upt-header modern-card">
                                 <p class="upt-small-header">Zadania główne</p>
                                 <a href="#zadania" class="link small variant2">Pokaż więcej</a>
                             </div>
+                            <ul>
+                                <li class="task modern-card modern-card--opacity">
+
+                                    <span
+                                        class="task-checkbox tooltip custom-checkbox-group custom-checkbox-group--big">
+                                        <input id="check" type="checkbox">
+                                        <label class="custom-checkbox-label" for="check">
+                                            <span class="tooltip-content">Oznacz jako wykonane</span>
+                                            <span class="custom-checkbox-icon" aria-hidden="true"></span>
+                                        </label>
+                                    </span>
+
+                                    <span class="task-content">
+                                        <span class="task-priority"><i class="fa-solid fa-circle-chevron-up"></i> Wysoki
+                                            piorytet</span>
+                                        <span class="task-header">
+                                            <span class="task-name"><i class="fa-solid fa-briefcase"></i> Zadanie numer
+                                                1</span>
+                                            <span class="tooltip">
+                                                <span class="task-date-month">
+                                                    <i class="fa-regular fa-calendar"></i> 23 Paź
+                                                </span>
+                                                <span class="task-date-hours">
+                                                    <i class="fa-regular fa-clock"></i> 10:00 - 12:30
+                                                </span>
+                                                <span class="tooltip-content">Lorem ipsum dolor sit amet consectetur,
+                                                    adipisicing elit. Consequatur, quod quasi. Repellendus reiciendis
+                                                    officia repellat ipsam dignissimos magnam aliquam aspernatur,
+                                                    voluptatibus autem itaque.</span>
+                                            </span>
+                                        </span>
+                                    </span>
+
+                                    <span class="task-actions">
+                                        <button class="task-action-btn task-edit-btn tooltip">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                            <span class="tooltip-content">Edytuj Zadanie</span>
+                                        </button>
+                                        <button class="task-action-btn task-delete-btn tooltip">
+                                            <span class="tooltip-content">Usuń Zadanie</span>
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </span>
+                                </li>
+                            </ul>
                         </div>
                         <div class="categories-card modern-card">
                             <div class="upt-header">
@@ -151,26 +228,31 @@
                             <ul class="task-category-list">
                                 <li>
                                     <a href="#kategorie" class="task-category-link link variant4">
-                                        <i class="task-category-link-icon fa-regular fa-circle-question" aria-hidden="true"></i>
+                                        <i class="task-category-link-icon fa-regular fa-circle-question"
+                                            aria-hidden="true"></i>
                                         <span>Start</span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="#kategorie" class="task-category-link link variant4">
-                                        <i class="task-category-link-icon fa-regular fa-circle-question" aria-hidden="true"></i>
+                                        <i class="task-category-link-icon fa-regular fa-circle-question"
+                                            aria-hidden="true"></i>
                                         <span>Start</span>
                                     </a>
                                 </li>
                                 <li>
                                     <a href="#kategorie" class="task-category-link link variant4">
-                                        <i class="task-category-link-icon fa-regular fa-circle-question" aria-hidden="true"></i>
+                                        <i class="task-category-link-icon fa-regular fa-circle-question"
+                                            aria-hidden="true"></i>
                                         <span>Start</span>
                                     </a>
                                 </li>
                             </ul>
                         </div>
                     </section>
+                    <!-- MAIN PANEL PAGE END -->
 
+                    <!-- TASKS PAGE START -->
                     <section data-content-page="#zadania" id="zadania" class="tasks-panel panel">
                         <div class="actions-card modern-card">
                             <form class="upt-search-form">
@@ -180,8 +262,8 @@
                                 </button>
                                 <div class="upt-search-box">
                                     <input class="floating-label-control upt-form-control " type="search"
-                                        name="input-search" id="input-search" placeholder="Search">
-                                    <label class="floating-label" for="input-search">Search</label>
+                                        name="input-search" id="input-search-task" placeholder="Search">
+                                    <label class="floating-label" for="input-search-task">Search</label>
                                 </div>
                             </form>
                         </div>
@@ -194,17 +276,272 @@
                             <div class="task modern-card">Zadanie</div>
                         </div>
                     </section>
+                    <!-- TASKS PAGE END -->
 
-                    <section data-content-page="#kategorie" id="kategorie" class="tasks-panel panel">
-                        <div class="actions-card modern-card">Akcje</div>
-                        <div class="tasks-list">
-                            <div class="task modern-card">kategoria</div>
-                            <div class="task modern-card">kategoria</div>
-                            <div class="task modern-card">kategoria</div>
-                            <div class="task modern-card">kategoria</div>
+                    <!-- CATEGORIES PAGE START -->
+                    <section data-content-page="#kategorie" id="kategorie" class="categories-panel panel">
+                        <div class="actions-card modern-card">
+                            <button class="actions-card-left-content link link-100 variant2">
+                                <i class="link-icon fa-solid fa-plus"></i> Dodaj Nową Kategorię
+                            </button>
+                            <div class="actions-card-right-content">
+                                <select id="filter-category" data-custom-select data-class-name="custom-select-green">
+                                    <option value="hide">Filtruj</option>
+                                    <option value="magni">Magni</option>
+                                    <option value="doloremque">Doloremque</option>
+                                </select>
+                                <select id="select-category" data-custom-select data-class-name="custom-select-green">
+                                    <option value="hide">Sortuj</option>
+                                    <option value="magni">Magni</option>
+                                    <option value="doloremque">Doloremque</option>
+                                </select>
+                                <form class="upt-search-form">
+                                    <button class="upt-search-btn link variant2" type="submit">
+                                        <i class="upt-icon fa-solid fa-magnifying-glass"></i>
+                                        <span class="sr-only">Szukaj</span>
+                                    </button>
+                                    <div class="upt-search-box">
+                                        <input class="floating-label-control upt-form-control " type="search"
+                                            name="input-search" id="input-search" placeholder="Szukaj">
+                                        <label class="floating-label" for="input-search">Szukaj</label>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
+                        <ul class="categories-list">
+                            <li class="category-card modern-card">
+                                <span class="category-card-header">
+                                    <span class="category-card-name">
+                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
+                                        Kategoria
+                                    </span>
+                                    <span class="category-card-createAt">Utworzono: 23.12.2024</span>
+                                </span>
+                                <span class="category-card-actions">
+                                    <button class="category-card-action-btn category-card-edit-btn tooltip">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="tooltip-content">Edytuj Zadanie</span>
+                                    </button>
+                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
+                                        <span class="tooltip-content">Usuń Zadanie</span>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </span>
+                            </li> 
+                            <li class="category-card modern-card">
+                                <span class="category-card-header">
+                                    <span class="category-card-name">
+                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
+                                        Kategoria
+                                    </span>
+                                    <span class="category-card-createAt">Utworzono: 23.12.2024</span>
+                                </span>
+                                <span class="category-card-actions">
+                                    <button class="category-card-action-btn category-card-edit-btn tooltip">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="tooltip-content">Edytuj Zadanie</span>
+                                    </button>
+                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
+                                        <span class="tooltip-content">Usuń Zadanie</span>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </span>
+                            </li> 
+                            <li class="category-card modern-card">
+                                <span class="category-card-header">
+                                    <span class="category-card-name">
+                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
+                                        Kategoria
+                                    </span>
+                                    <span class="category-card-createAt">Utworzono: 23.12.2024</span>
+                                </span>
+                                <span class="category-card-actions">
+                                    <button class="category-card-action-btn category-card-edit-btn tooltip">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="tooltip-content">Edytuj Zadanie</span>
+                                    </button>
+                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
+                                        <span class="tooltip-content">Usuń Zadanie</span>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </span>
+                            </li> 
+                            <li class="category-card modern-card">
+                                <span class="category-card-header">
+                                    <span class="category-card-name">
+                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
+                                        Kategoria
+                                    </span>
+                                    <span class="category-card-createAt">Utworzono: 23.12.2024</span>
+                                </span>
+                                <span class="category-card-actions">
+                                    <button class="category-card-action-btn category-card-edit-btn tooltip">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="tooltip-content">Edytuj Zadanie</span>
+                                    </button>
+                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
+                                        <span class="tooltip-content">Usuń Zadanie</span>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </span>
+                            </li> 
+                            <li class="category-card modern-card">
+                                <span class="category-card-header">
+                                    <span class="category-card-name">
+                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
+                                        Kategoria
+                                    </span>
+                                    <span class="category-card-createAt">Utworzono: 23.12.2024</span>
+                                </span>
+                                <span class="category-card-actions">
+                                    <button class="category-card-action-btn category-card-edit-btn tooltip">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="tooltip-content">Edytuj Zadanie</span>
+                                    </button>
+                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
+                                        <span class="tooltip-content">Usuń Zadanie</span>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </span>
+                            </li> 
+                            <li class="category-card modern-card">
+                                <span class="category-card-header">
+                                    <span class="category-card-name">
+                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
+                                        Kategoria
+                                    </span>
+                                    <span class="category-card-createAt">Utworzono: 23.12.2024</span>
+                                </span>
+                                <span class="category-card-actions">
+                                    <button class="category-card-action-btn category-card-edit-btn tooltip">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="tooltip-content">Edytuj Zadanie</span>
+                                    </button>
+                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
+                                        <span class="tooltip-content">Usuń Zadanie</span>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </span>
+                            </li> 
+                            <li class="category-card modern-card">
+                                <span class="category-card-header">
+                                    <span class="category-card-name">
+                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
+                                        Kategoria
+                                    </span>
+                                    <span class="category-card-createAt">Utworzono: 23.12.2024</span>
+                                </span>
+                                <span class="category-card-actions">
+                                    <button class="category-card-action-btn category-card-edit-btn tooltip">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="tooltip-content">Edytuj Zadanie</span>
+                                    </button>
+                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
+                                        <span class="tooltip-content">Usuń Zadanie</span>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </span>
+                            </li> 
+                            <li class="category-card modern-card">
+                                <span class="category-card-header">
+                                    <span class="category-card-name">
+                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
+                                        Kategoria
+                                    </span>
+                                    <span class="category-card-createAt">Utworzono: 23.12.2024</span>
+                                </span>
+                                <span class="category-card-actions">
+                                    <button class="category-card-action-btn category-card-edit-btn tooltip">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="tooltip-content">Edytuj Zadanie</span>
+                                    </button>
+                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
+                                        <span class="tooltip-content">Usuń Zadanie</span>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </span>
+                            </li> 
+                            <li class="category-card modern-card">
+                                <span class="category-card-header">
+                                    <span class="category-card-name">
+                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
+                                        Kategoria
+                                    </span>
+                                    <span class="category-card-createAt">Utworzono: 23.12.2024</span>
+                                </span>
+                                <span class="category-card-actions">
+                                    <button class="category-card-action-btn category-card-edit-btn tooltip">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="tooltip-content">Edytuj Zadanie</span>
+                                    </button>
+                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
+                                        <span class="tooltip-content">Usuń Zadanie</span>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </span>
+                            </li> 
+                            <li class="category-card modern-card">
+                                <span class="category-card-header">
+                                    <span class="category-card-name">
+                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
+                                        Kategoria
+                                    </span>
+                                    <span class="category-card-createAt">Utworzono: 23.12.2024</span>
+                                </span>
+                                <span class="category-card-actions">
+                                    <button class="category-card-action-btn category-card-edit-btn tooltip">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="tooltip-content">Edytuj Zadanie</span>
+                                    </button>
+                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
+                                        <span class="tooltip-content">Usuń Zadanie</span>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </span>
+                            </li> 
+                            <li class="category-card modern-card">
+                                <span class="category-card-header">
+                                    <span class="category-card-name">
+                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
+                                        Kategoria
+                                    </span>
+                                    <span class="category-card-createAt">Utworzono: 23.12.2024</span>
+                                </span>
+                                <span class="category-card-actions">
+                                    <button class="category-card-action-btn category-card-edit-btn tooltip">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="tooltip-content">Edytuj Zadanie</span>
+                                    </button>
+                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
+                                        <span class="tooltip-content">Usuń Zadanie</span>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </span>
+                            </li> 
+                            <li class="category-card modern-card">
+                                <span class="category-card-header">
+                                    <span class="category-card-name">
+                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
+                                        Kategoria
+                                    </span>
+                                    <span class="category-card-createAt">Utworzono: 23.12.2024</span>
+                                </span>
+                                <span class="category-card-actions">
+                                    <button class="category-card-action-btn category-card-edit-btn tooltip">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="tooltip-content">Edytuj Zadanie</span>
+                                    </button>
+                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
+                                        <span class="tooltip-content">Usuń Zadanie</span>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </span>
+                            </li> 
+                        </ul>
                     </section>
+                    <!-- CATEGORIES PAGE END -->
 
+                    <!-- ARCHIVE PAGE START -->
                     <section data-content-page="#archiwum" id="archiwum" class="archive-panel panel">
                         <div class="actions-card modern-card">Akcje</div>
                         <div class="tasks-archive-list">
@@ -216,11 +553,17 @@
                             <div class="task-archive modern-card">Zadanie</div>
                         </div>
                     </section>
+                    <!-- ARCHIVE PAGE END -->
+
                 </div>
             </div>
+            <!-- MAIN CONTENT LAYOUT END -->
 
-            <div id="user-private-tasks-module-e-szlaki-modal" data-modal-first-focus="#upt-add-tast-input-name" class="modal modal--animate-slide-up js-modal">
-                <div class="modal__content modern-card" role="alertdialog" aria-labelledby="user-private-tasks-module-e-szlaki-modal-title">
+            <!-- ADD TASK MODAL FORM START -->
+            <div id="user-private-tasks-module-e-szlaki-modal" data-modal-first-focus="#upt-add-tast-input-name"
+                class="modal modal--animate-slide-up js-modal">
+                <div class="modal__content modern-card" role="alertdialog"
+                    aria-labelledby="user-private-tasks-module-e-szlaki-modal-title">
                     <div class="modal__header pb-2">
                         <p id="user-private-tasks-module-e-szlaki-modal-title" class="upt-small-header">
                             Dodaj Nowe Zadanie
@@ -235,33 +578,32 @@
                     <form class="upt-add-tast-form">
 
                         <div class="upt-form-field">
-                            <input class="floating-label-control upt-form-control" type="text" name="upt-add-tast-name" id="upt-add-tast-input-name" placeholder="Nazwa Zadania">
+                            <input class="floating-label-control upt-form-control" type="text" name="upt-add-tast-name"
+                                id="upt-add-tast-input-name" placeholder="Nazwa Zadania">
                             <label class="floating-label" for="upt-add-tast-input-name">Nazwa Zadania</label>
 
                             <i class="upt-icon fa-solid fa-pen"></i>
                         </div>
 
                         <div class="upt-form-field">
-                            <select id="mounth" data-custom-select>
+                            <select id="upt-add-tast-input-category" data-custom-select>
                                 <option value="hide">Wybierz Kategorie</option>
                                 <option value="magni">Magni</option>
-                                <option value="february">Doloremque</option>
-                                <option value="tenetur">Tenetur</option>
-                                <option value="delectus">Delectus</option>
+                                <option value="doloremque">Doloremque</option>
                             </select>
-                            <label class="floating-label" for="upt-add-tast-input-email">Kategoria</label>
+                            <label class="floating-label" for="upt-add-tast-input-category">Kategoria</label>
                         </div>
 
                         <div class="upt-form-field">
                             <input class="floating-label-control upt-form-control" type="date" name="upt-add-tast-name"
-                                id="upt-add-tast-input-name" placeholder="Od kiedy">
-                            <label class="floating-label" for="upt-add-tast-input-name">Od kiedy</label>
+                                id="upt-add-tast-input-date-start">
+                            <label class="floating-label" for="upt-add-tast-input-date-start">Od kiedy</label>
                         </div>
 
                         <div class="upt-form-field">
-                            <input class="floating-label-control upt-form-control" type="date" type="email"
-                                name="upt-add-tast-email" id="upt-add-tast-input-email" placeholder="Do kiedy">
-                            <label class="floating-label" for="upt-add-tast-input-email">Do kiedy</label>
+                            <input class="floating-label-control upt-form-control" type="date"
+                                name="upt-add-tast-date-end" id="upt-add-tast-input-date-end">
+                            <label class="floating-label" for="upt-add-tast-input-date-end">Do kiedy</label>
                         </div>
 
                         <div class="upt-add-tast-form-question upt-form-field">
@@ -270,11 +612,12 @@
                                 id="upt-add-tast-input-desc" placeholder="Maksymalnie 500 znaków"></textarea>
                         </div>
 
-                        
-                        
                         <div class="custom-checkbox-group">
-                            <input class="custom-checkbox-input" type="checkbox" id="tenetur">
-                            <label class="custom-checkbox-label" for="tenetur">Tenetur</label>
+                            <input id="Tenetur" type="checkbox">
+                            <label class="custom-checkbox-label" for="Tenetur">
+                                <span class="custom-checkbox-icon" aria-hidden="true"></span>
+                            </label>
+                            <label class="custom-checkbox-label" for="Tenetur">Tenetur</label>
                         </div>
 
                         <div class="upt-add-tast-form-actions">
@@ -284,10 +627,86 @@
                             <button type="submit" class="link small variant2">
                                 Dodaj
                             </button>
-                        </div> 
+                        </div>
                     </form>
                 </div>
             </div>
+            <!-- ADD TASK MODAL FORM END -->
+
+            <!-- ADD TASK MODAL FORM START -->
+            <div id="user-private-tasks-module-e-szlaki-modal" data-modal-first-focus="#upt-add-tast-input-name"
+                class="modal modal--animate-slide-up js-modal">
+                <div class="modal__content modern-card" role="alertdialog"
+                    aria-labelledby="user-private-tasks-module-e-szlaki-modal-title">
+                    <div class="modal__header pb-2">
+                        <p id="user-private-tasks-module-e-szlaki-modal-title" class="upt-small-header">
+                            Dodaj Nowe Zadanie
+                        </p>
+
+                        <button class="modal__close-btn modal__close-btn--inner js-modal__close js-tab-focus">
+                            <span class="sr-only">Zamknij</span>
+                            <img class="modal__close-btn-icon" src="./images/close-icon.svg" alt="x" aria-hidden="true">
+                        </button>
+                    </div>
+
+                    <form class="upt-add-tast-form">
+
+                        <div class="upt-form-field">
+                            <input class="floating-label-control upt-form-control" type="text" name="upt-add-tast-name"
+                                id="upt-add-tast-input-name" placeholder="Nazwa Zadania">
+                            <label class="floating-label" for="upt-add-tast-input-name">Nazwa Zadania</label>
+
+                            <i class="upt-icon fa-solid fa-pen"></i>
+                        </div>
+
+                        <div class="upt-form-field">
+                            <select id="upt-add-tast-input-category" data-custom-select>
+                                <option value="hide">Wybierz Kategorie</option>
+                                <option value="magni">Magni</option>
+                                <option value="doloremque">Doloremque</option>
+                            </select>
+                            <label class="floating-label" for="upt-add-tast-input-category">Kategoria</label>
+                        </div>
+
+                        <div class="upt-form-field">
+                            <input class="floating-label-control upt-form-control" type="date" name="upt-add-tast-name"
+                                id="upt-add-tast-input-date-start">
+                            <label class="floating-label" for="upt-add-tast-input-date-start">Od kiedy</label>
+                        </div>
+
+                        <div class="upt-form-field">
+                            <input class="floating-label-control upt-form-control" type="date"
+                                name="upt-add-tast-date-end" id="upt-add-tast-input-date-end">
+                            <label class="floating-label" for="upt-add-tast-input-date-end">Do kiedy</label>
+                        </div>
+
+                        <div class="upt-add-tast-form-question upt-form-field">
+                            <label class="floating-label" for="upt-add-tast-input-desc">Treść pytania</label>
+                            <textarea rows="5" class="floating-label-control upt-form-control " name="upt-add-tast-desc"
+                                id="upt-add-tast-input-desc" placeholder="Maksymalnie 500 znaków"></textarea>
+                        </div>
+
+                        <div class="custom-checkbox-group">
+                            <input id="Tenetur" type="checkbox">
+                            <label class="custom-checkbox-label" for="Tenetur">
+                                <span class="custom-checkbox-icon" aria-hidden="true"></span>
+                            </label>
+                            <label class="custom-checkbox-label" for="Tenetur">Tenetur</label>
+                        </div>
+
+                        <div class="upt-add-tast-form-actions">
+                            <button class="link small variant1">
+                                Anuluj
+                            </button>
+                            <button type="submit" class="link small variant2">
+                                Dodaj
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- ADD TASK MODAL FORM END -->
+
         </section>
         <!-- USER PRIVATE TASKS MODULE END -->
     </main>

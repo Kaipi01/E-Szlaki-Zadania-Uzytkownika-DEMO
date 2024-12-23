@@ -26,6 +26,7 @@
     input[type="search"] {
       width: 100%;
       min-height: toRem(47);
+      border-radius: 0.375em;
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
       border-color: var(--light-green);

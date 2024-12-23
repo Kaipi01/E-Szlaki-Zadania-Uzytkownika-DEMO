@@ -3,7 +3,11 @@
 
 #user-private-tasks-module-e-szlaki {
   .task-category-list {
-    background-color: var(--blue);
+    margin-top: 1.5rem;
+    padding-block: 1rem;
+    overflow: hidden;
+    border-radius: 20px;
+    background-color: var(--green);
     list-style: none;
   }
 
@@ -15,6 +19,8 @@
     margin: 0;
     padding: 1.25rem 2rem;
     transition: all 0.4s ease-in-out;
+    border-radius: 0;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
     cursor: pointer;
 

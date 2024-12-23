@@ -1,5 +1,6 @@
 @use "./base/base";  
 @use "./base/colors";
+
 @use "./components/links";
 @use "./components/modern-card"; 
 @use "./components/sr-only";
@@ -9,14 +10,20 @@
 @use "./components/circular-progress-bar"; 
 @use "./components/custom-pie-chart"; 
 @use "./components/custom-select"; 
-@use "./components/tooltip-link"; 
-@use "./contact/form";
+@use "./components/custom-select-green"; 
+@use "./components/tooltip"; 
 @use "./components/search-form";
 
+@use "./contact/form";
+
 @use "./layout/main-content-layout";
-@use "./pages/main/main-panel";
-@use "./pages/archive/archive-panel";
-@use "./pages/tasks/tasks-panel";
+
+@use "./pages/main-page/main-panel";
+@use "./pages/archive-page/archive-panel";
+@use "./pages/tasks-page/tasks-panel";
+@use "./pages/categories-page/categories-panel";
 
 @use "./task/task-category";
 @use "./task/task";
+
+@use "./category/category-card";

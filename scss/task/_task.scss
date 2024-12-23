@@ -3,37 +3,83 @@
 
 #user-private-tasks-module-e-szlaki {
   .task {
+    --border-radius: 20px;
     display: flex;
-    align-items: center;
     gap: 0.75rem;
-    padding: 0.15rem 0.5rem;
-    border-radius: 10px;
+    padding: 0;
+    padding-left: 1rem;
+    border-radius: var(--border-radius);
 
-    &-checkbox {
-    }
-    &-header {
+    &-content {
+      padding: 0.15rem 0 0.15rem 0.25rem;
+      padding-block: 1rem;
     }
     &-name {
+      display: block;
+      padding-block: 0.5rem;
+      font-size: 1.2rem;
+      font-weight: bold;
     }
-    &-date {
+
+    &-checkbox {
+      align-self: center;
     }
+
+    &-priority {
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    &-short-desc {
+      color: var(--gray);
+    }
+
+    &-date-month {
+      padding-right: toRem(10);
+    }
+
+    &-date-day {
+    }
+
     &-actions {
       display: flex;
       flex-direction: column;
-      align-items: space-between;
-      justify-content: space-between;
-      height: 100%;
       margin-left: auto;
     }
 
     &-action-btn {
-      padding: toRem(10);
-      border-radius: 5px;
+      min-height: 50%;
+      padding-inline: toRem(15);
+      transition: all 0.3s ease;
+      border-left: 2px solid rgba(0, 0, 0, 0.16);
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px,
+        rgba(0, 0, 0, 0.03) 0px 3px 6px;
+
+      i {
+        font-size: 1rem;
+      }
     }
 
     &-edit-btn {
+      border-top-right-radius: var(--border-radius);
+
+      &:hover,
+      &:focus,
+      &:active {
+        background-color: var(--blue);
+        color: #fff;
+      }
     }
+
     &-delete-btn {
+      border-bottom-right-radius: var(--border-radius);
+
+      &:hover,
+      &:focus,
+      &:active {
+        background-color: #ff0000;
+        color: #fff;
+      }
     }
   }
 }

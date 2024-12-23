@@ -1,0 +1,91 @@
+@use "../functions/toRem";
+
+#user-private-tasks-module-e-szlaki {
+  .custom-select-green {
+    $background: var(--background-green-hover);
+    $select-color: #fff;
+    $select-background: var(--background-green-hover);  
+
+    display: inline-block;
+    position: relative;
+    width: 100%; 
+    color: $select-color;
+    font-size: 16px;
+    cursor: pointer;
+
+    &-hidden {
+      display: none;
+      visibility: hidden;
+      padding-right: 10px;
+    }
+
+    &-styled {
+      display: flex;
+      position: relative;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      padding: 0.75rem 0.9375rem;
+      transition: all 0.2s ease-in;
+      border-radius: 5px;
+      background-color: $select-background;
+
+      &:after {
+        content: "";
+        position: absolute;
+        top: calc(50% + 3.5px);
+        right: 0.9375rem;
+        width: 0;
+        height: 0;
+        transform: translateY(-50%);
+        border: 7px solid transparent;
+        border-color: $select-color transparent transparent transparent;
+      }
+      &:hover {
+        background-color: var(--background-green);
+      }
+      &:active,
+      &.active {
+        background-color: var(--background-green);
+
+        &:after {
+          transform: translateY(-50%) rotate(180deg);
+          border-color: transparent transparent $select-color transparent;
+        }
+      }
+    }
+
+    &-options {
+      display: none;
+      position: absolute;
+      z-index: 999;
+      top: 100%;
+      right: 0;
+      left: 0;
+      margin: 0;
+      padding: 0;
+      background-color: var(--background-green);
+      list-style: none;
+
+      li {
+        margin: 0;
+        padding: 12px 0;
+        transition: all 0.15s ease-in;
+        border-top: 1px solid var(--background-green);
+        text-indent: 15px;
+        &:hover,
+        &.is-selected {
+          background: $select-color;
+          color: $select-background;
+        }
+        &[rel="hide"] {
+          display: none;
+        }
+      }
+    }
+  }
+}

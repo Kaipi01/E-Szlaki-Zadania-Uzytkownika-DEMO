@@ -31,17 +31,24 @@
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      
+
       @media (min-width: $content-breakpoint-tablet) {
         gap: 1.5rem;
       }
     }
     .help-informations-card {
-      min-height: toRem(300);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      .information-message {
+      }
+
+      .dont-show-again-btn {
+        margin-left: auto;
+      }
     }
     .categories-card {
-      min-height: toRem(300);
-
       @media (min-width: $content-breakpoint-tablet) {
         grid-column: span 2;
       }
@@ -58,10 +65,12 @@
 
     .daily-tasks-card,
     .main-tasks-card {
-      min-height: toRem(700);
-
       @media (min-width: $content-breakpoint-tablet) {
         grid-row: span 2;
+      }
+
+      .upt-header {
+        margin-bottom: $main-content-layout-gap-small; 
       }
     }
   }

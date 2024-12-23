@@ -34,14 +34,12 @@
   }
 
   .upt-form-control {
+    position: relative;
     width: 100%;
     padding: 0.5rem;
     transition: 0.2s;
     border: none;
-    border-bottom: toRem(2) solid var(--green);
-    border-radius: 0.375em;
     background: hsla(0, 0%, 100%, 0.75);
-    box-shadow: inset 0 0 0 1px hsl(240, 4%, 85%);
     font-family: inherit;
     font-size: 1em;
     line-height: 1.2;
@@ -54,11 +52,11 @@
     &:focus,
     &:focus-within {
       outline: none;
-      background: #fff;
-      box-shadow: inset 0 0 0 1px hsla(240, 4%, 85%, 0), 0 0 0 2px var(--green),
-        0 0.3px 0.4px hsla(230, 13%, 9%, 0.025),
-        0 0.9px 1.5px hsla(230, 13%, 9%, 0.05),
-        0 3.5px 6px hsla(230, 13%, 9%, 0.1);
+      //background: #fff;
+      // box-shadow: inset 0 0 0 1px hsla(240, 4%, 85%, 0), 0 0 0 2px var(--green),
+      //   0 0.3px 0.4px hsla(230, 13%, 9%, 0.025),
+      //   0 0.9px 1.5px hsla(230, 13%, 9%, 0.05),
+      //   0 3.5px 6px hsla(230, 13%, 9%, 0.1);
     }
   }
 
@@ -81,9 +79,10 @@
   .floating-label {
     position: absolute;
     top: 0;
-    left: calc(1rem - 0.5rem);
-    padding: 0.25rem 0.5rem;
-    clip: auto;
+    // left: calc(1rem - 0.5rem);
+    left: 0;
+    padding: 0.25rem 0.75rem;
+
     transform: translateY(-50%);
     transition: transform 0.2s cubic-bezier(0.215, 0.61, 0.355, 1), color 0.2s;
     border-radius: 0.375em;
@@ -93,6 +92,7 @@
     line-height: 1;
     -webkit-clip-path: none;
     clip-path: none;
+    z-index: 3;
   }
 
   .floating-label-control {
@@ -105,7 +105,6 @@
   }
 
   .floating-label-control:placeholder-shown + .floating-label {
-    clip: rect(1px, 1px, 1px, 1px);
     -webkit-clip-path: inset(50%);
     clip-path: inset(50%);
     transform: translateY(-25%);
@@ -134,5 +133,36 @@
     position: relative;
     align-items: center;
     justify-content: space-between;
+
+    &::before {
+      content: "";
+      position: absolute;
+      width: 100%;
+      left: 0;
+      bottom: 0;
+      height: toRem(3);
+      border-radius: 100vw;
+      background-color: var(--green-opacity);
+      z-index: 2;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      width: 0%;
+      left: 0;
+      transition: 0.3s ease-in-out;
+      bottom: 0;
+      border-radius: 100vw;
+      height: toRem(3);
+      background-color: var(--green);
+      z-index: 4;
+    }
+
+    &:focus-within {
+      &::after {
+        width: 100%;
+      }
+    }
   }
 }

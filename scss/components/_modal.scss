@@ -25,6 +25,8 @@
   .modal__content {
     width: 90%;
     max-width: fun.toRem(700);
+    max-height: 95vh;
+    overflow-y: auto;
     border-radius: 15px;
 
     @media (min-width: 55em) {
