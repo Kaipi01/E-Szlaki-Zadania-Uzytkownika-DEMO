@@ -12,18 +12,42 @@
 
       &-content-top {
         display: grid;
-        grid-template-columns: 0.65fr 0.35fr;
-        align-items: center;
+        grid-template-columns: 1fr;
+        align-items: start;
+        gap: 1rem;
+        
+        @media (min-width: $content-breakpoint-tablet) {
+          grid-template-columns: 0.65fr 0.35fr;
+        }
       }
       &-content-bottom {
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr;
+        align-items: start;
+        margin-top: 1rem;
+        gap: 1rem;
+
+        @media (min-width: $content-breakpoint-tablet) {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        @media (min-width: $content-breakpoint-tablet-large) {
+          grid-template-columns: 0.65fr repeat(2, 0.3fr);
+        }
+        @media (min-width: $content-breakpoint-desktop-large) {
+          grid-template-columns: 0.65fr repeat(2, 0.25fr);
+        }
+
+        .add-task-btn {
+          @media (min-width: $content-breakpoint-tablet) {
+            width: max-content;
+          }
+        }
       }
     }
 
-    .tasks-list {
+    .tasks-cards-list {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(toRem(400), 1fr));
-      min-height: toRem(800);
       gap: $main-content-layout-gap-small;
 
       @media (min-width: $content-breakpoint-desktop) {

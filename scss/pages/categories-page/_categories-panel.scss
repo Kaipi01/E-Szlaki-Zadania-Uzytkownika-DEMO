@@ -6,16 +6,18 @@
     .actions-card {
       display: grid;
       grid-template-columns: 1fr;
-      align-items: start;
+      align-items: start; 
+      margin-bottom: $main-content-layout-gap-small; 
 
       @media (min-width: $content-breakpoint-phone-large) {
         grid-template-columns: repeat(2, 1fr);
       }
-      @media (min-width: 65em) {
+      @media (min-width: $content-breakpoint-tablet-large) {
         grid-template-columns: 0.35fr 0.65fr;
       }
       @media (min-width: $content-breakpoint-desktop) {
         grid-template-columns: 0.4fr 0.6fr;
+        margin-bottom: 1.5rem;
       }
 
       &-left-content {
@@ -31,7 +33,7 @@
         grid-template-columns: 1fr;
         gap: 0.5rem;
 
-        @media (min-width: 65em) {
+        @media (min-width: $content-breakpoint-desktop-small) {
           grid-template-columns: repeat(3, 1fr);
         }
         @media (min-width: $content-breakpoint-desktop) {

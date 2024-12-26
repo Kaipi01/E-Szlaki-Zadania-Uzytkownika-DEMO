@@ -7,8 +7,12 @@
     align-items: center;
     justify-content: space-between;
     margin-top: 0.75rem;
-    padding: 0.85rem 1.25rem;
+    padding: 0.85rem 1rem;
     font-weight: bold;
+
+    @media (min-width: $content-breakpoint-tablet) {
+      padding: 0.85rem 1.5rem;
+    }
 
     &-header {
       display: flex;
@@ -50,9 +54,7 @@
       i {
         font-size: 1rem;
       }
-    }
 
-    &-edit-btn {
       &:hover,
       &:focus,
       &:active {

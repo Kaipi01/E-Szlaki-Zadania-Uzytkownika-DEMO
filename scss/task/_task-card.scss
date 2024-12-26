@@ -1,0 +1,55 @@
+@use "../functions/toRem" as *;
+@use "../base/variables" as *;
+
+#user-private-tasks-module-e-szlaki {
+  .tasks-cards-list {
+    .task-card {
+      &-header {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        align-items: center;
+      }
+
+      &-priority {
+        width: max-content;
+      }
+
+      &-name {
+        grid-column: span 2;
+        order: 2;
+        font-size: 1.5rem;
+      }
+
+      &-actions-top {
+        justify-self: end;
+        gap: 0.5rem;
+      }
+
+      &-action-btn {
+        padding: 0.75rem;
+      }
+
+      &-short-desc {
+        padding-top: 1rem;
+        color: var(--gray);
+      }
+
+      &-stats {
+        padding-top: 1rem;
+        list-style: none;
+      }
+
+      &-actions-bottom {
+        display: flex;
+        padding-top: 1rem;
+        gap: 0.5rem;
+
+        .task-card-action-btn {
+          flex-grow: 1;
+          text-transform: capitalize;
+          gap: 0.4rem;
+        }
+      }
+    }
+  }
+}

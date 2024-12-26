@@ -4,21 +4,30 @@
 #user-private-tasks-module-e-szlaki {
   .archive-panel {
     .actions-card {
-      min-height: toRem(200);
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
       margin-bottom: $main-content-layout-gap-small;
 
-      @media (min-width: $content-breakpoint-desktop) {
-        margin-bottom: $main-content-layout-gap;
+      @media (min-width: $content-breakpoint-tablet) {
+        grid-template-columns: repeat(3, 1fr);
       }
-    }
-    .tasks-archive-list {
-      .task-archive {
-        margin-bottom: 0.5rem;
 
+      @media (min-width: $content-breakpoint-desktop) {
+        grid-template-columns: 0.22fr 0.22fr auto;
+        margin-bottom: 1.5rem;
+      }
+
+      .upt-search-form {
         @media (min-width: $content-breakpoint-desktop) {
-          margin-bottom: 1rem;
+          justify-self: end;
+          width: 40%;
         }
       }
+    }
+
+    .tasks-archive-list {
+      list-style: none; 
     }
   }
 }

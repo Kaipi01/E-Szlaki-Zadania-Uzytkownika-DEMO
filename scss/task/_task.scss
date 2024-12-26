@@ -26,8 +26,59 @@
     }
 
     &-priority {
-      font-size: 0.85rem;
-      font-weight: bold;
+      $single-chevron-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M18 15L12.2278 8.26574C12.108 8.12606 11.892 8.12606 11.7722 8.26574L6 15' stroke='%23ffffff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+      $double-chevron-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M18 17.5L12.2907 11.7907C12.1302 11.6302 11.8698 11.6302 11.7093 11.7907L6 17.5' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M18 12.5L12.2508 6.75078C12.1123 6.61228 11.8877 6.61228 11.7492 6.75078L6 12.5' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: toRem(3) toRem(8) toRem(3) toRem(5); 
+      border-radius: 100vw;
+      background-color: rgb(0, 84, 120);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: bold; 
+      text-transform: uppercase;
+      
+      &::before {
+        content: "";
+        display: inline-block;
+        width: 1.25rem;
+        height: 1.25rem;
+        background-color: inherit;
+        background-image: $double-chevron-icon;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+      }
+
+      &--very-high { 
+        background-color: rgb(177, 0, 0);
+      }
+
+      &--high {
+        background-color: rgb(177, 88, 0);
+        
+        &::before { 
+          background-image: $single-chevron-icon;
+        }
+      }
+
+      &--medium {
+        background-color: rgb(0, 84, 120);
+        &::before {
+          transform: rotate(180deg);
+          background-image: $single-chevron-icon;
+        }
+      }
+
+      &--low {
+        background-color: rgb(48, 120, 0);
+        
+        &::before {
+          transform: rotate(180deg);
+        }
+      }
     }
 
     &-short-desc {
