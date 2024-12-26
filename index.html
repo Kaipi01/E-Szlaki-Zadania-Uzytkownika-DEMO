@@ -799,7 +799,7 @@
 
                 </div>
             </div>
-            <!-- MAIN CONTENT LAYOUT END -->
+            <!-- MAIN CONTENT LAYOUT END --> 
 
             <!-- ADD TASK MODAL FORM START -->
             <div id="user-private-tasks-module-e-szlaki-modal" data-modal-first-focus="#upt-add-tast-input-name"
@@ -827,87 +827,15 @@
                             <i class="upt-icon fa-solid fa-pen"></i>
                         </div>
 
-                        <div class="upt-form-field">
-                            <select id="upt-add-tast-input-category" data-custom-select>
+                        <div>
+                            <select id="filter-tasks" data-custom-select data-class-name="custom-select-green">
                                 <option value="hide">Wybierz Kategorie</option>
-                                <option value="magni">Magni</option>
-                                <option value="doloremque">Doloremque</option>
+                                <option value="magni" data-icon="fa-pen">Magni</option>
+                                <option value="doloremque" data-icon="fa-briefcase">Doloremque</option>
+                                <option value="remque" data-icon="fa-clock">Remquee</option>
+                                <option value="quantum" data-icon="fa-home">Quantum</option>
                             </select>
-                            <label class="floating-label" for="upt-add-tast-input-category">Kategoria</label>
-                        </div>
-
-                        <div class="upt-form-field">
-                            <input class="floating-label-control upt-form-control" type="date" name="upt-add-tast-name"
-                                id="upt-add-tast-input-date-start">
-                            <label class="floating-label" for="upt-add-tast-input-date-start">Od kiedy</label>
-                        </div>
-
-                        <div class="upt-form-field">
-                            <input class="floating-label-control upt-form-control" type="date"
-                                name="upt-add-tast-date-end" id="upt-add-tast-input-date-end">
-                            <label class="floating-label" for="upt-add-tast-input-date-end">Do kiedy</label>
-                        </div>
-
-                        <div class="upt-add-tast-form-question upt-form-field">
-                            <label class="floating-label" for="upt-add-tast-input-desc">Treść pytania</label>
-                            <textarea rows="5" class="floating-label-control upt-form-control " name="upt-add-tast-desc"
-                                id="upt-add-tast-input-desc" placeholder="Maksymalnie 500 znaków"></textarea>
-                        </div>
-
-                        <div class="custom-checkbox-group">
-                            <input id="Tenetur" type="checkbox">
-                            <label class="custom-checkbox-label" for="Tenetur">
-                                <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                            </label>
-                            <label class="custom-checkbox-label" for="Tenetur">Tenetur</label>
-                        </div>
-
-                        <div class="upt-add-tast-form-actions">
-                            <button class="link small variant1">
-                                Anuluj
-                            </button>
-                            <button type="submit" class="link small variant2">
-                                Dodaj
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <!-- ADD TASK MODAL FORM END -->
-
-            <!-- ADD TASK MODAL FORM START -->
-            <div id="user-private-tasks-module-e-szlaki-modal" data-modal-first-focus="#upt-add-tast-input-name"
-                class="modal modal--animate-slide-up js-modal">
-                <div class="modal__content modern-card" role="alertdialog"
-                    aria-labelledby="user-private-tasks-module-e-szlaki-modal-title">
-                    <div class="modal__header pb-2">
-                        <p id="user-private-tasks-module-e-szlaki-modal-title" class="upt-small-header">
-                            Dodaj Nowe Zadanie
-                        </p>
-
-                        <button class="modal__close-btn modal__close-btn--inner js-modal__close js-tab-focus">
-                            <span class="sr-only">Zamknij</span>
-                            <img class="modal__close-btn-icon" src="./images/close-icon.svg" alt="x" aria-hidden="true">
-                        </button>
-                    </div>
-
-                    <form class="upt-add-tast-form">
-
-                        <div class="upt-form-field">
-                            <input class="floating-label-control upt-form-control" type="text" name="upt-add-tast-name"
-                                id="upt-add-tast-input-name" placeholder="Nazwa Zadania">
-                            <label class="floating-label" for="upt-add-tast-input-name">Nazwa Zadania</label>
-
-                            <i class="upt-icon fa-solid fa-pen"></i>
-                        </div>
-
-                        <div class="upt-form-field">
-                            <select id="upt-add-tast-input-category" data-custom-select>
-                                <option value="hide">Wybierz Kategorie</option>
-                                <option value="magni">Magni</option>
-                                <option value="doloremque">Doloremque</option>
-                            </select>
-                            <label class="floating-label" for="upt-add-tast-input-category">Kategoria</label>
+                            <label class="sr-only" for="upt-add-tast-input-category">Kategoria</label>
                         </div>
 
                         <div class="upt-form-field">

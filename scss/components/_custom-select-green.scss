@@ -1,4 +1,4 @@
-@use "../functions/toRem";
+@use "../functions/toRem" as *;
 
 #user-private-tasks-module-e-szlaki {
   .custom-select-green {
@@ -10,13 +10,13 @@
     position: relative;
     width: 100%; 
     color: $select-color;
-    font-size: 16px;
+    font-size: 1rem;
     cursor: pointer;
 
     &-hidden {
       display: none;
       visibility: hidden;
-      padding-right: 10px;
+      padding-right: toRem(10);
     }
 
     &-styled {
@@ -72,11 +72,14 @@
       list-style: none;
 
       li {
+        display: inline-flex;
+        gap: 0;
+        width: 100%;
         margin: 0;
-        padding: 12px 0;
+        padding: toRem(12) 0;
         transition: all 0.15s ease-in;
-        border-top: 1px solid var(--background-green);
-        text-indent: 15px;
+        border-top: toRem(1) solid var(--background-green);
+        text-indent: toRem(15);
         &:hover,
         &.is-selected {
           background: $select-color;
@@ -84,7 +87,7 @@
         }
         &[rel="hide"] {
           display: none;
-        }
+        } 
       }
     }
   }
