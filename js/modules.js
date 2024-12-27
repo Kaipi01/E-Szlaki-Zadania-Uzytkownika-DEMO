@@ -1215,7 +1215,7 @@ class CustomSelect {
 
     const chooseOption = (e, listItem) => {
       e.stopPropagation();
-      this.styledSelect.textContent = listItem.textContent;
+      this.styledSelect.innerHTML = listItem.innerHTML;
       this.styledSelect.classList.remove("active");
       this.selectElement.value = listItem.getAttribute("rel");
       this.optionList

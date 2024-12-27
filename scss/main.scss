@@ -8,13 +8,11 @@
 @use "./components/modal";
 @use "./components/custom-checkbox"; 
 @use "./components/circular-progress-bar"; 
-@use "./components/custom-pie-chart"; 
-@use "./components/custom-select"; 
+@use "./components/custom-pie-chart";  
 @use "./components/custom-select-green"; 
 @use "./components/tooltip"; 
 @use "./components/search-form";
-
-@use "./contact/form";
+@use "./components/form";
 
 @use "./layout/main-content-layout";
 
@@ -27,5 +25,6 @@
 @use "./task/task";
 @use "./task/task-card";
 @use "./task/task-archive";
+@use "./task/subtask";
 
 @use "./category/category-card";

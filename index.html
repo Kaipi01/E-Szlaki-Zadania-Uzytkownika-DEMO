@@ -554,13 +554,13 @@
 
 
                                 <select id="filter-tasks" data-custom-select data-class-name="custom-select-green">
-                                    <option value="hide">Filtruj</option>
+                                    <option selected value="hide">Filtruj</option>
                                     <option value="magni">Magni</option>
                                     <option value="doloremque">Doloremque</option>
                                 </select>
 
                                 <select id="select-tasks" data-custom-select data-class-name="custom-select-green">
-                                    <option value="hide">Sortuj</option>
+                                    <option selected value="hide">Sortuj</option>
                                     <option value="magni">Magni</option>
                                     <option value="doloremque">Doloremque</option>
                                 </select>
@@ -614,8 +614,7 @@
                                 </div>
 
                                 <ul class="task-card-stats">
-                                    <li><b>Kategoria:</b> <span>Praca</span></li>
-                                    <li><b>Nagroda:</b> <span>Serial</span></li>
+                                    <li><b>Kategoria:</b> <span>Praca</span></li> 
                                     <li><b>Do ukończenia zostało:</b> <span>122 dni 14 godz. 54 min.</span></li>
                                 </ul>
 
@@ -803,7 +802,7 @@
 
             <!-- ADD TASK MODAL FORM START -->
             <div id="user-private-tasks-module-e-szlaki-modal" data-modal-first-focus="#upt-add-tast-input-name"
-                class="modal modal--animate-slide-up js-modal">
+                class="modal modal--animate js-modal">
                 <div class="modal__content modern-card" role="alertdialog"
                     aria-labelledby="user-private-tasks-module-e-szlaki-modal-title">
                     <div class="modal__header pb-2">
@@ -821,14 +820,25 @@
 
                         <div class="upt-form-field">
                             <input class="floating-label-control upt-form-control" type="text" name="upt-add-tast-name"
-                                id="upt-add-tast-input-name" placeholder="Nazwa Zadania">
+                                id="upt-add-tast-input-name" placeholder="Nazwa">
                             <label class="floating-label" for="upt-add-tast-input-name">Nazwa Zadania</label>
 
                             <i class="upt-icon fa-solid fa-pen"></i>
+                        </div> 
+
+                        <div>
+                            <select id="upt-add-tast-input-priority" data-custom-select data-class-name="custom-select-green">
+                                <option value="hide">Wybierz Piorytet</option>
+                                <option value="bardzo-wysoki">Bardzo Wysoki</option>
+                                <option value="wysoki">Wysoki</option>
+                                <option value="sredni">Średni</option>
+                                <option value="niski">Niski</option>
+                            </select>
+                            <label class="sr-only" for="upt-add-tast-input-priority">Kategoria</label>
                         </div>
 
                         <div>
-                            <select id="filter-tasks" data-custom-select data-class-name="custom-select-green">
+                            <select id="upt-add-tast-input-category" data-custom-select data-class-name="custom-select-green">
                                 <option value="hide">Wybierz Kategorie</option>
                                 <option value="magni" data-icon="fa-pen">Magni</option>
                                 <option value="doloremque" data-icon="fa-briefcase">Doloremque</option>
@@ -850,27 +860,140 @@
                             <label class="floating-label" for="upt-add-tast-input-date-end">Do kiedy</label>
                         </div>
 
-                        <div class="upt-add-tast-form-question upt-form-field">
-                            <label class="floating-label" for="upt-add-tast-input-desc">Treść pytania</label>
-                            <textarea rows="5" class="floating-label-control upt-form-control " name="upt-add-tast-desc"
-                                id="upt-add-tast-input-desc" placeholder="Maksymalnie 500 znaków"></textarea>
-                        </div>
-
                         <div class="custom-checkbox-group">
-                            <input id="Tenetur" type="checkbox">
-                            <label class="custom-checkbox-label" for="Tenetur">
+                            <input id="upt-add-tast-all-day" type="checkbox">
+                            <label class="custom-checkbox-label" for="upt-add-tast-all-day">
                                 <span class="custom-checkbox-icon" aria-hidden="true"></span>
                             </label>
-                            <label class="custom-checkbox-label" for="Tenetur">Tenetur</label>
-                        </div>
+                            <label class="custom-checkbox-label" for="upt-add-tast-all-day">Cały dzień</label>
+                        </div> 
+
+                        <!-- <button type="submit" class="link small variant2">
+                            <i class="fa-solid fa-pen-nib"></i>
+                            Dodaj Opis Zadania
+                        </button> -->
+
+                        <div class="upt-add-tast-desc upt-form-field">
+                            <label class="floating-label" for="upt-add-tast-input-desc">Opis</label>
+                            <textarea rows="5" class="floating-label-control upt-form-control " name="upt-add-tast-desc"
+                                id="upt-add-tast-input-desc" placeholder="Maksymalnie 500 znaków"></textarea>
+                        </div>  
+
+                        <!-- <div class="upt-form-field">
+                            <input class="floating-label-control upt-form-control" type="text" name="upt-add-tast-reward"
+                                id="upt-add-tast-input-reward" placeholder="Nagroda (opcjonalnie)">
+                            <label class="floating-label" for="upt-add-tast-input-reward">Nagroda (opcjonalnie)</label>
+
+                            <i class="upt-icon fa-solid fa-trophy"></i>
+                        </div> -->
+
+                        <ul class="upt-add-tast-subtasks-list subtasks-list">
+                            <li class="subtask task modern-card">
+
+                                <span class="task-checkbox custom-checkbox-group">
+                                    <input id="checks" type="checkbox">
+                                    <label class="custom-checkbox-label" for="checks">
+                                        <span class="sr-only">Oznacz jako wykonane</span>
+                                        <span class="custom-checkbox-icon" aria-hidden="true"></span>
+                                    </label>
+                                </span>
+
+                                <span class="task-content"> 
+                                    <span class="task-header">
+                                        <span class="subtask-name" contenteditable>Zadanie numer 1</span> 
+                                    </span>
+                                </span> 
+
+                                <span class="category-card-actions subtask-actions">
+                                    <!-- <button class="category-card-action-btn subtask-action-btn tooltip">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="tooltip-content">Edytuj Podzadanie</span>
+                                    </button>  -->
+                                    <button class="category-card-action-btn subtask-action-btn tooltip">
+                                        <span class="tooltip-content">Zapisz zmiany</span>
+                                        <i class="fa-solid fa-save"></i>
+                                    </button> 
+                                    <button class="category-card-action-btn subtask-action-btn tooltip">
+                                        <span class="tooltip-content">Anuluj edycje podzadania</span>
+                                        <i class="fa-solid fa-cancel"></i>
+                                    </button> 
+                                    <button class="category-card-action-btn category-card-delete-btn subtask-action-btn tooltip">
+                                        <span class="tooltip-content">Usuń Podzadanie</span>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </span>
+                            </li>
+                            <li class="subtask task modern-card">
+
+                                <span class="task-checkbox custom-checkbox-group">
+                                    <input id="checks" type="checkbox">
+                                    <label class="custom-checkbox-label" for="checks">
+                                        <span class="sr-only">Oznacz jako wykonane</span>
+                                        <span class="custom-checkbox-icon" aria-hidden="true"></span>
+                                    </label>
+                                </span>
+
+                                <span class="task-content"> 
+                                    <span class="task-header">
+                                        <span class="subtask-name">Zadanie numer 1</span> 
+                                    </span>
+                                </span> 
+
+                                <span class="category-card-actions subtask-actions">
+                                    <button class="category-card-action-btn subtask-action-btn tooltip">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="tooltip-content">Edytuj Podzadanie</span>
+                                    </button> 
+                                    <button class="category-card-action-btn category-card-delete-btn subtask-action-btn tooltip">
+                                        <span class="tooltip-content">Usuń Podzadanie</span>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </span>
+                            </li>
+                            <li class="subtask task modern-card">
+
+                                <span class="task-checkbox custom-checkbox-group">
+                                    <input id="checks" type="checkbox">
+                                    <label class="custom-checkbox-label" for="checks">
+                                        <span class="sr-only">Oznacz jako wykonane</span>
+                                        <span class="custom-checkbox-icon" aria-hidden="true"></span>
+                                    </label>
+                                </span>
+
+                                <span class="task-content"> 
+                                    <span class="task-header">
+                                        <span class="subtask-name">Zadanie numer 1</span> 
+                                    </span>
+                                </span> 
+
+                                <span class="category-card-actions subtask-actions">
+                                    <button class="category-card-action-btn subtask-action-btn tooltip">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        <span class="tooltip-content">Edytuj Podzadanie</span>
+                                    </button> 
+                                    <button class="category-card-action-btn category-card-delete-btn subtask-action-btn tooltip">
+                                        <span class="tooltip-content">Usuń Podzadanie</span>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </span>
+                            </li> 
+                        </ul>
 
                         <div class="upt-add-tast-form-actions">
-                            <button class="link small variant1">
-                                Anuluj
-                            </button>
-                            <button type="submit" class="link small variant2">
-                                Dodaj
-                            </button>
+                            <div class="left-actions">
+                                <button type="submit" class="link small variant2">
+                                    <i class="fa-solid fa-plus"></i>
+                                    Dodaj Podzadanie
+                                </button>
+                            </div>
+                            <div class="right-actions">
+                                <button class="link small variant1">
+                                    Anuluj
+                                </button>
+                                <button type="submit" class="link small variant2">
+                                    Dodaj
+                                </button>
+                            </div> 
                         </div>
                     </form>
                 </div>

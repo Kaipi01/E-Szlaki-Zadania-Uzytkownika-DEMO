@@ -1,3 +1,4 @@
+@use "../base/variables" as *;
 @use "../functions/toRem" as *;
 
 #user-private-tasks-module-e-szlaki {
@@ -10,21 +11,42 @@
     align-items: center;
 
     @media (min-width: $add-tast-form-breakpoint) {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
     }
 
-    .upt-add-tast-form-question {
+    .upt-add-tast-desc, .upt-add-tast-subtasks-list {
       @media (min-width: $add-tast-form-breakpoint) {
-        grid-column: span 2;
+        grid-column: span 3;
       }
     }
 
     .upt-add-tast-form-actions {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      place-self: end;
+      --gap-value: 0.4rem;
+
+      @media (min-width: $content-breakpoint-phone) {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap; 
+      }
+
+      @media (min-width: $add-tast-form-breakpoint) {
+        grid-column: span 3;
+        --gap-value: 1rem;
+      }
+
+      button {
+        margin-top: var(--gap-value);
+        width: 100%;
+        font-size: 1rem;
+      }
+
+      .right-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: var(--gap-value);
+      }
     }
   }
 

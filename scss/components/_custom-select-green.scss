@@ -2,13 +2,16 @@
 
 #user-private-tasks-module-e-szlaki {
   .custom-select-green {
-    $background: var(--background-green-hover);
+    $background: var(--green);
     $select-color: #fff;
-    $select-background: var(--background-green-hover);  
+    $select-background: $background;
+
+    --box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    --border-radius: 5px;
 
     display: inline-block;
     position: relative;
-    width: 100%; 
+    width: 100%;
     color: $select-color;
     font-size: 1rem;
     cursor: pointer;
@@ -27,12 +30,13 @@
       bottom: 0;
       left: 0;
       align-items: center;
-      justify-content: space-between;
+      gap: toRem(15);
       height: 100%;
       padding: 0.75rem 0.9375rem;
       transition: all 0.2s ease-in;
-      border-radius: 5px;
+      border-radius: var(--border-radius);
       background-color: $select-background;
+      box-shadow: var(--box-shadow);
 
       &:after {
         content: "";
@@ -42,19 +46,17 @@
         width: 0;
         height: 0;
         transform: translateY(-50%);
-        border: 7px solid transparent;
+        transition: all 0.3s ease;
+        border: toRem(7) solid transparent;
         border-color: $select-color transparent transparent transparent;
       }
-      &:hover {
-        background-color: var(--background-green);
-      }
+      &:hover,
       &:active,
       &.active {
         background-color: var(--background-green);
 
         &:after {
-          transform: translateY(-50%) rotate(180deg);
-          border-color: transparent transparent $select-color transparent;
+          transform: translateY(-100%) rotate(180deg);
         }
       }
     }
@@ -63,13 +65,17 @@
       display: none;
       position: absolute;
       z-index: 999;
-      top: 100%;
+      // top: 100%;
+      top: 94%;
       right: 0;
       left: 0;
       margin: 0;
-      padding: 0;
+      padding: 0.75rem 0;
       background-color: var(--background-green);
+      box-shadow: var(--box-shadow);
       list-style: none;
+      border-bottom-right-radius: var(--border-radius);
+      border-bottom-left-radius: var(--border-radius);
 
       li {
         display: inline-flex;
@@ -82,12 +88,12 @@
         text-indent: toRem(15);
         &:hover,
         &.is-selected {
-          background: $select-color;
-          color: $select-background;
+          background: $select-background;
+          color: $select-color;
         }
         &[rel="hide"] {
           display: none;
-        } 
+        }
       }
     }
   }
