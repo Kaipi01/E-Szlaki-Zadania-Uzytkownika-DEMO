@@ -58,10 +58,6 @@
         grid-row: span 1;
       }
     }
-    .daily-tasks-card {
-    }
-    .main-tasks-card {
-    }
 
     .daily-tasks-card,
     .main-tasks-card {
@@ -69,8 +65,14 @@
         grid-row: span 2;
       }
 
+      .preview-tasks-list {
+        .task {
+          margin-bottom: 0.5rem;
+        }
+      }
+
       .upt-header {
-        margin-bottom: $main-content-layout-gap-small; 
+        margin-bottom: $main-content-layout-gap-small;
       }
     }
   }

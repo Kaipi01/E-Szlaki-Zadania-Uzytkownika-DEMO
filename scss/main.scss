@@ -12,7 +12,8 @@
 @use "./components/custom-select-green"; 
 @use "./components/tooltip"; 
 @use "./components/search-form";
-@use "./components/form";
+@use "./components/form"; 
+@use "./components/custom-countdown";
 
 @use "./layout/main-content-layout";
 
@@ -20,6 +21,9 @@
 @use "./pages/archive-page/archive-panel";
 @use "./pages/tasks-page/tasks-panel";
 @use "./pages/categories-page/categories-panel";
+
+@use "./modals/add-tast-form";
+@use "./modals/task-details";
 
 @use "./task/task-category";
 @use "./task/task";

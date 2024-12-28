@@ -1,0 +1,53 @@
+@use "../base/variables" as *;
+@use "../functions/toRem" as *;
+
+#user-private-tasks-module {
+  .upt-add-tast-form {
+    $add-tast-form-breakpoint: 55em;
+
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: center;
+
+    @media (min-width: $add-tast-form-breakpoint) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .upt-add-tast-desc,
+    .upt-add-tast-subtasks-list {
+      @media (min-width: $add-tast-form-breakpoint) {
+        grid-column: span 3;
+      }
+    }
+
+    .upt-add-tast-form-actions {
+      --gap-value: 0.4rem;
+
+      @media (min-width: $content-breakpoint-phone) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      @media (min-width: $add-tast-form-breakpoint) {
+        grid-column: span 3;
+        --gap-value: 1rem;
+      }
+
+      button {
+        width: 100%;
+        margin-top: var(--gap-value);
+        font-size: 1rem;
+      }
+
+      .right-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: var(--gap-value);
+      }
+    }
+  }
+}

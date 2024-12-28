@@ -1,0 +1,63 @@
+@use "../base/variables" as *;
+@use "../functions/toRem" as *;
+
+#user-private-tasks-module {
+  .upt-task-details {
+    &-content {
+      display: grid;
+      // grid-template-columns: 1fr toRem(150);
+      grid-template-columns: repeat(2, 1fr);
+      align-items: start;
+      gap: 2rem;
+    }
+    &-desc {
+    }
+    &-chart {
+    }
+    &-stats { 
+      list-style: none;
+      font-size: 1rem;
+
+      &-data {
+        width: 100%;
+        display: inline-flex; 
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+
+        &-no-flex {
+          display: block;
+        }
+      } 
+    }
+    &-subtasks-list {
+      padding-top: 1rem;
+      padding-bottom: 1.5rem;
+    }
+
+    &-title {
+      // padding-top: 1.5rem;
+      padding-bottom: 1rem;
+      font-weight: bold;
+    }
+
+    &-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      width: 100%;
+      gap: 0.5rem;
+
+      .upt-task-details-actions-delete {
+        margin-right: auto;
+        background-color: var(--red);
+
+        &:hover,
+        &:focus,
+        &:active {
+          background-color: var(--light-red);
+        }
+      }
+    }
+  }
+}

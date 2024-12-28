@@ -663,10 +663,10 @@ class CircularProgressBar {
     this._elements = elements;
   }
 
-  static initAll() {
+  static initAll(pieName, globalObj = {}) {
     const pie = document.querySelectorAll(".pie");
     const elements = [].slice.call(pie);
-    const circle = new CircularProgressBar("pie");
+    const circle = new CircularProgressBar(pieName, globalObj);
 
     if ("IntersectionObserver" in window) {
       const config = {
@@ -1280,5 +1280,114 @@ class CustomSelect {
       .forEach((selectElement) => {
         new CustomSelect(selectElement);
       });
+  }
+}
+class CustomCountdown {
+  static ANIMATE_ATTRIBUTE_NAME = "data-animate-now";
+
+  /**
+   * @param {string} containerSelector
+   * @param {string} dateEnd
+   */
+  constructor(containerSelector, dateEnd) {
+    this.container = document.querySelector(containerSelector);
+    this.dateEnd = dateEnd;
+    this.timer;
+    this.days;
+    this.hours;
+    this.minutes;
+    this.seconds;
+
+    this.daysElement = this.container.querySelector("[data-days]");
+    this.hoursElement = this.container.querySelector("[data-hours]");
+    this.minutesElement = this.container.querySelector("[data-minutes]");
+    this.secondsElement = this.container.querySelector("[data-seconds]");
+
+    this.init();
+  }
+
+  init() {
+    this.dateEnd = new Date(this.dateEnd);
+    this.dateEnd = this.dateEnd.getTime();
+
+    if (isNaN(this.dateEnd)) {
+      return;
+    }
+
+    this.timer = setInterval(() => {
+      this.calculate();
+    }, 1000);
+  }
+
+  /**
+   * @param {number} days
+   * @param {number} hours
+   * @param {number} minutes
+   * @param {number} seconds
+   */
+  animate(days, hours, minutes, seconds) {
+    const attrName = CustomCountdown.ANIMATE_ATTRIBUTE_NAME;
+
+    const animateTimeData = (value, thisValue, thisValueEl) => {
+      if (value != thisValue) {
+        thisValueEl.setAttribute(attrName, "");
+
+        setTimeout(() => {
+          thisValueEl.removeAttribute(attrName);
+        }, 2000);
+      }
+    };
+    animateTimeData(days, this.days, this.daysElement);
+    animateTimeData(hours, this.hours, this.hoursElement);
+    animateTimeData(minutes, this.minutes, this.minutesElement);
+    animateTimeData(seconds, this.seconds, this.secondsElement); 
+  }
+
+  /**
+   * @param {number} days
+   * @param {number} hours
+   * @param {number} minutes
+   * @param {number} seconds
+   */
+  display(days, hours, minutes, seconds) {
+    this.animate(days, hours, minutes, seconds);
+
+    this.daysElement.innerHTML = parseInt(days, 10);
+    this.hoursElement.innerHTML = ("0" + hours).slice(-2);
+    this.minutesElement.innerHTML = ("0" + minutes).slice(-2);
+    this.secondsElement.innerHTML = ("0" + seconds).slice(-2);
+  }
+
+  calculate() {
+    let dateStart = new Date();
+    dateStart = new Date(
+      dateStart.getUTCFullYear(),
+      dateStart.getUTCMonth(),
+      dateStart.getUTCDate(),
+      dateStart.getUTCHours(),
+      dateStart.getUTCMinutes(),
+      dateStart.getUTCSeconds()
+    );
+    let timeRemaining = parseInt((this.dateEnd - dateStart.getTime()) / 1000);
+    let days, hours, minutes, seconds;
+
+    if (timeRemaining >= 0) {
+      days = parseInt(timeRemaining / 86400);
+      timeRemaining = timeRemaining % 86400;
+      hours = parseInt(timeRemaining / 3600);
+      timeRemaining = timeRemaining % 3600;
+      minutes = parseInt(timeRemaining / 60);
+      timeRemaining = timeRemaining % 60;
+      seconds = parseInt(timeRemaining);
+
+      this.display(days, hours, minutes, seconds);
+
+      this.days = days;
+      this.hours = hours;
+      this.minutes = minutes;
+      this.seconds = seconds;
+    } else {
+      return;
+    }
   }
 }

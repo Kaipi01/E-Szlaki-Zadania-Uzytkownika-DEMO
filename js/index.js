@@ -1,10 +1,9 @@
 const UPT_MODULE_PREFIX = "user-private-tasks-module",
-UPT_MODULE_ID_SELECTOR = `#${UPT_MODULE_PREFIX}`,
-UPT_ADD_TASK_MODAL_ID_SELECTOR = `#${UPT_MODULE_PREFIX}-add-task-modal`,
-UPT_TASK_DETAILS_MODAL_ID_SELECTOR = `#${UPT_MODULE_PREFIX}-task-details-modal`;
+  UPT_MODULE_ID_SELECTOR = `#${UPT_MODULE_PREFIX}`,
+  UPT_ADD_TASK_MODAL_ID_SELECTOR = `#${UPT_MODULE_PREFIX}-add-task-modal`,
+  UPT_TASK_DETAILS_MODAL_ID_SELECTOR = `#${UPT_MODULE_PREFIX}-task-details-modal`;
 
 document.addEventListener("DOMContentLoaded", function () {
-
   // Główna nawigacja
   new UPTModuleMainNavigation(UPT_MODULE_ID_SELECTOR);
 
@@ -12,7 +11,9 @@ document.addEventListener("DOMContentLoaded", function () {
   new CustomPieChart(UPT_MODULE_ID_SELECTOR + " .custom-pie-chart");
 
   // Statystyki związane z datą i godziną na głównym panelu
-  new UPTDateTimeStatisics(UPT_MODULE_ID_SELECTOR + " [data-date-time-statisics]");
+  new UPTDateTimeStatisics(
+    UPT_MODULE_ID_SELECTOR + " [data-date-time-statisics]"
+  );
 
   //(new UPTModuleToast(UPT_MODULE_ID_SELECTOR)).open(UPTModuleToast.TYPE_SUCCESS, 'Lorem ipsum dolor sit amet.');
 
@@ -23,9 +24,13 @@ document.addEventListener("DOMContentLoaded", function () {
   new UPTModuleModal(UPT_ADD_TASK_MODAL_ID_SELECTOR);
 
   // Modal "Szczegóły Zadania"
-  // new UPTModuleModal(UPT_TASK_DETAILS_MODAL_ID_SELECTOR);
+  new UPTModuleModal(UPT_TASK_DETAILS_MODAL_ID_SELECTOR);
 
-  // TODO: ?????
   // Inicjacja wszystkich animowantych kołowych progress barów z klasą "circular-progress-bar"
-  CircularProgressBar.initAll();
+  CircularProgressBar.initAll("pie", { size: 150 });
+
+  new CustomCountdown(
+    UPT_MODULE_ID_SELECTOR + " .custom-countdown",
+    "01/19/2025 03:14:07 AM"
+  );
 });

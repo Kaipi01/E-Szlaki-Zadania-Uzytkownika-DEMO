@@ -1,0 +1,69 @@
+@use "../functions/toRem" as *;
+
+#user-private-tasks-module {
+  .custom-countdown {
+    $size: toRem(60); 
+
+    .timer {
+      color: #fff;
+      font-size: toRem(32);
+      font-weight: bold;
+
+      &-data {
+        display: inline-flex;
+        position: relative;
+        align-items: center;
+        justify-content: center;
+        width: $size;
+        height: $size;
+        border-radius: 10px;
+        background-color: var(--green);
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+        &::after {
+          content: "";
+          display: block;
+          position: absolute;
+          bottom: -1.25em;
+          left: 50%;
+          transform: translateX(-50%);
+          color: #000;
+          font-size: 0.5em;
+        }
+
+        &[data-days]::after {
+          content: "dni";
+        }
+        &[data-hours]::after {
+          content: "godz.";
+        }
+        &[data-minutes]::after {
+          content: "min.";
+        }
+        &[data-seconds]::after {
+          content: "sek.";
+        }
+
+        &[data-animate-now] {
+          animation: custom-countdown-time-data-animation 1s ease infinite
+            forwards;
+        }
+      }
+    }
+  }
+
+  @keyframes custom-countdown-time-data-animation {
+    0% {
+      background-color: var(--green);
+      // transform: scale(1); 
+    }
+    50% {
+      // transform: scale(1.025);
+      background-color: var(--green-opacity-30);
+    }
+    100% {
+      // transform: scale(1); 
+      background-color: var(--green);
+    }
+  }
+}
