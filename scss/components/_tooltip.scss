@@ -1,6 +1,6 @@
 @use "../base/variables" as *;
 
-#user-private-tasks-module-e-szlaki {
+#user-private-tasks-module {
   .tooltip {
     position: relative;
 
@@ -17,10 +17,10 @@
         width: max-content;
         max-width: 30ch;
         padding: 0.25rem 0.5rem;
+        padding: 0.5rem 0.75rem;
         transform: translateY(-100%);
         transition: 0.3s;
         border-radius: 5px;
-        padding: 0.5rem 0.75rem;
         opacity: 0;
         background-color: var(--dark-green);
         color: #fff; 

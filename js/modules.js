@@ -1,4 +1,7 @@
 class UPTDateTimeStatisics {
+  /**
+   * @param {string} containerSelector
+   */
   constructor(containerSelector) {
     this.container = document.querySelector(containerSelector);
     this.currentTimeEl = this.container.querySelector(
@@ -106,9 +109,12 @@ class UPTDateTimeStatisics {
 }
 
 class UPTModuleMainNavigation {
-  static UPT_MODULE_CHANGE_PAGE_EVENT = "upt-modul-e-szlaki-change-page";
+  static UPT_MODULE_CHANGE_PAGE_EVENT = "upt-modul-change-page";
   static ANIMATION_DURATION_TIME = 350;
 
+  /**
+   * @param {string} mainContainerSelector
+   */
   constructor(mainContainerSelector) {
     this.mainContainer = document.querySelector(mainContainerSelector);
     this.navigation = this.mainContainer.querySelector(
@@ -131,6 +137,9 @@ class UPTModuleMainNavigation {
     this.init();
   }
 
+  /**
+   * @param {number} rem
+   */
   remToPx(rem) {
     const htmlElement = document.documentElement;
     const fontSize = window.getComputedStyle(htmlElement).fontSize;
@@ -202,6 +211,9 @@ class UPTModuleMainNavigation {
     });
   }
 
+  /**
+   * @param {HTMLAnchorElement} link
+   */
   showPage(link) {
     if (this.prevLink != link) {
       const linkHref = link?.href.split("#")[1];
@@ -233,6 +245,9 @@ class UPTModuleMainNavigation {
     });
   }
 
+  /**
+   * @param {number} pageNumber
+   */
   animateNavigation(pageNumber) {
     let stylesForNavigationList = this.mainContainer.querySelector("style");
 
@@ -248,6 +263,10 @@ class UPTModuleMainNavigation {
     }%;}`;
   }
 
+  /**
+   * @param {HTMLElement | null} prevPage
+   * @param {HTMLElement} nextPage
+   */
   animateChangePages(prevPage, nextPage) {
     if (prevPage === nextPage) return;
 
@@ -279,6 +298,9 @@ class UPTModuleToast {
   static WARNING_ICON = "fa-triangle-exclamation";
   static INFO_ICON = "fa-circle-info";
 
+  /**
+   * @param {string} containerSelector
+   */
   constructor(containerSelector) {
     this.container = document.querySelector(containerSelector);
     this.toastId = this.generateToastId();
@@ -333,6 +355,10 @@ class UPTModuleToast {
     }, 300);
   }
 
+  /**
+   * @param {string} type
+   * @param {string} message
+   */
   open(type, message = "") {
     if (this.toast.style.display != "none") return;
 
@@ -388,6 +414,9 @@ class UPTModuleToast {
 }
 
 class UPTModuleModal {
+  /**
+   * @param {string} selector
+   */
   constructor(selector) {
     this.selector = selector;
     this.element = document.querySelector(this.selector);
@@ -1173,17 +1202,17 @@ class CustomSelect {
 
     for (let i = 0; i < this.numberOfOptions; i++) {
       let listItem = document.createElement("li");
-      let icon = this.selectElement.options[i].dataset.icon
-      let listItemIcon = icon ? document.createElement("i") : ""
+      let icon = this.selectElement.options[i].dataset.icon;
+      let listItemIcon = icon ? document.createElement("i") : "";
       listItem.textContent = this.selectElement.options[i].textContent;
       listItem.setAttribute("rel", this.selectElement.options[i].value);
       listItem.setAttribute("tabindex", "0");
 
       if (listItemIcon != "") {
-        listItemIcon.classList.add("fa-solid", icon)
+        listItemIcon.classList.add("fa-solid", icon);
       }
 
-      listItem.prepend(listItemIcon)
+      listItem.prepend(listItemIcon);
       this.optionList.appendChild(listItem);
 
       if (this.selectElement.options[i].selected) {
@@ -1223,22 +1252,21 @@ class CustomSelect {
         .classList.remove("is-selected");
       listItem.classList.add("is-selected");
       this.optionList.style.display = "none";
-    }
+    };
 
     this.styledSelect.addEventListener("click", (e) => openSelect(e));
     this.styledSelect.addEventListener("keydown", (e) => {
       if (e.key === "Enter") openSelect(e);
     });
-    
 
     this.listItems.forEach((listItem) => {
       listItem.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") chooseOption(e,listItem);
+        if (e.key === "Enter") chooseOption(e, listItem);
       });
       listItem.addEventListener("click", (e) => {
-        chooseOption(e,listItem)
+        chooseOption(e, listItem);
       });
-    }); 
+    });
 
     document.addEventListener("click", () => {
       this.styledSelect.classList.remove("active");

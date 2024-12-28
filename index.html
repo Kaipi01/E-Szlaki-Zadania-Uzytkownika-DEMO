@@ -17,7 +17,7 @@
         <!-- container -->
 
         <!-- USER PRIVATE TASKS MODULE START -->
-        <section class="modern-card" id="user-private-tasks-module-e-szlaki">
+        <section class="modern-card" id="user-private-tasks-module">
 
             <!-- MAIN CONTENT LAYOUT START -->
             <div class="main-content-layout">
@@ -106,7 +106,7 @@
                                 </div>
                             </form>
                             <button class="link link-100 variant2"
-                                aria-controls="user-private-tasks-module-e-szlaki-modal"><i
+                                aria-controls="user-private-tasks-module-add-task-modal"><i
                                     class="link-icon fa-solid fa-plus"></i> Dodaj Nowe Zadanie</button>
                             <button class="link link-100 variant2">
                                 <i class="link-icon fa-solid fa-plus"></i> Dodaj Nową Kategorię
@@ -549,7 +549,7 @@
                             <div class="actions-card-content-bottom">
 
                                 <button class="add-task-btn link link-100 variant2"
-                                    aria-controls="user-private-tasks-module-e-szlaki-modal"><i
+                                    aria-controls="user-private-tasks-module-add-task-modal"><i
                                         class="link-icon fa-solid fa-plus"></i> Dodaj Nowe Zadanie</button>
 
 
@@ -801,12 +801,11 @@
             <!-- MAIN CONTENT LAYOUT END --> 
 
             <!-- ADD TASK MODAL FORM START -->
-            <div id="user-private-tasks-module-e-szlaki-modal" data-modal-first-focus="#upt-add-tast-input-name"
-                class="modal modal--animate js-modal">
+            <div id="user-private-tasks-module-add-task-modal" data-modal-first-focus="#upt-add-tast-input-name" class="modal modal--animate js-modal">
                 <div class="modal__content modern-card" role="alertdialog"
-                    aria-labelledby="user-private-tasks-module-e-szlaki-modal-title">
+                    aria-labelledby="user-private-tasks-module-add-task-modal-title">
                     <div class="modal__header pb-2">
-                        <p id="user-private-tasks-module-e-szlaki-modal-title" class="upt-small-header">
+                        <p id="user-private-tasks-module-add-task-modal-title" class="upt-small-header">
                             Dodaj Nowe Zadanie
                         </p>
 
@@ -999,6 +998,33 @@
                 </div>
             </div>
             <!-- ADD TASK MODAL FORM END -->
+
+            <!-- TAKS DETAILS MODAL START -->
+            <div id="user-private-tasks-module-task-details-modal" data-modal-first-focus="" class="modal modal--animate js-modal">
+                <div class="modal__content modern-card" role="alertdialog" aria-labelledby="user-private-tasks-module-task-details-modal-title">
+                    <div class="modal__header pb-2">
+                        <p id="user-private-tasks-module-task-details-modal-title" class="upt-small-header">
+                            Szczegóły Zadania "Zadanie numer 1"
+                        </p>
+
+                        <button class="modal__close-btn modal__close-btn--inner js-modal__close js-tab-focus">
+                            <span class="sr-only">Zamknij</span>
+                            <img class="modal__close-btn-icon" src="./images/close-icon.svg" alt="x" aria-hidden="true">
+                        </button>
+                    </div>
+
+                    <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quidem rem exercitationem pariatur, mollitia dolore at dolores vel corrupti, aut qui assumenda architecto commodi quod ullam est, natus vero quo in nesciunt tempora facilis? Debitis atque reprehenderit quisquam eveniet, unde ut autem neque odit explicabo illo molestias accusamus pariatur expedita non quibusdam minus optio sit illum odio.</p>
+
+                    <button class="link small variant1">
+                        Anuluj
+                    </button>
+                    <button type="submit" class="link small variant2">
+                        Dodaj
+                    </button>
+                </div> 
+            </div>
+                
+            <!-- TAKS DETAILS MODAL END -->
 
         </section>
         <!-- USER PRIVATE TASKS MODULE END -->

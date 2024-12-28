@@ -1,6 +1,6 @@
 @use "../functions/toRem" as fun;
 
-#user-private-tasks-module-e-szlaki {
+#user-private-tasks-module {
   .upt-toast {
     --primary: #2659ffd3;
     --secondary: #fff;
@@ -19,12 +19,7 @@
     border-radius: 10px;
     background: var(--primary);
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    color: var(--secondary);
-
-    &--left {
-    }
-    &--right {
-    }
+    color: var(--secondary); 
 
     &.success {
       --primary: #00c11ad3;

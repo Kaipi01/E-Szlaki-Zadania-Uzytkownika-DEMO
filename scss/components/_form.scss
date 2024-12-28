@@ -1,7 +1,7 @@
 @use "../base/variables" as *;
 @use "../functions/toRem" as *;
 
-#user-private-tasks-module-e-szlaki {
+#user-private-tasks-module {
   .upt-add-tast-form {
     $add-tast-form-breakpoint: 55em;
 

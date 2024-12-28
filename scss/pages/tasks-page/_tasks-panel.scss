@@ -1,7 +1,7 @@
 @use "../../functions/toRem" as *;
 @use "../../base/variables" as *;
 
-#user-private-tasks-module-e-szlaki {
+#user-private-tasks-module {
   .tasks-panel {
     .actions-card {
       margin-bottom: $main-content-layout-gap-small;
