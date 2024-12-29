@@ -1,7 +1,5 @@
-const UPT_MODULE_PREFIX = "user-private-tasks-module",
-  UPT_MODULE_ID_SELECTOR = `#${UPT_MODULE_PREFIX}`,
-  UPT_ADD_TASK_MODAL_ID_SELECTOR = `#${UPT_MODULE_PREFIX}-add-task-modal`,
-  UPT_TASK_DETAILS_MODAL_ID_SELECTOR = `#${UPT_MODULE_PREFIX}-task-details-modal`;
+const UPT_MODULE_ID_SELECTOR = "#user-private-tasks-module";
+const UPT_CONFIRM_MODAL_ID = "user-private-tasks-module-confirm-modal";
 
 document.addEventListener("DOMContentLoaded", function () {
   // Główna nawigacja
@@ -20,17 +18,45 @@ document.addEventListener("DOMContentLoaded", function () {
   // Inicjalizacja wszystkich customowych select-ów
   CustomSelect.initAll();
 
-  // Modal z formularzem "Dodaj Zadanie"
-  new UPTModuleModal(UPT_ADD_TASK_MODAL_ID_SELECTOR);
-
-  // Modal "Szczegóły Zadania"
-  new UPTModuleModal(UPT_TASK_DETAILS_MODAL_ID_SELECTOR);
-
   // Inicjacja wszystkich animowantych kołowych progress barów z klasą "circular-progress-bar"
   CircularProgressBar.initAll("pie", { size: 150 });
 
-  new CustomCountdown(
-    UPT_MODULE_ID_SELECTOR + " .custom-countdown",
-    "01/19/2025 03:14:07 AM"
-  );
+  document.querySelector("#testuj").addEventListener("click", () => {
+    showModal("Czy napewno chcesz usunąć to zadanie?", UPT_CONFIRM_MODAL_ID);
+
+    dispatchEvent(UPTModuleModal.START_LOADING_EVENT_NAME, {
+      modalId: UPT_CONFIRM_MODAL_ID,
+    });
+
+    setTimeout(() => {
+      dispatchEvent(UPTModuleModal.STOP_LOADING_EVENT_NAME, {
+        modalId: UPT_CONFIRM_MODAL_ID,
+      });
+    }, 3000);
+  });
 });
+
+/**
+ * @param {string} title
+ * @param {string} modalId
+ */
+function showModal(title, modalId) {
+  const confirmModal = document.querySelector(`#${modalId}`);
+  confirmModal.querySelector(
+    `[${UserPrivateTasksModuleModal.ATTR_TITLE}]`
+  ).textContent = title;
+
+  dispatchEvent(UPTModuleModal.SHOW_EVENT_NAME, { modalId });
+}
+
+/**
+ * @param {string} eventName
+ * @param {Object} eventData
+ */
+function dispatchEvent(eventName, eventData = {}) {
+  document.dispatchEvent(
+    new CustomEvent(eventName, {
+      detail: eventData,
+    })
+  );
+}

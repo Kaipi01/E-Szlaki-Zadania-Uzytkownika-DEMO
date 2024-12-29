@@ -1,0 +1,15 @@
+@use "../base/variables" as *;
+@use "../functions/toRem" as *;
+
+#user-private-tasks-module {
+  .upt-confirm-modal {
+    max-width: toRem(500);
+
+    &-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+  }
+}

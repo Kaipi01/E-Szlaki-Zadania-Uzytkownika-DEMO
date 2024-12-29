@@ -24,6 +24,8 @@
 
 @use "./modals/add-tast-form";
 @use "./modals/task-details";
+@use "./modals/upt-add-category";
+@use "./modals/confirm-modal";
 
 @use "./task/task-category";
 @use "./task/task";

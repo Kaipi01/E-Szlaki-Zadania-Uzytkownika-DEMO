@@ -66,9 +66,10 @@
                                 <p>Do końca dnia zostało:<br><span data-statistic-time-to-end-day>06: 34: 43</span></p>
                                 <p>Zostało dziś: <span>5</span> zadań do wykonania</p>
                             </div>
-
-                            <figure class="custom-pie-chart">
-                                <div class="pie-chart donut" data-pie='{ 
+ 
+                            <figure class="custom-pie-chart" aria-labelledby="pie-chart-desc">
+                                <div class="pie-chart donut" 
+                                     data-pie='{ 
                                         "data": [
                                             {"color": "#00c821", "percent": 65, "label": "Zrealizowane"},
                                             {"color": "#e74f4f", "percent": 15, "label": "Porzucone"},
@@ -76,8 +77,18 @@
                                         ], 
                                         "animate": true,
                                         "animationSpeed": 1250
-                                    }'></div>
+                                     }'
+                                     aria-live="polite"
+                                     aria-label="Wykres przedstawiający status projektów: Zrealizowane 65%, Porzucone 15%, W trakcie 20%">
+                                </div>
+                                <figcaption id="pie-chart-desc" class="sr-only">
+                                    <span>Wykres przedstawia procentowy podział statusów projektów:</span>
+                                    <span>Zrealizowane: 65%</span>
+                                    <span>Porzucone: 15%</span>
+                                    <span>W trakcie: 20%</span>
+                                </figcaption>
                             </figure>
+                            
                         </div>
                         <div class="start-action-card modern-card">
                             <form class="upt-search-form">
@@ -94,7 +105,7 @@
                             <button class="link link-100 variant2"
                                 aria-controls="user-private-tasks-module-add-task-modal"><i
                                     class="link-icon fa-solid fa-plus"></i> Dodaj Nowe Zadanie</button>
-                            <button class="link link-100 variant2">
+                            <button class="link link-100 variant2" aria-controls="user-private-tasks-module-add-category-modal">
                                 <i class="link-icon fa-solid fa-plus"></i> Dodaj Nową Kategorię
                             </button>
                         </div>
@@ -552,7 +563,6 @@
                                     aria-controls="user-private-tasks-module-add-task-modal"><i
                                         class="link-icon fa-solid fa-plus"></i> Dodaj Nowe Zadanie</button>
 
-
                                 <select id="filter-tasks" data-custom-select data-class-name="custom-select-green">
                                     <option selected value="hide">Filtruj</option>
                                     <option value="magni">Magni</option>
@@ -564,7 +574,6 @@
                                     <option value="magni">Magni</option>
                                     <option value="doloremque">Doloremque</option>
                                 </select>
-
 
                             </div>
 
@@ -643,7 +652,7 @@
                     <!-- CATEGORIES PAGE START -->
                     <section data-content-page="#kategorie" id="kategorie" class="categories-panel panel">
                         <div class="actions-card modern-card">
-                            <button class="actions-card-left-content link link-100 variant2">
+                            <button class="actions-card-left-content link link-100 variant2" aria-controls="user-private-tasks-module-add-category-modal">
                                 <i class="link-icon fa-solid fa-plus"></i> Dodaj Nową Kategorię
                             </button>
                             <div class="actions-card-right-content">
@@ -799,21 +808,10 @@
             <!-- MAIN CONTENT LAYOUT END -->
 
             <!-- ADD TASK MODAL FORM START -->
-            <div id="user-private-tasks-module-add-task-modal" data-modal-first-focus="#upt-add-tast-input-name"
-                class="modal modal--animate js-modal">
-                <div class="modal__content modern-card" role="alertdialog"
-                    aria-labelledby="user-private-tasks-module-add-task-modal-title">
-                    <div class="modal__header pb-2">
-                        <p id="user-private-tasks-module-add-task-modal-title" class="upt-small-header">
-                            Dodaj Nowe Zadanie
-                        </p>
+            <user-private-tasks-module-modal data-modal-id="user-private-tasks-module-add-task-modal" data-modal-first-focus="#upt-add-tast-input-name">
+                <template slot="modal-title">Dodaj Nowe Zadanie</template>
 
-                        <button class="modal__close-btn modal__close-btn--inner js-modal__close js-tab-focus">
-                            <span class="sr-only">Zamknij</span>
-                            <img class="modal__close-btn-icon" src="./images/close-icon.svg" alt="x" aria-hidden="true">
-                        </button>
-                    </div>
-
+                <template slot="modal-content">
                     <form class="upt-add-tast-form">
 
                         <div class="upt-form-field">
@@ -866,26 +864,13 @@
                                 <span class="custom-checkbox-icon" aria-hidden="true"></span>
                             </label>
                             <label class="custom-checkbox-label" for="upt-add-tast-all-day">Cały dzień</label>
-                        </div>
-
-                        <!-- <button type="submit" class="link small variant2">
-                            <i class="fa-solid fa-pen-nib"></i>
-                            Dodaj Opis Zadania
-                        </button> -->
+                        </div> 
 
                         <div class="upt-add-tast-desc upt-form-field">
                             <label class="floating-label" for="upt-add-tast-input-desc">Opis</label>
                             <textarea rows="5" class="floating-label-control upt-form-control " name="upt-add-tast-desc"
                                 id="upt-add-tast-input-desc" placeholder="Maksymalnie 500 znaków"></textarea>
-                        </div>
-
-                        <!-- <div class="upt-form-field">
-                            <input class="floating-label-control upt-form-control" type="text" name="upt-add-tast-reward"
-                                id="upt-add-tast-input-reward" placeholder="Nagroda (opcjonalnie)">
-                            <label class="floating-label" for="upt-add-tast-input-reward">Nagroda (opcjonalnie)</label>
-
-                            <i class="upt-icon fa-solid fa-trophy"></i>
-                        </div> -->
+                        </div> 
 
                         <ul class="upt-add-tast-subtasks-list subtasks-list">
                             <li class="subtask task modern-card">
@@ -990,7 +975,7 @@
                                 </button>
                             </div>
                             <div class="right-actions">
-                                <button class="link small variant1">
+                                <button class="link small variant1 js-modal__close">
                                     Anuluj
                                 </button>
                                 <button type="submit" class="link small variant2">
@@ -999,26 +984,17 @@
                             </div>
                         </div>
                     </form>
-                </div>
-            </div>
+                </template> 
+            </user-private-tasks-module-modal>
             <!-- ADD TASK MODAL FORM END -->
 
             <!-- TASK DETAILS MODAL START -->
-            <div id="user-private-tasks-module-task-details-modal" class="modal modal--animate js-modal">
-                <div class="modal__content modern-card upt-task-details" role="alertdialog"
-                    aria-labelledby="user-private-tasks-module-task-details-modal-title">
-                    <div class="modal__header pb-1">
-                        <p id="user-private-tasks-module-task-details-modal-title" class="upt-small-header">
-                            <i class="fa-solid fa-briefcase"></i>
-                            Zadanie numer 23
-                        </p>
-
-                        <button class="modal__close-btn modal__close-btn--inner js-modal__close js-tab-focus">
-                            <span class="sr-only">Zamknij</span>
-                            <img class="modal__close-btn-icon" src="./images/close-icon.svg" alt="x" aria-hidden="true">
-                        </button>
-                    </div>
-
+            <user-private-tasks-module-modal data-modal-id="user-private-tasks-module-task-details-modal">
+                <template slot="modal-title">
+                    <i class="fa-solid fa-briefcase"></i>
+                    Zadanie numer 23
+                </template>
+                <template slot="modal-content">
                     <div class="upt-task-details-content">
 
                         <ul class="upt-task-details-stats">
@@ -1051,18 +1027,9 @@
                         </ul>
 
                         <div>
-                            <p class="upt-task-details-title">Do ukończenia zostało:</p>
+                            <p class="upt-task-details-title">Do ukończenia zostało:</p> 
 
-                            <div class="custom-countdown">
-                                <p class="timer">
-                                    <span class="timer-data" data-days></span>
-                                    <span class="timer-data" data-hours></span>
-                                    <span class="timer-data" data-minutes></span>
-                                    <span class="timer-data" data-seconds></span>
-                                </p>
-                            </div>
-
-                            
+                            <custom-countdown data-date-end="01/19/2025 03:14:07 AM"></custom-countdown> 
                         </div>
                     </div>
 
@@ -1157,22 +1124,75 @@
                             <i class="fa-solid fa-check"></i>
                             Zakończ Zadanie
                         </button>
-                        <button class="link small variant1">
+                        <button class="link small variant1 js-modal__close">
                             <i class="fa-solid fa-xmark"></i>
                             Zamknij
                         </button>
                     </div>
-
-                </div>
-            </div>
-
+                </template>
+            </user-private-tasks-module-modal>
             <!-- TASK DETAILS MODAL END -->
 
+            <!-- ADD CATEGORY MODAL START -->
+            <user-private-tasks-module-modal data-modal-id="user-private-tasks-module-add-category-modal" data-modal-content-class="upt-add-category">
+                <template slot="modal-title">Dodaj nową kategorię</template>
+                <template slot="modal-content">
+                    <form class="upt-add-category-form">
+                        <div class="upt-form-field">
+                            <input class="floating-label-control upt-form-control" type="text" name="upt-add-category-name"
+                                id="upt-add-category-input-name" placeholder="Nazwa Kategorii">
+                            <label class="floating-label" for="upt-add-category-input-name">Nazwa Kategorii</label>
+
+                            <i class="upt-icon fa-solid fa-pen"></i>
+                        </div>
+
+                        <div>
+                            <select id="upt-add-category-input-icon" data-custom-select
+                                data-class-name="custom-select-green">
+                                <option value="hide">Wybierz Ikonę</option>
+                                <option value="magni" data-icon="fa-pen">Magni</option>
+                                <option value="doloremque" data-icon="fa-briefcase">Doloremque</option>
+                                <option value="remque" data-icon="fa-clock">Remquee</option>
+                                <option value="quantum" data-icon="fa-home">Quantum</option>
+                            </select>
+                            <label class="sr-only" for="upt-add-category-input-icon">Wybierz Ikonę</label>
+                        </div>
+
+                        <div class="upt-add-category-form-actions">
+                            <button class="link small variant1 js-modal__close">
+                                Anuluj
+                            </button>
+                            <button type="submit" class="link small variant2">
+                                Dodaj
+                            </button>
+                        </div>
+                    </form>
+                </template>
+            </user-private-tasks-module-modal>
+            <!-- ADD CATEGORY MODAL END --> 
+
+            <!-- CONFIRM MODAL START --> 
+            <user-private-tasks-module-modal data-modal-id="user-private-tasks-module-confirm-modal" data-modal-content-class="upt-confirm-modal">
+                <template slot="modal-title">Czy na pewno chcesz wykonać tą operację?</template>
+                <template slot="modal-content">
+                    <div class="upt-confirm-modal-actions">
+                        <button class="link small variant1 js-modal__close">
+                            Anuluj
+                        </button>
+                        <button type="submit" class="link small variant2">
+                            Zatwierdź
+                        </button>
+                    </div>
+                </template>
+            </user-private-tasks-module-modal>
+            <!-- CONFIRM MODAL END -->  
+
+            <button id="testuj" class="link variant2">testuj</button>
         </section>
         <!-- USER PRIVATE TASKS MODULE END -->
     </main>
 
-    <script src="./js/modules.js"></script>
+    <script src="./js/modules.js"></script> 
     <script src="./js/index.js"></script>
 </body>
 

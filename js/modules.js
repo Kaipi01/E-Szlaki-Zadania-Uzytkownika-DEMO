@@ -414,6 +414,13 @@ class UPTModuleToast {
 }
 
 class UPTModuleModal {
+  static SHOW_EVENT_NAME = "upt-show-modal";
+  static HIDE_EVENT_NAME = "upt-hide-modal";
+  static OPEN_EVENT_NAME = "upt-modal-is-open";
+  static CLOSE_EVENT_NAME = "upt-modal-is-close";
+  static START_LOADING_EVENT_NAME = "upt-start-loading-modal";
+  static STOP_LOADING_EVENT_NAME = "upt-stop-loading-modal";
+
   /**
    * @param {string} selector
    */
@@ -452,7 +459,42 @@ class UPTModuleModal {
   }
   initModal() {
     var self = this;
-    //open modal when clicking on trigger buttons
+    const catchModalEvent = (event, callback) => {
+      const modalId = event.detail?.modalId;
+      if (this.element.id && modalId && modalId === this.element.id) {
+        callback();
+      }
+    };
+
+    // show modal when show modal event occurs
+    document.addEventListener(UPTModuleModal.SHOW_EVENT_NAME, (event) =>
+      catchModalEvent(event, () => {
+        this.showModal();
+        this.initModalEvents();
+      })
+    );
+    // hide modal when hide modal event occurs
+    document.addEventListener(UPTModuleModal.HIDE_EVENT_NAME, (event) =>
+      catchModalEvent(event, () => this.closeModal())
+    );
+
+    // show loading state modal
+    document.addEventListener(
+      UPTModuleModal.START_LOADING_EVENT_NAME,
+      (event) =>
+        catchModalEvent(event, () =>
+          this.element.classList.add("modal--loading")
+        )
+    );
+
+    // hide loading state modal
+    document.addEventListener(UPTModuleModal.STOP_LOADING_EVENT_NAME, (event) =>
+      catchModalEvent(event, () =>
+        this.element.classList.remove("modal--loading")
+      )
+    );
+
+    // open modal when clicking on trigger buttons
     if (this.triggers) {
       for (var i = 0; i < this.triggers.length; i++) {
         this.triggers[i].addEventListener("click", function (event) {
@@ -469,14 +511,14 @@ class UPTModuleModal {
     }
 
     // listen to the openModal event -> open modal without a trigger button
-    this.element.addEventListener("openModal", function (event) {
+    this.element.addEventListener("upt-open-modal", function (event) {
       if (event.detail) self.selectedTrigger = event.detail;
       self.showModal();
       self.initModalEvents();
     });
 
     // listen to the closeModal event -> close modal without a trigger button
-    this.element.addEventListener("closeModal", function (event) {
+    this.element.addEventListener("upt-close-modal", function (event) {
       if (event.detail) self.selectedTrigger = event.detail;
       self.closeModal();
     });
@@ -503,7 +545,7 @@ class UPTModuleModal {
         self.element.removeEventListener("transitionend", cb);
       });
     }
-    this.emitModalEvents("modalIsOpen");
+    this.emitModalEvents(UPTModuleModal.OPEN_EVENT_NAME);
     // change the overflow of the preventScrollEl
     if (this.preventScrollEl) this.preventScrollEl.style.overflow = "hidden";
   }
@@ -516,7 +558,7 @@ class UPTModuleModal {
     if (this.selectedTrigger) this.selectedTrigger.focus();
     //remove listeners
     this.cancelModalEvents();
-    this.emitModalEvents("modalIsClose");
+    this.emitModalEvents(UPTModuleModal.CLOSE_EVENT_NAME);
     // change the overflow of the preventScrollEl
     if (this.preventScrollEl) this.preventScrollEl.style.overflow = "";
   }
@@ -1282,26 +1324,26 @@ class CustomSelect {
       });
   }
 }
-class CustomCountdown {
+
+class CustomCountdown extends HTMLElement {
   static ANIMATE_ATTRIBUTE_NAME = "data-animate-now";
 
-  /**
-   * @param {string} containerSelector
-   * @param {string} dateEnd
-   */
-  constructor(containerSelector, dateEnd) {
-    this.container = document.querySelector(containerSelector);
-    this.dateEnd = dateEnd;
+  constructor() {
+    super();
+    this.dateEnd = this.getAttribute("data-date-end");
     this.timer;
     this.days;
     this.hours;
     this.minutes;
     this.seconds;
+  }
 
-    this.daysElement = this.container.querySelector("[data-days]");
-    this.hoursElement = this.container.querySelector("[data-hours]");
-    this.minutesElement = this.container.querySelector("[data-minutes]");
-    this.secondsElement = this.container.querySelector("[data-seconds]");
+  connectedCallback() {
+    this.render();
+    this.daysElement = this.querySelector("[data-days]");
+    this.hoursElement = this.querySelector("[data-hours]");
+    this.minutesElement = this.querySelector("[data-minutes]");
+    this.secondsElement = this.querySelector("[data-seconds]");
 
     this.init();
   }
@@ -1317,6 +1359,19 @@ class CustomCountdown {
     this.timer = setInterval(() => {
       this.calculate();
     }, 1000);
+  }
+
+  render() {
+    this.innerHTML = `
+      <div class="custom-countdown">
+        <p class="timer">
+          <span class="timer-data" data-days></span>
+          <span class="timer-data" data-hours></span>
+          <span class="timer-data" data-minutes></span>
+          <span class="timer-data" data-seconds></span>
+        </p>
+      </div>
+    `;
   }
 
   /**
@@ -1340,7 +1395,7 @@ class CustomCountdown {
     animateTimeData(days, this.days, this.daysElement);
     animateTimeData(hours, this.hours, this.hoursElement);
     animateTimeData(minutes, this.minutes, this.minutesElement);
-    animateTimeData(seconds, this.seconds, this.secondsElement); 
+    animateTimeData(seconds, this.seconds, this.secondsElement);
   }
 
   /**
@@ -1391,3 +1446,65 @@ class CustomCountdown {
     }
   }
 }
+customElements.define("custom-countdown", CustomCountdown);
+
+class UserPrivateTasksModuleModal extends HTMLElement {
+  static NAME = "user-private-tasks-module-modal";
+  static SLOT_TITLE = "modal-title";
+  static SLOT_CONTENT = "modal-content";
+  static ATTR_ID = "data-modal-id";
+  static ATTR_FIRST_FOCUS = "data-modal-first-focus";
+  static ATTR_CONTENT_CLASS = "data-modal-content-class";
+  static ATTR_TITLE = "data-modal-title";
+
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    this.modalId = this.getAttribute(UserPrivateTasksModuleModal.ATTR_ID);
+    this.modalTitle = this.querySelector(
+      `[slot="${UserPrivateTasksModuleModal.SLOT_TITLE}"]`
+    );
+    this.modalTitleVal = this.modalTitle?.innerHTML || "";
+    this.modalContentVal =
+      this.querySelector(`[slot="${UserPrivateTasksModuleModal.SLOT_CONTENT}"]`)
+        ?.innerHTML || "";
+    this.modalFirstFocus = this.getAttribute(
+      UserPrivateTasksModuleModal.ATTR_FIRST_FOCUS
+    );
+    this.modalFirstFocusVal = this.modalFirstFocus
+      ? `${UserPrivateTasksModuleModal.ATTR_FIRST_FOCUS}="${this.modalFirstFocus}"`
+      : "";
+    this.modalContentClass = this.getAttribute(
+      UserPrivateTasksModuleModal.ATTR_CONTENT_CLASS
+    );
+    this.modalContentClassVal = this.modalContentClass ?? "";
+    this.render();
+    new UPTModuleModal(`#${this.modalId}`);
+  }
+
+  render() {
+    this.innerHTML = `
+        <div id="${this.modalId}" ${this.modalFirstFocusVal} class="modal modal--animate js-modal">
+            <div class="modal__content modern-card ${this.modalContentClassVal}" role="alertdialog" aria-labelledby="${this.modalId}-title">
+                <div class="modal__header pb-2">
+                    <p ${UserPrivateTasksModuleModal.ATTR_TITLE} id="${this.modalId}-title" class="upt-small-header">
+                        ${this.modalTitleVal}
+                    </p>
+                    <button class="modal__close-btn modal__close-btn--inner js-modal__close js-tab-focus">
+                        <span class="sr-only">Zamknij</span>
+                        <img class="modal__close-btn-icon" src="./images/close-icon.svg" alt="x" aria-hidden="true">
+                    </button>
+                </div>
+                ${this.modalContentVal}
+            </div>
+        </div>
+      `;
+  }
+}
+
+customElements.define(
+  UserPrivateTasksModuleModal.NAME,
+  UserPrivateTasksModuleModal
+);
