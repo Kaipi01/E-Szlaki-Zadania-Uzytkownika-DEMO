@@ -67,7 +67,7 @@
                                 <p>Zostało dziś: <span>5</span> zadań do wykonania</p>
                             </div>
 
-                            <figure class="custom-pie-chart" aria-labelledby="pie-chart-desc">
+                            <figure data-pie-chart class="custom-pie-chart" aria-labelledby="pie-chart-desc">
                                 <div class="pie-chart donut" data-pie='{ 
                                         "data": [
                                             {"color": "#00c821", "percent": 65, "label": "Zrealizowane"},
@@ -120,7 +120,7 @@
                                 <p class="upt-small-header">Zadania dzienne</p>
                                 <a href="#zadania" class="link small variant2">Pokaż więcej</a>
                             </div>
-                            <ul class="preview-tasks-list">
+                            <ul data-daily-tasks-list class="preview-tasks-list">
                                 <li class="task modern-card modern-card--opacity">
 
                                     <span
@@ -354,7 +354,7 @@
                                 <p class="upt-small-header">Zadania główne</p>
                                 <a href="#zadania" class="link small variant2">Pokaż więcej</a>
                             </div>
-                            <ul class="preview-tasks-list">
+                            <ul data-main-tasks-list class="preview-tasks-list">
                                 <li class="task modern-card modern-card--opacity">
 
                                     <span
@@ -585,14 +585,15 @@
 
                         </div>
                         <div class="tasks-cards-list">
-                            <div class="task-card modern-card">
+                            <div data-task-id="task12345" class="task-card modern-card">
                                 <div class="task-card-header">
-                                    <span class="task-priority task-card-priority task-priority--very-high">Bardzo
-                                        Wysoki piorytet</span>
+                                    <span class="task-priority task-card-priority task-priority--very-high">
+                                        Bardzo Wysoki piorytet
+                                    </span>
 
                                     <p class="task-name task-card-name">
                                         <i class="task-icon fa fa-briefcase"></i>
-                                        Zadanie numer 23
+                                        Zadanie numer 1234
                                     </p>
 
                                     <div class="category-card-actions task-card-actions-top">
@@ -978,7 +979,7 @@
 
                         <div class="upt-add-tast-form-actions">
                             <div class="left-actions">
-                                <button type="submit" class="link small variant2">
+                                <button class="link small variant2">
                                     <i class="fa-solid fa-plus"></i>
                                     Dodaj Podzadanie
                                 </button>
@@ -1194,7 +1195,7 @@
                         <button class="link small variant1 js-modal__close">
                             Anuluj
                         </button>
-                        <button type="submit" class="link small variant2">
+                        <button data-modal-confirm-button class="link small variant2">
                             Zatwierdź
                         </button>
                     </div>
@@ -1207,6 +1208,7 @@
         <!-- USER PRIVATE TASKS MODULE END -->
     </main>
 
+    <script src="./js/Tasks/classes.js"></script>
     <script src="./js/modules.js"></script>
     <script src="./js/index.js"></script>
 </body>

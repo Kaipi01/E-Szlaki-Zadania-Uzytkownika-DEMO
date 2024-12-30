@@ -6,7 +6,7 @@ class UPTDateTimeStatisics {
     this.container = document.querySelector(containerSelector);
 
     if (!this.container) {
-      console.error(`Nie istnieje Element o selektorze ${containerSelector}`);
+      console.error(`Element with selector ${containerSelector} is not exist!`);
       return;
     }
 
@@ -141,7 +141,6 @@ class UPTModuleMainNavigation {
       console.error(`this.mainContainer is null`);
       return;
     }
-    /** @type {HTMLElement} */
     this.navigation = this.mainContainer.querySelector(
       "[data-main-navigation]"
     );
@@ -161,8 +160,10 @@ class UPTModuleMainNavigation {
     this.pages = this.mainContainer.querySelectorAll("[data-content-page]");
     this.linkPage = "";
     this.prevLink;
+    /** @type {number} */
     this.breakpointValue = this.remToPx(76);
-    this.windowWidthIsLessThanBreakpoint = window.innerWidth < this.breakpointValue;
+    this.windowWidthIsLessThanBreakpoint =
+      window.innerWidth < this.breakpointValue;
     this.changeScreenEvent = new CustomEvent(
       UPTModuleMainNavigation.UPT_MODULE_CHANGE_PAGE_EVENT
     );
@@ -199,7 +200,6 @@ class UPTModuleMainNavigation {
   }
 
   init() {
-    
     this.bindPageLinks();
     this.showInitPage();
 
@@ -311,16 +311,16 @@ class UPTModuleMainNavigation {
   animateChangePages(prevPage, nextPage) {
     if (prevPage === nextPage) return;
 
-    prevPage.classList.remove("page-static");
+    if (prevPage) prevPage.classList.remove("page-static");
     this.pages.forEach((page) => (page.style.position = "absolute"));
 
     nextPage.classList.add("active");
-    nextPage.style.opacity = 0;
-    prevPage.style.opacity = 0;
+    nextPage.style.opacity = "0";
+    if (prevPage) prevPage.style.opacity = "0";
 
     setTimeout(() => {
       nextPage.style.position = "relative";
-      nextPage.style.opacity = 1;
+      nextPage.style.opacity = "1";
 
       if (prevPage) {
         prevPage.classList.remove("active");
@@ -330,20 +330,34 @@ class UPTModuleMainNavigation {
 }
 
 class UPTModuleToast {
-  static TYPE_SUCCESS = "success";
-  static TYPE_WARNING = "warning";
-  static TYPE_ERROR = "error";
-  static TYPE_INFO = "info";
+  static SUCCESS = "success";
+  static WARNING = "warning";
+  static ERROR = "error";
+  static INFO = "info";
   static SUCCESS_ICON = "fa-circle-check";
   static ERROR_ICON = "fa-circle-exclamation";
   static WARNING_ICON = "fa-triangle-exclamation";
   static INFO_ICON = "fa-circle-info";
 
   /**
+   * @param {string} type
+   * @param {string} message
+   */
+  static show(type, message = "") {
+    new UPTModuleToast(window.UPT_MODULE_ID_SELECTOR).open(type, message);
+  }
+
+  /**
    * @param {string} containerSelector
    */
   constructor(containerSelector) {
     this.container = document.querySelector(containerSelector);
+
+    if (!this.container) {
+      console.warn("this.container is null");
+      return;
+    }
+
     this.toastId = this.generateToastId();
     this.toast;
     this.countdown;
@@ -358,7 +372,9 @@ class UPTModuleToast {
     this.toastIcon = this.toast.querySelector(".icon");
     this.toastTitle = this.toast.querySelector(".toast-message-title");
     this.toastMessage = this.toast.querySelector(".toast-message-text");
-    this.closeToastBtn.addEventListener("click", () => this.close());
+
+    if (this.closeToastBtn)
+      this.closeToastBtn.addEventListener("click", () => this.close());
   }
 
   /**
@@ -374,7 +390,7 @@ class UPTModuleToast {
   generateToast() {
     const toast = document.createElement("div");
     toast.className = "upt-toast";
-    toast.id = this.toastId;
+    toast.id = String(this.toastId);
     toast.style.display = "none";
     toast.innerHTML = ` 
                   <i class="icon fa-solid"></i>
@@ -412,10 +428,10 @@ class UPTModuleToast {
     let toastTitle;
     let toastIcon;
     this.toast.classList.remove(
-      UPTModuleToast.TYPE_SUCCESS,
-      UPTModuleToast.TYPE_WARNING,
-      UPTModuleToast.TYPE_ERROR,
-      UPTModuleToast.TYPE_INFO
+      UPTModuleToast.SUCCESS,
+      UPTModuleToast.WARNING,
+      UPTModuleToast.ERROR,
+      UPTModuleToast.INFO
     );
     this.toastIcon.classList.remove(
       UPTModuleToast.SUCCESS_ICON,
@@ -426,15 +442,15 @@ class UPTModuleToast {
     this.toast.style.display = "flex";
 
     switch (type) {
-      case UPTModuleToast.TYPE_SUCCESS:
+      case UPTModuleToast.SUCCESS:
         toastTitle = "Sukces!";
         toastIcon = UPTModuleToast.SUCCESS_ICON;
         break;
-      case UPTModuleToast.TYPE_ERROR:
+      case UPTModuleToast.ERROR:
         toastTitle = "Błąd!";
         toastIcon = UPTModuleToast.ERROR_ICON;
         break;
-      case UPTModuleToast.TYPE_WARNING:
+      case UPTModuleToast.WARNING:
         toastTitle = "Ostrzeżenie";
         toastIcon = UPTModuleToast.WARNING_ICON;
         break;
@@ -1208,7 +1224,6 @@ class CustomPieChart {
     this.container = document.querySelector(this.pieChartContainerSelector);
 
     if (!this.container) {
-      // eslint-disable-next-line no-console
       console.warn(`${pieChartContainerSelector} element not found!`);
     } else {
       this.pieChart = this.container.querySelector(".pie-chart");
@@ -1453,13 +1468,13 @@ class CustomCountdown extends HTMLElement {
   }
 
   connectedCallback() {
-    this.render(); 
+    this.render();
     this.init();
   }
 
   init() {
     if (!this.dateEnd) {
-      console.warn("Nie podano atrybutu data-date-end !");
+      console.warn("data-date-end attribute is missing!");
       return;
     }
 
@@ -1472,47 +1487,32 @@ class CustomCountdown extends HTMLElement {
   }
 
   render() {
-    const wrapper = document.createElement('div')
-    wrapper.className = "custom-countdown"
+    const wrapper = document.createElement("div");
+    wrapper.className = "custom-countdown";
 
-    const timer  = document.createElement('p')
-    timer.className = "timer" 
-    
-    this.daysElement = document.createElement('span')
-    this.hoursElement = document.createElement('span')
-    this.minutesElement = document.createElement('span')
-    this.secondsElement = document.createElement('span')
+    const timer = document.createElement("p");
+    timer.className = "timer";
 
-    this.daysElement.className = "timer-data"
-    this.daysElement.setAttribute("data-days", "")
-    this.hoursElement.className = "timer-data"
-    this.hoursElement.setAttribute("data-hours", "")
-    this.minutesElement.className = "timer-data"
-    this.minutesElement.setAttribute("data-minutes", "")
-    this.secondsElement.className = "timer-data"
-    this.secondsElement.setAttribute("data-seconds", "")
+    this.daysElement = document.createElement("span");
+    this.hoursElement = document.createElement("span");
+    this.minutesElement = document.createElement("span");
+    this.secondsElement = document.createElement("span");
 
-    timer.append(this.daysElement)
-    timer.append(this.hoursElement)
-    timer.append(this.minutesElement)
-    timer.append(this.secondsElement)
-    wrapper.append(timer)
-    // this.daysElement = this.querySelector("[data-days]");
-    // this.hoursElement = this.querySelector("[data-hours]");
-    // this.minutesElement = this.querySelector("[data-minutes]");
-    // this.secondsElement = this.querySelector("[data-seconds]");
+    this.daysElement.className = "timer-data";
+    this.daysElement.setAttribute("data-days", "");
+    this.hoursElement.className = "timer-data";
+    this.hoursElement.setAttribute("data-hours", "");
+    this.minutesElement.className = "timer-data";
+    this.minutesElement.setAttribute("data-minutes", "");
+    this.secondsElement.className = "timer-data";
+    this.secondsElement.setAttribute("data-seconds", "");
 
-    // this.innerHTML = `
-    //   <div class="custom-countdown">
-    //     <p class="timer">
-    //       <span class="timer-data" data-days></span>
-    //       <span class="timer-data" data-hours></span>
-    //       <span class="timer-data" data-minutes></span>
-    //       <span class="timer-data" data-seconds></span>
-    //     </p>
-    //   </div>
-    // `;
-    this.append(wrapper)
+    timer.append(this.daysElement);
+    timer.append(this.hoursElement);
+    timer.append(this.minutesElement);
+    timer.append(this.secondsElement);
+    wrapper.append(timer);
+    this.append(wrapper);
   }
 
   /**
@@ -1654,3 +1654,91 @@ customElements.define(
   UserPrivateTasksModuleModal.NAME,
   UserPrivateTasksModuleModal
 );
+
+class UPTModuleMainPanel {
+  /**
+   * @param {string} selector
+   */
+  constructor(selector) {
+    this.panel = document.querySelector(selector);
+
+    if (!this.panel) {
+      console.error("this.panel is null");
+      return;
+    }
+    this.init();
+    //[data-daily-tasks-list]
+    //[data-main-tasks-list]
+  }
+
+  init() {
+    // Wykres kołowy na głównym panelu
+    this.initPieChart();
+
+    // Statystyki związane z datą i godziną na głównym panelu
+    new UPTDateTimeStatisics(
+      UPT_MODULE_ID_SELECTOR + " [data-date-time-statisics]"
+    );
+  }
+
+  initPieChart() {
+    const pieChartSelector = UPT_MODULE_ID_SELECTOR + " [data-pie-chart]";
+    const pieChartDataAttrSelector = pieChartSelector + " [data-pie]";
+
+    pieChartDataAttrSelector.setAttribute(
+      "data-pie",
+      JSON.stringify({
+        data: [
+          { color: "#00c821", percent: 0, label: "Zrealizowane" },
+          { color: "#e74f4f", percent: 0, label: "Porzucone" },
+          { color: "#fc921f", percent: 0, label: "W trakcie" },
+        ],
+        animate: true,
+        animationSpeed: 1250,
+      })
+    );
+
+    new CustomPieChart(pieChartSelector);
+  }
+}
+
+class UPTModuleCategoryPanel {
+  /**
+   * @param {string} selector
+   */
+  constructor(selector) {
+    this.panel = document.querySelector(selector);
+
+    if (!this.panel) {
+      console.error("this.panel is null");
+      return;
+    }
+  }
+}
+class UPTModuleTasksPanel {
+  /**
+   * @param {string} selector
+   */
+  constructor(selector) {
+    this.panel = document.querySelector(selector);
+
+    if (!this.panel) {
+      console.error("this.panel is null");
+      return;
+    }
+  }
+}
+
+class UPTModuleArchivePanel {
+  /**
+   * @param {string} selector
+   */
+  constructor(selector) {
+    this.panel = document.querySelector(selector);
+
+    if (!this.panel) {
+      console.error("this.panel is null");
+      return;
+    }
+  }
+}
