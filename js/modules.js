@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 class UPTDateTimeStatisics {
   /**
    * @param {string} containerSelector
@@ -138,6 +139,7 @@ class UPTModuleMainNavigation {
   }
 
   /**
+   * @returns {number}
    * @param {number} rem
    */
   remToPx(rem) {
@@ -179,6 +181,11 @@ class UPTModuleMainNavigation {
 
   bindPageLinks() {
     // Mechanizm throttle do zabezpieczenia animacji
+    /**
+     * @returns {void}
+     * @param {Function} callback
+     * @param {number} delay
+     */
     const throttle = (
       callback,
       delay = UPTModuleMainNavigation.ANIMATION_DURATION_TIME
@@ -320,10 +327,16 @@ class UPTModuleToast {
     this.closeToastBtn.addEventListener("click", () => this.close());
   }
 
+  /**
+   * @returns {string}
+   */
   generateToastId() {
     return "upt-toast-" + Date.now().toString(36) + Math.random().toString(36);
   }
 
+  /**
+   * @returns {HTMLDivElement}
+   */
   generateToast() {
     const toast = document.createElement("div");
     toast.className = "upt-toast";
@@ -446,6 +459,10 @@ class UPTModuleModal {
       '[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable], audio[controls], video[controls], summary';
   }
 
+  /**
+   * @returns {bool}
+   * @param {Element} element
+   */
   isVisible(element) {
     return (
       element.offsetWidth ||
@@ -453,12 +470,21 @@ class UPTModuleModal {
       element.getClientRects().length
     );
   }
+  /**
+   * @returns {HTMLElement}
+   */
   getPreventScrollEl() {
     var scrollEl = document.body;
     return scrollEl;
   }
+
   initModal() {
     var self = this;
+
+    /**
+     * @param {Event} event
+     * @param {Funtion} callback
+     */
     const catchModalEvent = (event, callback) => {
       const modalId = event.detail?.modalId;
       if (this.element.id && modalId && modalId === this.element.id) {
@@ -532,6 +558,7 @@ class UPTModuleModal {
       }
     });
   }
+
   showModal() {
     var self = this;
     this.element.classList.add(this.showClass);
@@ -549,6 +576,7 @@ class UPTModuleModal {
     // change the overflow of the preventScrollEl
     if (this.preventScrollEl) this.preventScrollEl.style.overflow = "hidden";
   }
+
   closeModal() {
     if (!this.element.classList.contains(this.showClass)) return;
     this.element.classList.remove(this.showClass);
@@ -562,26 +590,36 @@ class UPTModuleModal {
     // change the overflow of the preventScrollEl
     if (this.preventScrollEl) this.preventScrollEl.style.overflow = "";
   }
+
   initModalEvents() {
     //add event listeners
     this.element.addEventListener("keydown", this);
     this.element.addEventListener("click", this);
   }
+
   cancelModalEvents() {
     //remove event listeners
     this.element.removeEventListener("keydown", this);
     this.element.removeEventListener("click", this);
   }
+
+  /**
+   * @param {Event} event
+   */
   handleEvent(event) {
     switch (event.type) {
       case "click": {
         this.initClick(event);
+        break;
       }
       case "keydown": {
         this.initKeyDown(event);
       }
     }
   }
+  /**
+   * @param {Event} event
+   */
   initKeyDown(event) {
     if (
       (event.keyCode && event.keyCode == 9) ||
@@ -598,6 +636,9 @@ class UPTModuleModal {
       this.closeModal(); // close modal when pressing Enter on close button
     }
   }
+  /**
+   * @param {Event} event
+   */
   initClick(event) {
     //close modal when clicking on close button or modal bg layer
     if (
@@ -608,6 +649,9 @@ class UPTModuleModal {
     event.preventDefault();
     this.closeModal();
   }
+  /**
+   * @param {Event} event
+   */
   trapFocus(event) {
     if (this.firstFocusable == document.activeElement && event.shiftKey) {
       //on Shift+Tab -> focus last focusable element when focus moves out of modal
@@ -620,6 +664,7 @@ class UPTModuleModal {
       this.firstFocusable.focus();
     }
   }
+
   getFocusableElements() {
     //get all focusable elements inside the modal
     var allFocusable = this.element.querySelectorAll(this.focusableElString);
@@ -627,6 +672,9 @@ class UPTModuleModal {
     this.getLastVisible(allFocusable);
     this.getFirstFocusable();
   }
+  /**
+   * @param {NodeListOf<Element>} elements
+   */
   getFirstVisible(elements) {
     //get first visible focusable element inside the modal
     for (var i = 0; i < elements.length; i++) {
@@ -636,6 +684,9 @@ class UPTModuleModal {
       }
     }
   }
+  /**
+   * @param {NodeListOf<Element>} elements
+   */
   getLastVisible(elements) {
     //get last visible focusable element inside the modal
     for (var i = elements.length - 1; i >= 0; i--) {
@@ -665,6 +716,9 @@ class UPTModuleModal {
       if (!this.moveFocusEl) this.moveFocusEl = this.firstFocusable;
     }
   }
+  /**
+   * @param {string} eventName
+   */
   emitModalEvents(eventName) {
     var event = new CustomEvent(eventName, { detail: this.selectedTrigger });
     this.element.dispatchEvent(event);
@@ -687,6 +741,10 @@ class CircularProgressBar {
     stroke: 10,
   };
 
+  /**
+   * @param {string} pieName
+   * @param {object} globalObj
+   */
   constructor(pieName, globalObj = {}) {
     this._className = pieName;
     this._globalObj = globalObj;
@@ -705,6 +763,10 @@ class CircularProgressBar {
     this._elements = elements;
   }
 
+  /**
+   * @param {string} pieName
+   * @param {object} globalObj
+   */
   static initAll(pieName, globalObj = {}) {
     const pie = document.querySelectorAll(".pie");
     const elements = [].slice.call(pie);
@@ -988,22 +1050,26 @@ class CircularProgressBar {
 
     return `transform:rotate(${rotation}deg);transform-origin: 50% 50%;${smoothAnimation}`;
   };
+
   _strokeDasharray = (type) => {
     return {
       "stroke-dasharray": type || "264",
     };
   };
+
   _strokeLinecap = ({ round }) => {
     return {
       "stroke-linecap": round ? "round" : "",
     };
   };
+
   _fontSettings = (options) => {
     return {
       "font-size": options.fontSize,
       "font-weight": options.fontWeight,
     };
   };
+
   _querySelector = (element) => document.querySelector(element);
 
   _setColor = (element, { lineargradient, index, colorSlice }) => {
@@ -1100,11 +1166,15 @@ class CircularProgressBar {
 }
 
 class CustomPieChart {
+  /**
+   * @param {string}pieChartContainerSelector
+   */
   constructor(pieChartContainerSelector) {
     this.pieChartContainerSelector = pieChartContainerSelector;
     this.container = document.querySelector(this.pieChartContainerSelector);
 
     if (!this.container) {
+      // eslint-disable-next-line no-console
       console.warn(`${pieChartContainerSelector} element not found!`);
     } else {
       this.pieChart = this.container.querySelector(".pie-chart");
@@ -1214,6 +1284,9 @@ class CustomPieChart {
 }
 
 class CustomSelect {
+  /**
+   * @param {HTMLSelectElement} selectElement
+   */
   constructor(selectElement) {
     this.selectElement = selectElement;
     this.numberOfOptions = selectElement.children.length;
@@ -1266,6 +1339,9 @@ class CustomSelect {
   }
 
   attachEventListeners() {
+    /**
+     * @param {Event} e
+     */
     const openSelect = (e) => {
       e.stopPropagation();
       document
@@ -1284,6 +1360,10 @@ class CustomSelect {
         : "none";
     };
 
+    /**
+     * @param {Event} e
+     * @param {HTMLElement} listItem
+     */
     const chooseOption = (e, listItem) => {
       e.stopPropagation();
       this.styledSelect.innerHTML = listItem.innerHTML;
@@ -1383,6 +1463,11 @@ class CustomCountdown extends HTMLElement {
   animate(days, hours, minutes, seconds) {
     const attrName = CustomCountdown.ANIMATE_ATTRIBUTE_NAME;
 
+    /**
+     * @param {number} value
+     * @param {number} thisValue
+     * @param {HTMLElement} thisValueEl
+     */
     const animateTimeData = (value, thisValue, thisValueEl) => {
       if (value != thisValue) {
         thisValueEl.setAttribute(attrName, "");

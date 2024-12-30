@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const UPT_MODULE_ID_SELECTOR = "#user-private-tasks-module";
 const UPT_CONFIRM_MODAL_ID = "user-private-tasks-module-confirm-modal";
 
@@ -19,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
   CustomSelect.initAll();
 
   // Inicjacja wszystkich animowantych kołowych progress barów z klasą "circular-progress-bar"
-  CircularProgressBar.initAll("pie", { size: 150 });
+  CircularProgressBar.initAll("pie", { size: 150 }); 
 
   document.querySelector("#testuj").addEventListener("click", () => {
     showModal("Czy napewno chcesz usunąć to zadanie?", UPT_CONFIRM_MODAL_ID);
@@ -34,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }, 3000);
   });
-});
+}); 
 
 /**
  * @param {string} title
@@ -51,7 +52,7 @@ function showModal(title, modalId) {
 
 /**
  * @param {string} eventName
- * @param {Object} eventData
+ * @param {object} eventData
  */
 function dispatchEvent(eventName, eventData = {}) {
   document.dispatchEvent(
