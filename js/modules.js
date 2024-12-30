@@ -1,10 +1,15 @@
-/* eslint-disable no-unused-vars */
 class UPTDateTimeStatisics {
   /**
    * @param {string} containerSelector
    */
   constructor(containerSelector) {
     this.container = document.querySelector(containerSelector);
+
+    if (!this.container) {
+      console.error(`Nie istnieje Element o selektorze ${containerSelector}`);
+      return;
+    }
+
     this.currentTimeEl = this.container.querySelector(
       "[data-statistic-current-time]"
     );
@@ -59,7 +64,11 @@ class UPTDateTimeStatisics {
     const year = now.getFullYear();
     const formattedDate = `${dayName}, ${day} ${month} ${year}`;
 
-    this.currentDateEl.textContent = formattedDate;
+    if (this.currentDateEl) {
+      this.currentDateEl.textContent = formattedDate;
+    } else {
+      console.error(`this.currentDateEl is null`);
+    }
   }
 
   setTimeToEndDay() {
@@ -87,7 +96,7 @@ class UPTDateTimeStatisics {
         );
         endOfDay.setTime(nextDay.getTime());
       }
-      const diff = endOfDay - now;
+      const diff = endOfDay.getTime() - now.getTime();
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
@@ -96,7 +105,11 @@ class UPTDateTimeStatisics {
         .toString()
         .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
-      this.timeToEndDayEl.textContent = formattedTime;
+      if (this.timeToEndDayEl) {
+        this.timeToEndDayEl.textContent = formattedTime;
+      } else {
+        console.error(`this.timeToEndDayEl is null`);
+      }
     };
 
     setInterval(updateTime, 1000);
@@ -105,7 +118,12 @@ class UPTDateTimeStatisics {
 
   setCurrentTime() {
     const date = new Date();
-    this.currentTimeEl.textContent = date.toLocaleTimeString();
+
+    if (this.currentDateEl) {
+      this.currentDateEl.textContent = date.toLocaleTimeString();
+    } else {
+      console.error(`this.currentDateEl is null`);
+    }
   }
 }
 
@@ -118,23 +136,42 @@ class UPTModuleMainNavigation {
    */
   constructor(mainContainerSelector) {
     this.mainContainer = document.querySelector(mainContainerSelector);
+
+    if (!this.mainContainer) {
+      console.error(`this.mainContainer is null`);
+      return;
+    }
+    /** @type {HTMLElement} */
     this.navigation = this.mainContainer.querySelector(
       "[data-main-navigation]"
     );
     this.navigationList = this.mainContainer.querySelector(
       "[data-main-navigation-list]"
     );
+
+    if (!this.navigation) {
+      console.error(`this.navigation is null`);
+      return;
+    }
+    if (!this.navigationList) {
+      console.error(`this.navigationList is null`);
+      return;
+    }
+
     this.pages = this.mainContainer.querySelectorAll("[data-content-page]");
-    this.pageLinks = [];
     this.linkPage = "";
     this.prevLink;
     this.breakpointValue = this.remToPx(76);
-    this.windowWidthIsLessThanBreakpoint =
-      window.innerWidth < this.breakpointValue;
+    this.windowWidthIsLessThanBreakpoint = window.innerWidth < this.breakpointValue;
     this.changeScreenEvent = new CustomEvent(
       UPTModuleMainNavigation.UPT_MODULE_CHANGE_PAGE_EVENT
     );
-    this.pageLinksArray;
+    /** @type {NodeListOf<HTMLAnchorElement>} */
+    this.pageLinks = this.navigation.querySelectorAll(
+      "[data-main-navigation-link]"
+    );
+    /** @type {HTMLAnchorElement[]} */
+    this.pageLinksArray = Array.from(this.pageLinks);
     this.init();
   }
 
@@ -162,10 +199,7 @@ class UPTModuleMainNavigation {
   }
 
   init() {
-    this.pageLinks = this.navigation.querySelectorAll(
-      "[data-main-navigation-link]"
-    );
-    this.pageLinksArray = Array.from(this.pageLinks);
+    
     this.bindPageLinks();
     this.showInitPage();
 
@@ -182,7 +216,7 @@ class UPTModuleMainNavigation {
   bindPageLinks() {
     // Mechanizm throttle do zabezpieczenia animacji
     /**
-     * @returns {void}
+     * @returns {(...args: any[]) => void}
      * @param {Function} callback
      * @param {number} delay
      */
@@ -1419,22 +1453,18 @@ class CustomCountdown extends HTMLElement {
   }
 
   connectedCallback() {
-    this.render();
-    this.daysElement = this.querySelector("[data-days]");
-    this.hoursElement = this.querySelector("[data-hours]");
-    this.minutesElement = this.querySelector("[data-minutes]");
-    this.secondsElement = this.querySelector("[data-seconds]");
-
+    this.render(); 
     this.init();
   }
 
   init() {
-    this.dateEnd = new Date(this.dateEnd);
-    this.dateEnd = this.dateEnd.getTime();
-
-    if (isNaN(this.dateEnd)) {
+    if (!this.dateEnd) {
+      console.warn("Nie podano atrybutu data-date-end !");
       return;
     }
+
+    this.dateEnd = new Date(this.dateEnd);
+    this.dateEnd = this.dateEnd.getTime();
 
     this.timer = setInterval(() => {
       this.calculate();
@@ -1442,16 +1472,47 @@ class CustomCountdown extends HTMLElement {
   }
 
   render() {
-    this.innerHTML = `
-      <div class="custom-countdown">
-        <p class="timer">
-          <span class="timer-data" data-days></span>
-          <span class="timer-data" data-hours></span>
-          <span class="timer-data" data-minutes></span>
-          <span class="timer-data" data-seconds></span>
-        </p>
-      </div>
-    `;
+    const wrapper = document.createElement('div')
+    wrapper.className = "custom-countdown"
+
+    const timer  = document.createElement('p')
+    timer.className = "timer" 
+    
+    this.daysElement = document.createElement('span')
+    this.hoursElement = document.createElement('span')
+    this.minutesElement = document.createElement('span')
+    this.secondsElement = document.createElement('span')
+
+    this.daysElement.className = "timer-data"
+    this.daysElement.setAttribute("data-days", "")
+    this.hoursElement.className = "timer-data"
+    this.hoursElement.setAttribute("data-hours", "")
+    this.minutesElement.className = "timer-data"
+    this.minutesElement.setAttribute("data-minutes", "")
+    this.secondsElement.className = "timer-data"
+    this.secondsElement.setAttribute("data-seconds", "")
+
+    timer.append(this.daysElement)
+    timer.append(this.hoursElement)
+    timer.append(this.minutesElement)
+    timer.append(this.secondsElement)
+    wrapper.append(timer)
+    // this.daysElement = this.querySelector("[data-days]");
+    // this.hoursElement = this.querySelector("[data-hours]");
+    // this.minutesElement = this.querySelector("[data-minutes]");
+    // this.secondsElement = this.querySelector("[data-seconds]");
+
+    // this.innerHTML = `
+    //   <div class="custom-countdown">
+    //     <p class="timer">
+    //       <span class="timer-data" data-days></span>
+    //       <span class="timer-data" data-hours></span>
+    //       <span class="timer-data" data-minutes></span>
+    //       <span class="timer-data" data-seconds></span>
+    //     </p>
+    //   </div>
+    // `;
+    this.append(wrapper)
   }
 
   /**
@@ -1512,13 +1573,13 @@ class CustomCountdown extends HTMLElement {
     let days, hours, minutes, seconds;
 
     if (timeRemaining >= 0) {
-      days = parseInt(timeRemaining / 86400);
+      days = Math.trunc(timeRemaining / 86400);
       timeRemaining = timeRemaining % 86400;
-      hours = parseInt(timeRemaining / 3600);
+      hours = Math.trunc(timeRemaining / 3600);
       timeRemaining = timeRemaining % 3600;
-      minutes = parseInt(timeRemaining / 60);
+      minutes = Math.trunc(timeRemaining / 60);
       timeRemaining = timeRemaining % 60;
-      seconds = parseInt(timeRemaining);
+      seconds = Math.trunc(timeRemaining);
 
       this.display(days, hours, minutes, seconds);
 
