@@ -2,12 +2,20 @@
 
 #user-private-tasks-module {
   .custom-countdown {
-    $size: toRem(60); 
+    $color: var(--blue);
+    $color-animation: var(--light-blue-opacity);
+    $size: 3.75rem;
 
     .timer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 0.5rem;
+      padding-bottom: 1rem;
       color: #fff;
-      font-size: toRem(32);
+      font-size: calc($size / 2);
       font-weight: bold;
+      gap: 0.5rem;
 
       &-data {
         display: inline-flex;
@@ -17,14 +25,14 @@
         width: $size;
         height: $size;
         border-radius: 10px;
-        background-color: var(--green);
+        background-color: var(--blue);
         box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
         &::after {
           content: "";
           display: block;
           position: absolute;
-          bottom: -1.25em;
+          bottom: -1.5em;
           left: 50%;
           transform: translateX(-50%);
           color: #000;
@@ -50,20 +58,20 @@
         }
       }
     }
-  }
 
-  @keyframes custom-countdown-time-data-animation {
-    0% {
-      background-color: var(--green);
-      // transform: scale(1); 
-    }
-    50% {
-      // transform: scale(1.025);
-      background-color: var(--green-opacity-30);
-    }
-    100% {
-      // transform: scale(1); 
-      background-color: var(--green);
+    @keyframes custom-countdown-time-data-animation {
+      0% {
+        transform: scale(1);
+        background-color: $color;
+      }
+      50% {
+        transform: scale(1.025);
+        background-color: $color-animation;
+      }
+      100% {
+        transform: scale(1);
+        background-color: $color;
+      }
     }
   }
 }

@@ -157,17 +157,7 @@ main {
     @media (min-width: $content-breakpoint-desktop) {
       font-size: 1.3rem;
     }
-  }
-
-  .text {
-    padding-bottom: 1.5rem;
-    color: var(--font-color-gray);
-    line-height: 1.5;
-
-    &--narrow {
-      max-width: 80ch;
-    }
-  }
+  } 
 
   .mx-auto {
     margin: 0 auto;

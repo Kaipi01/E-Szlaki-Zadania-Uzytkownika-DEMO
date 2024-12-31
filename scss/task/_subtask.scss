@@ -6,6 +6,7 @@
     .subtask {
       margin-bottom: 0.5rem;
       padding: 0.2rem 0.85rem;
+      border-radius: toRem(10);
 
       &-name {
         font-size: 1rem;

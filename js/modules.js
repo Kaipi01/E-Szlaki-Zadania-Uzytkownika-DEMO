@@ -1487,7 +1487,7 @@ class CustomCountdown extends HTMLElement {
   }
 
   render() {
-    const wrapper = document.createElement("div");
+    const wrapper = document.createElement("span");
     wrapper.className = "custom-countdown";
 
     const timer = document.createElement("p");

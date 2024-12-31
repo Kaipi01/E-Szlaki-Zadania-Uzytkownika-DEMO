@@ -495,7 +495,7 @@
                                 <p class="upt-small-header">Kategorie zadań</p>
                                 <a href="#kategorie" class="link small variant2">Pokaż więcej</a>
                             </div>
-                            <ul class="task-category-list">
+                            <ul data-category-list class="task-category-list">
                                 <li>
                                     <a href="#kategorie" class="task-category-link link variant4">
                                         <i class="task-category-link-icon fa-regular fa-circle-question"
@@ -760,6 +760,7 @@
                                 <option value="magni">Magni</option>
                                 <option value="doloremque">Doloremque</option>
                             </select>
+
                             <select id="select-tasks" data-custom-select data-class-name="custom-select-green">
                                 <option value="hide">Sortuj</option>
                                 <option value="magni">Magni</option>
@@ -999,57 +1000,93 @@
             <!-- ADD TASK MODAL FORM END -->
 
             <!-- TASK DETAILS MODAL START -->
-            <user-private-tasks-module-modal data-modal-id="user-private-tasks-module-task-details-modal">
+            <user-private-tasks-module-modal data-modal-id="user-private-tasks-module-task-details-modal" data-modal-content-class="upt-task-details">
                 <template slot="modal-title">
                     <i class="fa-solid fa-briefcase"></i>
                     Zadanie numer 23
                 </template>
                 <template slot="modal-content">
-                    <div class="upt-task-details-content">
 
-                        <ul class="upt-task-details-stats">
-                            <li class="upt-task-details-stats-data">
-                                <b>Dodano:</b>
-                                <span class="task-date-month">
-                                    <i class="fa-regular fa-calendar"></i> 23 Paź
-                                </span>
-                                <span class="task-date-hours">
-                                    <i class="fa-regular fa-clock"></i> 11:34
-                                </span>
-                            </li>
-                            <li class="upt-task-details-stats-data upt-task-details-stats-data-no-flex">
-                                <b>Termin wykonania:</b>
-                                <span><br>
-                                    <i class="fa-regular fa-calendar"></i> 23 Pażdziernika 2024 rok <br>
-                                    Poniedziałek<br>
-                                    <i class="fa-regular fa-clock"></i> Od 10:00 do 12:30
-                                </span>
-                            </li>
-                            <li class="upt-task-details-stats-data">
-                                <b>Piorytet:</b> <span class="task-priority task-priority--very-high">
-                                    Bardzo Wysoki piorytet
-                                </span>
-                            </li>
-                            <li class="upt-task-details-stats-data">
-                                <b>Kategoria:</b> <span><i class="fa-solid fa-briefcase"></i> Praca</span>
-                            </li>
-                            <!-- <li><b></b> <span>122 dni 14 godz. 54 min.</span></li> -->
-                        </ul>
+                    <div class="upt-task-details-top-content">
+                        <div class="upt-task-details-top-content-left">
+                            <span class="task-priority upt-task-details-priority task-priority--very-high task-priority--big">
+                                Bardzo Wysoki piorytet
+                            </span>
+        
+                            <span class="task-status upt-task-details-status task-status--in-progress task-status--big">
+                                W Trakcie
+                            </span> 
+                        </div>
 
-                        <div>
-                            <p class="upt-task-details-title">Do ukończenia zostało:</p>
-
-                            <custom-countdown data-date-end="01/19/2025 03:14:07 AM"></custom-countdown>
+                        <div class="upt-task-details-top-content-right">
+                            <button class="link small variant2">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                                Edytuj
+                            </button>
+                            <button class="link small variant2">
+                                <i class="fa-regular fa-folder"></i>
+                                Archiwizuj
+                            </button>
+                            <button class="link small variant2">
+                                <i class="fa-solid fa-check"></i>
+                                Zakończ Zadanie
+                            </button>
                         </div>
                     </div>
 
-                    <p class="upt-task-details-title">Opis:</p>
+                    <ul class="upt-task-details-stats-list green-list green-list--variant2 list">
+                        <li class="upt-task-details-stats-created-at">
+                            <span class="text">
+                                <span class="li-title">Dodano:</span>
+                                <i class="fa-regular fa-calendar"></i> 23 Paź <i class="fa-regular fa-clock"></i> 11:34
+                            </span>
+                            <span class="li-icon" aria-hidden="true">
+                                <i class="fa-regular fa-calendar"></i>
+                            </span>
+                        </li>
+                        <li class="upt-task-details-stats-category">
+                            <span class="text">
+                                <span class="li-title">Kategoria:</span>
+                                Praca
+                            </span>
+                            <span class="li-icon" aria-hidden="true">
+                                <i class="fa-solid fa-briefcase"></i>
+                            </span>
+                        </li>
+                        <li class="upt-task-details-stats-deadline-date">
+                            <span class="text">
+                                <span class="li-title">Termin wykonania:</span>
+                                <span>
+                                    <i class="fa-regular fa-calendar"></i> Poniedziałek 23 Pażdziernika 2024 rok <br> 
+                                    <i class="fa-regular fa-clock"></i> Od 10:00 do 12:30
+                                </span>
+                            </span>
+                            <span class="li-icon" aria-hidden="true">
+                                <i class="fa-regular fa-clock"></i>
+                            </span>
+                        </li>
+                        <li class="upt-task-details-stats-deadline-timer">
+                            <span class="text">
+                                <span class="li-title">Do ukończenia zostało:</span>
+                                <custom-countdown data-date-end="01/19/2025 03:14:07 AM"></custom-countdown>
+                            </span> 
+                        </li>
+                        <li class="upt-task-details-stats-desc">
+                            <span class="text">
+                                <span class="li-title">Opis:</span>
+                                Lorem, ipsum dolor sit amet
+                                consectetur adipisicing elit. Quidem rem exercitationem pariatur, mollitia dolore at
+                                dolores vel corrupti. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aliquam tenetur, sint quidem quam molestiae quos nam, esse facere eligendi maiores excepturi quaerat iste.
+                            </span>
+                            <span class="li-icon" aria-hidden="true">
+                                <i class="fa-solid fa-pen"></i>
+                            </span>
+                        </li>
+                    </ul>                
 
-                    <div style="display: flex;">
-                        <p class="upt-task-details-desc">Lorem, ipsum dolor sit amet
-                            consectetur adipisicing elit. Quidem rem exercitationem pariatur, mollitia dolore at
-                            dolores vel corrupti, aut qui assumenda architecto commodi quod ullam est, natus vero
-                            quo in nesciunt tempora facilis? Debitis atque reprehenderit quisquam eveniet.</p>
+                    <div class="upt-task-details-subtasks">
+
+                        <p class="upt-task-details-subtasks-title">Lista podzadań:</p>
 
                         <div class="upt-task-details-chart circular-progress-bar">
 
@@ -1062,81 +1099,69 @@
                                 <meter class="visually-hidden" id="d-harum-sedipsam" value="0.6">60%</meter>
                             </div>
 
-                            <label class="sr-only" for="d-harum-sedipsam">Procent ukończonych podzadań</label>
+                            <label class="progress-desc" for="d-harum-sedipsam">Procent ukończonych podzadań</label>
 
                         </div>
 
+                        <ul class="upt-task-details-subtasks-list subtasks-list">
+                            <li class="subtask task modern-card">
+
+                                <span class="task-checkbox custom-checkbox-group">
+                                    <input id="checks" type="checkbox">
+                                    <label class="custom-checkbox-label" for="checks">
+                                        <span class="sr-only">Oznacz jako wykonane</span>
+                                        <span class="custom-checkbox-icon" aria-hidden="true"></span>
+                                    </label>
+                                </span>
+
+                                <span class="task-content">
+                                    <span class="task-header">
+                                        <span class="subtask-name">Zadanie numer 1</span>
+                                    </span>
+                                </span>
+                            </li>
+                            <li class="subtask task modern-card">
+
+                                <span class="task-checkbox custom-checkbox-group">
+                                    <input id="checks" type="checkbox">
+                                    <label class="custom-checkbox-label" for="checks">
+                                        <span class="sr-only">Oznacz jako wykonane</span>
+                                        <span class="custom-checkbox-icon" aria-hidden="true"></span>
+                                    </label>
+                                </span>
+
+                                <span class="task-content">
+                                    <span class="task-header">
+                                        <span class="subtask-name">Zadanie numer 1</span>
+                                    </span>
+                                </span>
+                            </li>
+                            <li class="subtask task modern-card">
+
+                                <span class="task-checkbox custom-checkbox-group">
+                                    <input id="checks" type="checkbox">
+                                    <label class="custom-checkbox-label" for="checks">
+                                        <span class="sr-only">Oznacz jako wykonane</span>
+                                        <span class="custom-checkbox-icon" aria-hidden="true"></span>
+                                    </label>
+                                </span>
+
+                                <span class="task-content">
+                                    <span class="task-header">
+                                        <span class="subtask-name">Zadanie numer 1</span>
+                                    </span>
+                                </span>
+                            </li> 
+                        </ul> 
+
                     </div>
-                    <p class="upt-task-details-title">Lista podzadań:</p>
-
-                    <ul class="upt-task-details-subtasks-list subtasks-list">
-                        <li class="subtask task modern-card">
-
-                            <span class="task-checkbox custom-checkbox-group">
-                                <input id="checks" type="checkbox">
-                                <label class="custom-checkbox-label" for="checks">
-                                    <span class="sr-only">Oznacz jako wykonane</span>
-                                    <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                                </label>
-                            </span>
-
-                            <span class="task-content">
-                                <span class="task-header">
-                                    <span class="subtask-name">Zadanie numer 1</span>
-                                </span>
-                            </span>
-                        </li>
-                        <li class="subtask task modern-card">
-
-                            <span class="task-checkbox custom-checkbox-group">
-                                <input id="checks" type="checkbox">
-                                <label class="custom-checkbox-label" for="checks">
-                                    <span class="sr-only">Oznacz jako wykonane</span>
-                                    <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                                </label>
-                            </span>
-
-                            <span class="task-content">
-                                <span class="task-header">
-                                    <span class="subtask-name">Zadanie numer 1</span>
-                                </span>
-                            </span>
-                        </li>
-                        <li class="subtask task modern-card">
-
-                            <span class="task-checkbox custom-checkbox-group">
-                                <input id="checks" type="checkbox">
-                                <label class="custom-checkbox-label" for="checks">
-                                    <span class="sr-only">Oznacz jako wykonane</span>
-                                    <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                                </label>
-                            </span>
-
-                            <span class="task-content">
-                                <span class="task-header">
-                                    <span class="subtask-name">Zadanie numer 1</span>
-                                </span>
-                            </span>
-                        </li>
-                    </ul>
 
                     <div class="upt-task-details-actions">
                         <button class="upt-task-details-actions-delete link small variant2">
                             <i class="fa-solid fa-trash"></i>
                             Usuń Zadanie
                         </button>
-                        <button class="link small variant2">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                            Edytuj
-                        </button>
-                        <button class="link small variant2">
-                            <i class="fa-regular fa-folder"></i>
-                            Archiwizuj
-                        </button>
-                        <button class="link small variant2">
-                            <i class="fa-solid fa-check"></i>
-                            Zakończ Zadanie
-                        </button>
+                        
                         <button class="link small variant1 js-modal__close">
                             <i class="fa-solid fa-xmark"></i>
                             Zamknij
@@ -1204,6 +1229,8 @@
             <!-- CONFIRM MODAL END -->
 
             <button id="testuj" class="link variant2">testuj</button>
+
+
         </section>
         <!-- USER PRIVATE TASKS MODULE END -->
     </main>
