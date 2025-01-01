@@ -39,7 +39,7 @@
     .legends {
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       font-size: 0.9rem;
       gap: 1rem;
@@ -48,7 +48,7 @@
     .legends .legend-item {
       position: relative;
       padding-inline-start: 1.25rem;
-      font-size: 1.1rem;
+      font-size: 1.1rem; 
     }
 
     .legends .legend-item::before {

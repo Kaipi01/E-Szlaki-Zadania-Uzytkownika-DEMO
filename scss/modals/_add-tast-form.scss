@@ -7,8 +7,8 @@
 
     display: grid;
     grid-template-columns: 1fr;
-    gap: 1.5rem;
-    align-items: center;
+    gap: 1.65rem;
+    align-items: start;
 
     @media (min-width: $add-tast-form-breakpoint) {
       grid-template-columns: repeat(3, 1fr);

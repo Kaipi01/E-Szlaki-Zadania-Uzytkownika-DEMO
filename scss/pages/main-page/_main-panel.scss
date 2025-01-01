@@ -4,8 +4,9 @@
 #user-private-tasks-module {
   .main-panel {
     display: grid;
-    gap: $main-content-layout-gap-small;
     grid-template-columns: 1fr;
+    grid-template-rows: max-content; 
+    gap: $main-content-layout-gap-small;
 
     @media (min-width: $content-breakpoint-tablet) {
       grid-template-columns: repeat(2, 1fr);
@@ -13,7 +14,7 @@
 
     @media (min-width: $content-breakpoint-desktop) {
       grid-template-columns: repeat(3, 1fr);
-      gap: $main-content-layout-gap;
+      gap: $main-content-layout-gap; 
     }
 
     .statistics-card {
@@ -23,9 +24,29 @@
 
       @media (min-width: $content-breakpoint-tablet) {
         grid-column: span 2;
-        grid-template-columns: repeat(2, 1fr);
+        // grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: toRem(300) 1fr;
         gap: 2rem;
       }
+      
+      .green-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        .li-title {
+          font-size: 1.1rem;
+          font-weight: normal;
+        }
+      }
+
+      &-tasks-number {
+        color: var(--blue);
+        font-weight: bold;
+      }
+
+      &-left-content{}
+      &-right-content{}
     }
     .start-action-card {
       display: flex;
@@ -39,14 +60,13 @@
     .help-informations-card {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      align-items: center;
+      justify-content: center;
 
-      .information-message {
-      }
-
-      .dont-show-again-btn {
-        margin-left: auto;
-      }
+      &-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+      } 
     }
     .categories-card {
       @media (min-width: $content-breakpoint-tablet) {
@@ -56,18 +76,26 @@
       @media (min-width: $content-breakpoint-desktop) {
         grid-column: span 1;
         grid-row: span 1;
+        align-self: start;
       }
     }
 
     .daily-tasks-card,
     .main-tasks-card {
       @media (min-width: $content-breakpoint-tablet) {
-        grid-row: span 2;
+        grid-row: span 3;
       }
 
       .preview-tasks-list {
+        list-style: none;
         .task {
           margin-bottom: 0.5rem;
+        }
+
+        .no-tasks-card {
+          &-info {
+            padding-bottom: 1rem;
+          }
         }
       }
 

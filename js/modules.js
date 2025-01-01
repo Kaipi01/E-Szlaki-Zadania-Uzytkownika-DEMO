@@ -16,9 +16,6 @@ class UPTDateTimeStatisics {
     this.currentDateEl = this.container.querySelector(
       "[data-statistic-current-date]"
     );
-    this.timeToEndDayEl = this.container.querySelector(
-      "[data-statistic-time-to-end-day]"
-    );
 
     this.init();
   }
@@ -26,8 +23,6 @@ class UPTDateTimeStatisics {
   init() {
     this.setCurrentTime();
     this.setCurrentDate();
-
-    this.setTimeToEndDay();
     setInterval(() => this.setCurrentTime(), 1000);
   }
 
@@ -71,58 +66,13 @@ class UPTDateTimeStatisics {
     }
   }
 
-  setTimeToEndDay() {
-    const updateTime = () => {
-      const now = new Date();
-      const endOfDay = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate(),
-        23,
-        59,
-        59,
-        999
-      );
-
-      if (now > endOfDay) {
-        const nextDay = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate() + 1,
-          23,
-          59,
-          59,
-          999
-        );
-        endOfDay.setTime(nextDay.getTime());
-      }
-      const diff = endOfDay.getTime() - now.getTime();
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
-        .toString()
-        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-
-      if (this.timeToEndDayEl) {
-        this.timeToEndDayEl.textContent = formattedTime;
-      } else {
-        console.error(`this.timeToEndDayEl is null`);
-      }
-    };
-
-    setInterval(updateTime, 1000);
-    updateTime();
-  }
-
   setCurrentTime() {
     const date = new Date();
 
-    if (this.currentDateEl) {
-      this.currentDateEl.textContent = date.toLocaleTimeString();
+    if (this.currentTimeEl) {
+      this.currentTimeEl.textContent = date.toLocaleTimeString();
     } else {
-      console.error(`this.currentDateEl is null`);
+      console.error(`this.currentTimeEl is null`);
     }
   }
 }
@@ -1459,12 +1409,20 @@ class CustomCountdown extends HTMLElement {
 
   constructor() {
     super();
+    const timeUnitsToShowAttr = this.getAttribute("data-time-units-to-show");
     this.dateEnd = this.getAttribute("data-date-end");
+    this.timeUnitsToShow = timeUnitsToShowAttr
+      ? JSON.parse(timeUnitsToShowAttr.replace(/'/g, '"'))
+      : ["days", "hours", "minutes", "seconds"];
     this.timer;
     this.days;
     this.hours;
     this.minutes;
     this.seconds;
+    this.daysElement;
+    this.hoursElement;
+    this.minutesElement;
+    this.secondsElement;
   }
 
   connectedCallback() {
@@ -1493,24 +1451,31 @@ class CustomCountdown extends HTMLElement {
     const timer = document.createElement("p");
     timer.className = "timer";
 
-    this.daysElement = document.createElement("span");
-    this.hoursElement = document.createElement("span");
-    this.minutesElement = document.createElement("span");
-    this.secondsElement = document.createElement("span");
+    /** @param {string} timeUnitName */
+    const createTimeUnit = (timeUnitName) => {
+      this.timeUnitElement = document.createElement("span");
+      this.timeUnitElement.className = "timer-data";
+      this.timeUnitElement.setAttribute("data-" + timeUnitName, "");
+      return this.timeUnitElement;
+    };
 
-    this.daysElement.className = "timer-data";
-    this.daysElement.setAttribute("data-days", "");
-    this.hoursElement.className = "timer-data";
-    this.hoursElement.setAttribute("data-hours", "");
-    this.minutesElement.className = "timer-data";
-    this.minutesElement.setAttribute("data-minutes", "");
-    this.secondsElement.className = "timer-data";
-    this.secondsElement.setAttribute("data-seconds", "");
+    if (this.timeUnitsToShow.includes("days")) {
+      this.daysElement = createTimeUnit("days");
+      timer.append(this.daysElement);
+    }
+    if (this.timeUnitsToShow.includes("hours")) {
+      this.hoursElement = createTimeUnit("hours");
+      timer.append(this.hoursElement);
+    }
+    if (this.timeUnitsToShow.includes("minutes")) {
+      this.minutesElement = createTimeUnit("minutes");
+      timer.append(this.minutesElement);
+    }
+    if (this.timeUnitsToShow.includes("seconds")) {
+      this.secondsElement = createTimeUnit("seconds");
+      timer.append(this.secondsElement);
+    }
 
-    timer.append(this.daysElement);
-    timer.append(this.hoursElement);
-    timer.append(this.minutesElement);
-    timer.append(this.secondsElement);
     wrapper.append(timer);
     this.append(wrapper);
   }
@@ -1530,7 +1495,7 @@ class CustomCountdown extends HTMLElement {
      * @param {HTMLElement} thisValueEl
      */
     const animateTimeData = (value, thisValue, thisValueEl) => {
-      if (value != thisValue) {
+      if (value != thisValue && thisValueEl) {
         thisValueEl.setAttribute(attrName, "");
 
         setTimeout(() => {
@@ -1553,10 +1518,13 @@ class CustomCountdown extends HTMLElement {
   display(days, hours, minutes, seconds) {
     this.animate(days, hours, minutes, seconds);
 
-    this.daysElement.innerHTML = parseInt(days, 10);
-    this.hoursElement.innerHTML = ("0" + hours).slice(-2);
-    this.minutesElement.innerHTML = ("0" + minutes).slice(-2);
-    this.secondsElement.innerHTML = ("0" + seconds).slice(-2);
+    if (this.daysElement) this.daysElement.innerHTML = parseInt(days, 10);
+    if (this.hoursElement)
+      this.hoursElement.innerHTML = ("0" + hours).slice(-2);
+    if (this.minutesElement)
+      this.minutesElement.innerHTML = ("0" + minutes).slice(-2);
+    if (this.secondsElement)
+      this.secondsElement.innerHTML = ("0" + seconds).slice(-2);
   }
 
   calculate() {
@@ -1635,7 +1603,7 @@ class UserPrivateTasksModuleModal extends HTMLElement {
         <div id="${this.modalId}" ${this.modalFirstFocusVal} class="modal modal--animate js-modal">
             <div class="modal__content modern-card ${this.modalContentClassVal}" role="alertdialog" aria-labelledby="${this.modalId}-title">
                 <div class="modal__header pb-2">
-                    <p ${UserPrivateTasksModuleModal.ATTR_TITLE} id="${this.modalId}-title" class="upt-small-header">
+                    <p ${UserPrivateTasksModuleModal.ATTR_TITLE} id="${this.modalId}-title" class="upt-header">
                         ${this.modalTitleVal}
                     </p>
                     <button class="modal__close-btn modal__close-btn--inner js-modal__close js-tab-focus">

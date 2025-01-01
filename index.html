@@ -60,27 +60,48 @@
                     <section data-content-page="#panel-glowny" id="panel-glowny" class="main-panel panel active">
                         <div class="statistics-card modern-card">
 
-                            <div data-date-time-statisics>
-                                <p data-statistic-current-time class="upt-big-header"></p>
-                                <p data-statistic-current-date class="upt-sub-header">Sobota, 12 Styczeń 2022</p>
-                                <p>Do końca dnia zostało:<br><span data-statistic-time-to-end-day>06: 34: 43</span></p>
-                                <p>Zostało dziś: <span>5</span> zadań do wykonania</p>
+                            <div class="statistics-card-left-content" data-date-time-statisics>
+                                <p data-statistic-current-time class="upt-big-header">13:26:20</p>
+                                <p data-statistic-current-date class="upt-sub-header">Sobota, 12 Styczeń 2022</p> 
+
+                                <ul class="green-list list">
+                                    <li class="upt-task-details-stats-created-at">
+                                        <span class="text">
+                                            <span class="li-title">Zadania na dziś: 
+                                                <span data-statistic-daily-tasks-number class="statistics-card-tasks-number">5</span>
+                                            </span>
+                                        </span>
+                                        <span class="li-icon" aria-hidden="true">
+                                            <i class="fa-regular fa-calendar"></i>
+                                        </span>
+                                    </li>
+                                    <li class="upt-task-details-stats-deadline-date">
+                                        <span class="text">
+                                            <span class="li-title">Liczba głównych zadań: 
+                                                <span data-statistic-main-tasks-number class="statistics-card-tasks-number">24</span>
+                                            </span> 
+                                        </span>
+                                        <span class="li-icon" aria-hidden="true">
+                                            <i class="fa-regular fa-clock"></i>
+                                        </span>
+                                    </li>
+                                </ul>
                             </div>
 
-                            <figure data-pie-chart class="custom-pie-chart" aria-labelledby="pie-chart-desc">
+                            <figure data-pie-chart class="custom-pie-chart statistics-card-right-content" aria-labelledby="pie-chart-desc">
                                 <div class="pie-chart donut" data-pie='{ 
                                         "data": [
-                                            {"color": "#00c821", "percent": 65, "label": "Zrealizowane"},
-                                            {"color": "#e74f4f", "percent": 15, "label": "Porzucone"},
-                                            {"color": "#fc921f", "percent": 20, "label": "W trakcie"}
+                                            {"color": "#00c821", "percent": 65, "label": "Zrealizowane (65)"},
+                                            {"color": "#e74f4f", "percent": 15, "label": "Porzucone (36)"},
+                                            {"color": "#fc921f", "percent": 20, "label": "W trakcie (29)"}
                                         ], 
                                         "animate": true,
                                         "animationSpeed": 1250
                                      }' aria-live="polite"
-                                    aria-label="Wykres przedstawiający status projektów: Zrealizowane 65%, Porzucone 15%, W trakcie 20%">
+                                    aria-label="Wykres przedstawiający status zadań: Zrealizowane 65%, Porzucone 15%, W trakcie 20%">
                                 </div>
                                 <figcaption id="pie-chart-desc" class="sr-only">
-                                    <span>Wykres przedstawia procentowy podział statusów projektów:</span>
+                                    <span>Wykres przedstawia procentowy podział statusów zadań:</span>
                                     <span>Zrealizowane: 65%</span>
                                     <span>Porzucone: 15%</span>
                                     <span>W trakcie: 20%</span>
@@ -100,27 +121,35 @@
                                     <label class="floating-label" for="input-search">Szukaj</label>
                                 </div>
                             </form>
-                            <button class="link link-100 variant2"
+                            <button class="link link-100 variant3"
                                 aria-controls="user-private-tasks-module-add-task-modal"><i
                                     class="link-icon fa-solid fa-plus"></i> Dodaj Nowe Zadanie</button>
-                            <button class="link link-100 variant2"
+                            <button class="link link-100 variant3"
                                 aria-controls="user-private-tasks-module-add-category-modal">
                                 <i class="link-icon fa-solid fa-plus"></i> Dodaj Nową Kategorię
                             </button>
                         </div>
                         <div class="help-informations-card modern-card">
-                            <p class="information-message">Witaj! Lorem ipsum, dolor sit amet consectetur adipisicing
-                                elit. Iste placeat officia
-                                natus aperiam enim nemo eveniet eum. Rerum nulla quidem odit ipsam nobis. Lorem ipsum
-                                dolor, sit amet consectetur adipisicing elit. Provident, beatae ex.</p>
-                            <button class="dont-show-again-btn link small variant2">Nie pokazuj więcej</button>
+                            <p class="help-informations-card-title">Do końca dnia zostało:</p>
+                            <custom-countdown data-time-units-to-show="['hours', 'minutes', 'seconds']"
+                                data-date-end="01/02/2025 03:14:07 AM"></custom-countdown>
+
+
                         </div>
                         <div class="daily-tasks-card">
                             <div class="upt-header modern-card">
                                 <p class="upt-small-header">Zadania dzienne</p>
-                                <a href="#zadania" class="link small variant2">Pokaż więcej</a>
+                                <a href="#zadania" class="link variant2 small">Pokaż więcej</a>
                             </div>
                             <ul data-daily-tasks-list class="preview-tasks-list">
+                                <!-- <li class="modern-card no-tasks-card">
+                                    <p class="no-tasks-card-info">Obecnie nie masz żadnych zadań dziennych</p>
+                                    <button class="link small link-100 variant3" aria-controls="user-private-tasks-module-add-task-modal">
+                                        <i class="link-icon fa-solid fa-plus"></i> 
+                                        Dodaj Nowe Zadanie
+                                    </button>
+                                </li> -->
+
                                 <li class="task modern-card modern-card--opacity">
 
                                     <span
@@ -352,9 +381,17 @@
                         <div class="main-tasks-card">
                             <div class="upt-header modern-card">
                                 <p class="upt-small-header">Zadania główne</p>
-                                <a href="#zadania" class="link small variant2">Pokaż więcej</a>
+                                <a href="#zadania" class="link variant2 small">Pokaż więcej</a>
                             </div>
                             <ul data-main-tasks-list class="preview-tasks-list">
+                                <!-- <li class="modern-card no-tasks-card">
+                                    <p class="no-tasks-card-info">Obecnie nie masz żadnych zadań głównych</p>
+                                    <button class="link small link-100 variant3" aria-controls="user-private-tasks-module-add-task-modal">
+                                        <i class="link-icon fa-solid fa-plus"></i> 
+                                        Dodaj Nowe Zadanie
+                                    </button>
+                                </li> -->
+
                                 <li class="task modern-card modern-card--opacity">
 
                                     <span
@@ -542,9 +579,9 @@
 
                             <div class="actions-card-content-top">
 
-                                <div style="display: flex; align-items: center; gap: 0.25rem;">
-                                    <p class="upt-small-header">Zadania Codzienne</p>
-                                    <button class="link link-100 small variant2" style="width: max-content;">
+                                <div class="actions-card-header">
+                                    <p class="actions-card-title upt-header">Zadania Codzienne</p>
+                                    <button class="actions-card-toggle-btn link link-100 small variant2">
                                         Pokaż zadania główne
                                     </button>
                                 </div>
@@ -565,7 +602,7 @@
 
                             <div class="actions-card-content-bottom">
 
-                                <button class="add-task-btn link link-100 variant2"
+                                <button class="add-task-btn link link-100 variant3"
                                     aria-controls="user-private-tasks-module-add-task-modal"><i
                                         class="link-icon fa-solid fa-plus"></i> Dodaj Nowe Zadanie</button>
 
@@ -628,16 +665,12 @@
                                     </span>
                                 </div>
 
-                                <!-- <ul class="task-card-stats">
-                                    <li><b>Do ukończenia zostało:</b> <span>122 dni 14 godz. 54 min.</span></li>
-                                </ul> -->
-
-                                <!-- <p class="task-card-short-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                                <p class="task-card-short-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit.
                                     Unde beatae, corporis totam
-                                    ducimus sunt odit quia autem minima...</p> -->
+                                    ducimus sunt odit quia autem minima...</p>
 
                                 <div class="task-card-actions-bottom">
-                                    <button class="task-card-action-btn link small variant2"
+                                    <button class="task-card-action-btn link small variant3"
                                         aria-controls="user-private-tasks-module-task-details-modal">
                                         <i class="fa-solid fa-info"></i>
                                         Pokaż Szczegóły
@@ -660,7 +693,7 @@
                     <!-- CATEGORIES PAGE START -->
                     <section data-content-page="#kategorie" id="kategorie" class="categories-panel panel">
                         <div class="actions-card modern-card">
-                            <button class="actions-card-left-content link link-100 variant2"
+                            <button class="actions-card-left-content link link-100 variant3"
                                 aria-controls="user-private-tasks-module-add-category-modal">
                                 <i class="link-icon fa-solid fa-plus"></i> Dodaj Nową Kategorię
                             </button>
@@ -834,15 +867,13 @@
                         </div>
 
                         <div>
-                            <select id="upt-add-tast-input-priority" data-custom-select
+                            <select id="upt-add-tast-input-type" data-custom-select
                                 data-class-name="custom-select-green">
-                                <option value="hide">Wybierz Piorytet</option>
-                                <option value="bardzo-wysoki">Bardzo Wysoki</option>
-                                <option value="wysoki">Wysoki</option>
-                                <option value="sredni">Średni</option>
-                                <option value="niski">Niski</option>
+                                <option value="hide">Typ Zadania</option>
+                                <option value="daily">Codzienne</option>
+                                <option value="main">Główne</option>
                             </select>
-                            <label class="sr-only" for="upt-add-tast-input-priority">Kategoria</label>
+                            <label class="sr-only" for="upt-add-tast-input-type">Typ Zadania</label>
                         </div>
 
                         <div>
@@ -857,11 +888,23 @@
                             <label class="sr-only" for="upt-add-tast-input-category">Kategoria</label>
                         </div>
 
-                        <div class="upt-form-field">
-                            <input class="floating-label-control upt-form-control" type="date" name="upt-add-tast-name"
-                                id="upt-add-tast-input-date-start">
-                            <label class="floating-label" for="upt-add-tast-input-date-start">Od kiedy</label>
+
+                        <div>
+                            <div class="upt-form-field mb-1">
+                                <input class="floating-label-control upt-form-control" type="date"
+                                    name="upt-add-tast-name" id="upt-add-tast-input-date-start">
+                                <label class="floating-label" for="upt-add-tast-input-date-start">Od kiedy</label>
+                            </div>
+
+                            <div class="custom-checkbox-group">
+                                <input id="upt-add-tast-all-day" type="checkbox">
+                                <label class="custom-checkbox-label" for="upt-add-tast-all-day">
+                                    <span class="custom-checkbox-icon" aria-hidden="true"></span>
+                                </label>
+                                <label class="custom-checkbox-label" for="upt-add-tast-all-day">Cały dzień</label>
+                            </div>
                         </div>
+
 
                         <div class="upt-form-field">
                             <input class="floating-label-control upt-form-control" type="date"
@@ -869,13 +912,19 @@
                             <label class="floating-label" for="upt-add-tast-input-date-end">Do kiedy</label>
                         </div>
 
-                        <div class="custom-checkbox-group">
-                            <input id="upt-add-tast-all-day" type="checkbox">
-                            <label class="custom-checkbox-label" for="upt-add-tast-all-day">
-                                <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                            </label>
-                            <label class="custom-checkbox-label" for="upt-add-tast-all-day">Cały dzień</label>
+
+                        <div>
+                            <select id="upt-add-tast-input-priority" data-custom-select
+                                data-class-name="custom-select-green">
+                                <option value="hide">Wybierz Piorytet</option>
+                                <option value="bardzo-wysoki">Bardzo Wysoki</option>
+                                <option value="wysoki">Wysoki</option>
+                                <option value="sredni">Średni</option>
+                                <option value="niski">Niski</option>
+                            </select>
+                            <label class="sr-only" for="upt-add-tast-input-priority">Piorytet</label>
                         </div>
+
 
                         <div class="upt-add-tast-desc upt-form-field">
                             <label class="floating-label" for="upt-add-tast-input-desc">Opis</label>
@@ -901,10 +950,6 @@
                                 </span>
 
                                 <span class="category-card-actions subtask-actions">
-                                    <!-- <button class="category-card-action-btn subtask-action-btn tooltip">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                        <span class="tooltip-content">Edytuj Podzadanie</span>
-                                    </button>  -->
                                     <button class="category-card-action-btn subtask-action-btn tooltip">
                                         <span class="tooltip-content">Zapisz zmiany</span>
                                         <i class="fa-solid fa-save"></i>
@@ -980,16 +1025,16 @@
 
                         <div class="upt-add-tast-form-actions">
                             <div class="left-actions">
-                                <button class="link small variant2">
+                                <button class="link medium variant2">
                                     <i class="fa-solid fa-plus"></i>
                                     Dodaj Podzadanie
                                 </button>
                             </div>
                             <div class="right-actions">
-                                <button class="link small variant1 js-modal__close">
+                                <button class="link medium variant1 js-modal__close">
                                     Anuluj
                                 </button>
-                                <button type="submit" class="link small variant2">
+                                <button type="submit" class="link medium variant2">
                                     Dodaj
                                 </button>
                             </div>
@@ -1000,34 +1045,35 @@
             <!-- ADD TASK MODAL FORM END -->
 
             <!-- TASK DETAILS MODAL START -->
-            <user-private-tasks-module-modal data-modal-id="user-private-tasks-module-task-details-modal" data-modal-content-class="upt-task-details">
+            <user-private-tasks-module-modal data-modal-id="user-private-tasks-module-task-details-modal"
+                data-modal-content-class="upt-task-details">
                 <template slot="modal-title">
-                    <i class="fa-solid fa-briefcase"></i>
                     Zadanie numer 23
                 </template>
                 <template slot="modal-content">
 
                     <div class="upt-task-details-top-content">
                         <div class="upt-task-details-top-content-left">
-                            <span class="task-priority upt-task-details-priority task-priority--very-high task-priority--big">
+                            <span
+                                class="task-priority upt-task-details-priority task-priority--very-high task-priority--big">
                                 Bardzo Wysoki piorytet
                             </span>
-        
+
                             <span class="task-status upt-task-details-status task-status--in-progress task-status--big">
                                 W Trakcie
-                            </span> 
+                            </span>
                         </div>
 
                         <div class="upt-task-details-top-content-right">
-                            <button class="link small variant2">
+                            <button class="link variant2 medium">
                                 <i class="fa-solid fa-pen-to-square"></i>
                                 Edytuj
                             </button>
-                            <button class="link small variant2">
+                            <button class="link variant2 medium">
                                 <i class="fa-regular fa-folder"></i>
                                 Archiwizuj
                             </button>
-                            <button class="link small variant2">
+                            <button class="link variant2 medium">
                                 <i class="fa-solid fa-check"></i>
                                 Zakończ Zadanie
                             </button>
@@ -1038,7 +1084,20 @@
                         <li class="upt-task-details-stats-created-at">
                             <span class="text">
                                 <span class="li-title">Dodano:</span>
-                                <i class="fa-regular fa-calendar"></i> 23 Paź <i class="fa-regular fa-clock"></i> 11:34
+                                <span class="tooltip">
+                                    <span class="task-date-month">
+                                        <i class="fa-regular fa-calendar"></i> 23 Paź
+                                    </span>
+                                    <span class="task-date-hours">
+                                        <i class="fa-regular fa-clock"></i> 11:34
+                                    </span>
+                                    <span class="tooltip-content">
+                                        23 Pażdziernika 2024 rok
+                                        Poniedziałek
+                                        <hr class="upt-hr">
+                                        Od 10:00 do 12:30
+                                    </span>
+                                </span>
                             </span>
                             <span class="li-icon" aria-hidden="true">
                                 <i class="fa-regular fa-calendar"></i>
@@ -1056,33 +1115,50 @@
                         <li class="upt-task-details-stats-deadline-date">
                             <span class="text">
                                 <span class="li-title">Termin wykonania:</span>
-                                <span>
-                                    <i class="fa-regular fa-calendar"></i> Poniedziałek 23 Pażdziernika 2024 rok <br> 
-                                    <i class="fa-regular fa-clock"></i> Od 10:00 do 12:30
+                                <span class="tooltip">
+                                    <i class="fa-regular fa-calendar"></i> 23 Października<br>
+                                    <i class="fa-regular fa-clock"></i> 10:00 - 12:30
+                                    <span class="tooltip-content">
+                                        23 Pażdziernika 2024 rok
+                                        Poniedziałek
+                                        <hr class="upt-hr">
+                                        Od 10:00 do 12:30
+                                    </span>
                                 </span>
                             </span>
                             <span class="li-icon" aria-hidden="true">
                                 <i class="fa-regular fa-clock"></i>
                             </span>
                         </li>
+                        <li class="upt-task-details-stats-type">
+                            <span class="text">
+                                <span class="li-title">Typ Zadania:</span>
+                                Codzienne
+                            </span>
+                            <span class="li-icon" aria-hidden="true">
+                                <i class="fa-solid fa-list-check"></i>
+                            </span>
+                        </li>
                         <li class="upt-task-details-stats-deadline-timer">
                             <span class="text">
                                 <span class="li-title">Do ukończenia zostało:</span>
                                 <custom-countdown data-date-end="01/19/2025 03:14:07 AM"></custom-countdown>
-                            </span> 
+                            </span>
                         </li>
                         <li class="upt-task-details-stats-desc">
                             <span class="text">
                                 <span class="li-title">Opis:</span>
                                 Lorem, ipsum dolor sit amet
                                 consectetur adipisicing elit. Quidem rem exercitationem pariatur, mollitia dolore at
-                                dolores vel corrupti. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aliquam tenetur, sint quidem quam molestiae quos nam, esse facere eligendi maiores excepturi quaerat iste.
+                                dolores vel corrupti. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aliquam
+                                tenetur, sint quidem quam molestiae quos nam, esse facere eligendi maiores excepturi
+                                quaerat iste.
                             </span>
                             <span class="li-icon" aria-hidden="true">
                                 <i class="fa-solid fa-pen"></i>
                             </span>
                         </li>
-                    </ul>                
+                    </ul>
 
                     <div class="upt-task-details-subtasks">
 
@@ -1091,7 +1167,7 @@
                         <div class="upt-task-details-chart circular-progress-bar">
 
                             <div class="upt-task-details-chart pie" data-pie='{ 
-                                    "lineargradient": ["#37ff7a","#00c821"], 
+                                    "lineargradient": ["#14a5ff","#008be2"], 
                                     "round": true, 
                                     "percent": 75, 
                                     "colorCircle": "rgba(63, 98, 74, 0.25)" 
@@ -1151,18 +1227,18 @@
                                         <span class="subtask-name">Zadanie numer 1</span>
                                     </span>
                                 </span>
-                            </li> 
-                        </ul> 
+                            </li>
+                        </ul>
 
                     </div>
 
                     <div class="upt-task-details-actions">
-                        <button class="upt-task-details-actions-delete link small variant2">
+                        <button class="upt-task-details-actions-delete link medium variant2">
                             <i class="fa-solid fa-trash"></i>
                             Usuń Zadanie
                         </button>
-                        
-                        <button class="link small variant1 js-modal__close">
+
+                        <button class="link medium variant1 js-modal__close">
                             <i class="fa-solid fa-xmark"></i>
                             Zamknij
                         </button>
@@ -1199,10 +1275,10 @@
                         </div>
 
                         <div class="upt-add-category-form-actions">
-                            <button class="link small variant1 js-modal__close">
+                            <button class="link medium variant1 js-modal__close">
                                 Anuluj
                             </button>
-                            <button type="submit" class="link small variant2">
+                            <button type="submit" class="link medium variant2">
                                 Dodaj
                             </button>
                         </div>
@@ -1217,10 +1293,10 @@
                 <template slot="modal-title">Czy na pewno chcesz wykonać tą operację?</template>
                 <template slot="modal-content">
                     <div class="upt-confirm-modal-actions">
-                        <button class="link small variant1 js-modal__close">
+                        <button class="link medium variant1 js-modal__close">
                             Anuluj
                         </button>
-                        <button data-modal-confirm-button class="link small variant2">
+                        <button data-modal-confirm-button class="link medium variant2">
                             Zatwierdź
                         </button>
                     </div>
