@@ -68,7 +68,7 @@
                                     <li class="upt-task-details-stats-created-at">
                                         <span class="text">
                                             <span class="li-title">Zadania na dziś: 
-                                                <span data-statistic-daily-tasks-number class="statistics-card-tasks-number">5</span>
+                                                <span data-statistic-daily-tasks-number class="statistics-card-tasks-number">0</span>
                                             </span>
                                         </span>
                                         <span class="li-icon" aria-hidden="true">
@@ -78,7 +78,7 @@
                                     <li class="upt-task-details-stats-deadline-date">
                                         <span class="text">
                                             <span class="li-title">Liczba głównych zadań: 
-                                                <span data-statistic-main-tasks-number class="statistics-card-tasks-number">24</span>
+                                                <span data-statistic-main-tasks-number class="statistics-card-tasks-number">0</span>
                                             </span> 
                                         </span>
                                         <span class="li-icon" aria-hidden="true">
@@ -89,22 +89,10 @@
                             </div>
 
                             <figure data-pie-chart class="custom-pie-chart statistics-card-right-content" aria-labelledby="pie-chart-desc">
-                                <div class="pie-chart donut" data-pie='{ 
-                                        "data": [
-                                            {"color": "#00c821", "percent": 65, "label": "Zrealizowane (65)"},
-                                            {"color": "#e74f4f", "percent": 15, "label": "Porzucone (36)"},
-                                            {"color": "#fc921f", "percent": 20, "label": "W trakcie (29)"}
-                                        ], 
-                                        "animate": true,
-                                        "animationSpeed": 1250
-                                     }' aria-live="polite"
-                                    aria-label="Wykres przedstawiający status zadań: Zrealizowane 65%, Porzucone 15%, W trakcie 20%">
+                                <div data-pie-chart-appearance class="pie-chart donut" aria-live="polite">
                                 </div>
                                 <figcaption id="pie-chart-desc" class="sr-only">
-                                    <span>Wykres przedstawia procentowy podział statusów zadań:</span>
-                                    <span>Zrealizowane: 65%</span>
-                                    <span>Porzucone: 15%</span>
-                                    <span>W trakcie: 20%</span>
+                                    <span>Wykres przedstawia procentowy podział statusów zadań</span> 
                                 </figcaption>
                             </figure>
 
@@ -129,12 +117,8 @@
                                 <i class="link-icon fa-solid fa-plus"></i> Dodaj Nową Kategorię
                             </button>
                         </div>
-                        <div class="help-informations-card modern-card">
-                            <p class="help-informations-card-title">Do końca dnia zostało:</p>
-                            <custom-countdown data-time-units-to-show="['hours', 'minutes', 'seconds']"
-                                data-date-end="01/02/2025 03:14:07 AM"></custom-countdown>
-
-
+                        <div data-time-to-end-day class="help-informations-card modern-card">
+                            <p class="help-informations-card-title">Do końca dnia zostało:</p> 
                         </div>
                         <div class="daily-tasks-card">
                             <div class="upt-header modern-card">
@@ -148,234 +132,7 @@
                                         <i class="link-icon fa-solid fa-plus"></i> 
                                         Dodaj Nowe Zadanie
                                     </button>
-                                </li> -->
-
-                                <li class="task modern-card modern-card--opacity">
-
-                                    <span
-                                        class="task-checkbox tooltip custom-checkbox-group custom-checkbox-group--big">
-                                        <input id="checks" type="checkbox">
-                                        <label class="custom-checkbox-label" for="checks">
-                                            <span class="tooltip-content">Oznacz jako wykonane</span>
-                                            <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                                        </label>
-                                    </span>
-
-                                    <span class="task-content">
-                                        <span class="task-priority task-priority--very-high">Bardzo Wysoki
-                                            piorytet</span>
-                                        <span class="task-header">
-                                            <span class="task-name"><i class="fa-solid fa-briefcase"></i> Zadanie numer
-                                                1</span>
-                                            <span class="tooltip">
-                                                <span class="task-date-month">
-                                                    <i class="fa-regular fa-calendar"></i> 23 Paź
-                                                </span>
-                                                <span class="task-date-hours">
-                                                    <i class="fa-regular fa-clock"></i> 10:00 - 12:30
-                                                </span>
-                                                <span class="tooltip-content">
-                                                    23 Pażdziernika 2024 rok
-                                                    Poniedziałek
-                                                    <hr class="upt-hr">
-                                                    Od 10:00 do 12:30
-                                                </span>
-                                            </span>
-                                        </span>
-                                    </span>
-
-                                    <span class="task-actions">
-                                        <button class="task-action-btn task-edit-btn tooltip">
-                                            <span class="tooltip-content">Edytuj Zadanie</span>
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </button>
-                                        <button class="task-action-btn task-delete-btn tooltip">
-                                            <span class="tooltip-content">Usuń Zadanie</span>
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </span>
-                                </li>
-                                <li class="task modern-card modern-card--opacity">
-
-                                    <span
-                                        class="task-checkbox tooltip custom-checkbox-group custom-checkbox-group--big">
-                                        <input id="checks" type="checkbox">
-                                        <label class="custom-checkbox-label" for="checks">
-                                            <span class="tooltip-content">Oznacz jako wykonane</span>
-                                            <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                                        </label>
-                                    </span>
-
-                                    <span class="task-content">
-                                        <span class="task-priority task-priority--high"></i> Wysoki
-                                            piorytet</span>
-                                        <span class="task-header">
-                                            <span class="task-name"><i class="fa-solid fa-briefcase"></i> Zadanie numer
-                                                1</span>
-                                            <span class="tooltip">
-                                                <span class="task-date-month">
-                                                    <i class="fa-regular fa-calendar"></i> 23 Paź
-                                                </span>
-                                                <span class="task-date-hours">
-                                                    <i class="fa-regular fa-clock"></i> 10:00 - 12:30
-                                                </span>
-                                                <span class="tooltip-content">
-                                                    23 Pażdziernika 2024 rok <br>
-                                                    Poniedziałek
-                                                    <hr class="upt-hr">
-                                                    Od 10:00 do 12:30
-                                                </span>
-                                            </span>
-                                        </span>
-                                    </span>
-
-                                    <span class="task-actions">
-                                        <button class="task-action-btn task-edit-btn tooltip">
-                                            <span class="tooltip-content">Edytuj Zadanie</span>
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </button>
-
-                                        <button class="task-action-btn task-delete-btn tooltip">
-                                            <span class="tooltip-content">Usuń Zadanie</span>
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </span>
-                                </li>
-                                <li class="task modern-card modern-card--opacity">
-
-                                    <span
-                                        class="task-checkbox tooltip custom-checkbox-group custom-checkbox-group--big">
-                                        <input id="checks" type="checkbox">
-                                        <label class="custom-checkbox-label" for="checks">
-                                            <span class="tooltip-content">Oznacz jako wykonane</span>
-                                            <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                                        </label>
-                                    </span>
-
-                                    <span class="task-content">
-                                        <span class="task-priority task-priority--medium"></i> Średni
-                                            piorytet</span>
-                                        <span class="task-header">
-                                            <span class="task-name"><i class="fa-solid fa-briefcase"></i> Zadanie numer
-                                                1</span>
-                                            <span class="tooltip">
-                                                <span class="task-date-month">
-                                                    <i class="fa-regular fa-calendar"></i> 23 Paź
-                                                </span>
-                                                <span class="task-date-hours">
-                                                    <i class="fa-regular fa-clock"></i> 10:00 - 12:30
-                                                </span>
-                                                <span class="tooltip-content">
-                                                    23 Pażdziernika 2024 rok <br>
-                                                    Poniedziałek
-                                                    <hr class="upt-hr">
-                                                    Od 10:00 do 12:30
-                                                </span>
-                                            </span>
-                                        </span>
-                                    </span>
-
-                                    <span class="task-actions">
-                                        <button class="task-action-btn task-edit-btn tooltip">
-                                            <span class="tooltip-content">Edytuj Zadanie</span>
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </button>
-                                        <button class="task-action-btn task-delete-btn tooltip">
-                                            <span class="tooltip-content">Usuń Zadanie</span>
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </span>
-                                </li>
-                                <li class="task modern-card modern-card--opacity">
-
-                                    <span
-                                        class="task-checkbox tooltip custom-checkbox-group custom-checkbox-group--big">
-                                        <input id="checks" type="checkbox">
-                                        <label class="custom-checkbox-label" for="checks">
-                                            <span class="tooltip-content">Oznacz jako wykonane</span>
-                                            <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                                        </label>
-                                    </span>
-
-                                    <span class="task-content">
-                                        <span class="task-priority task-priority--low"></i> Niski
-                                            piorytet</span>
-                                        <span class="task-header">
-                                            <span class="task-name"><i class="fa-solid fa-briefcase"></i> Zadanie numer
-                                                1</span>
-                                            <span class="tooltip">
-                                                <span class="task-date-month">
-                                                    <i class="fa-regular fa-calendar"></i> 23 Paź
-                                                </span>
-                                                <span class="task-date-hours">
-                                                    <i class="fa-regular fa-clock"></i> 10:00 - 12:30
-                                                </span>
-                                                <span class="tooltip-content">
-                                                    23 Pażdziernika 2024 rok <br>
-                                                    Poniedziałek
-                                                    <hr class="upt-hr">
-                                                    Od 10:00 do 12:30
-                                                </span>
-                                            </span>
-                                        </span>
-                                    </span>
-
-                                    <span class="task-actions">
-                                        <button class="task-action-btn task-edit-btn tooltip">
-                                            <span class="tooltip-content">Edytuj Zadanie</span>
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </button>
-                                        <button class="task-action-btn task-delete-btn tooltip">
-                                            <span class="tooltip-content">Usuń Zadanie</span>
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </span>
-                                </li>
-                                <li class="task modern-card modern-card--opacity">
-
-                                    <span
-                                        class="task-checkbox tooltip custom-checkbox-group custom-checkbox-group--big">
-                                        <input id="checks" type="checkbox">
-                                        <label class="custom-checkbox-label" for="checks">
-                                            <span class="tooltip-content">Oznacz jako wykonane</span>
-                                            <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                                        </label>
-                                    </span>
-
-                                    <span class="task-content">
-                                        <span class="task-priority"></i> Wysoki
-                                            piorytet</span>
-                                        <span class="task-header">
-                                            <span class="task-name"><i class="fa-solid fa-briefcase"></i> Zadanie numer
-                                                1</span>
-                                            <span class="tooltip">
-                                                <span class="task-date-month">
-                                                    <i class="fa-regular fa-calendar"></i> 23 Paź
-                                                </span>
-                                                <span class="task-date-hours">
-                                                    <i class="fa-regular fa-clock"></i> 10:00 - 12:30
-                                                </span>
-                                                <span class="tooltip-content">
-                                                    23 Pażdziernika 2024 rok <br>
-                                                    Poniedziałek
-                                                    <hr class="upt-hr">
-                                                    Od 10:00 do 12:30
-                                                </span>
-                                            </span>
-                                        </span>
-                                    </span>
-
-                                    <span class="task-actions">
-                                        <button class="task-action-btn task-edit-btn tooltip">
-                                            <span class="tooltip-content">Edytuj Zadanie</span>
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </button>
-                                        <button class="task-action-btn task-delete-btn tooltip">
-                                            <span class="tooltip-content">Usuń Zadanie</span>
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </span>
-                                </li>
+                                </li> --> 
                             </ul>
                         </div>
                         <div class="main-tasks-card">
@@ -1311,7 +1068,8 @@
         <!-- USER PRIVATE TASKS MODULE END -->
     </main>
 
-    <script src="./js/Tasks/classes.js"></script>
+    <script src="./js/models.js"></script>
+    <script src="./js/ApiService.js"></script>
     <script src="./js/modules.js"></script>
     <script src="./js/index.js"></script>
 </body>

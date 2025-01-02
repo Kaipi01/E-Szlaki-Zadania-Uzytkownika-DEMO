@@ -1,36 +1,36 @@
-const UPT_MODULE_ID_SELECTOR = "#user-private-tasks-module"; 
+"use strict";
+
+const UPT_LOCAL_STORAGE_ITEM_NAME = "user-private-tasks-data";
+const UPT_MODULE_ID_SELECTOR = "#user-private-tasks-module";
 const UPT_CONFIRM_MODAL_ID = "user-private-tasks-module-confirm-modal";
 
-window.UPT_MODULE_ID_SELECTOR = UPT_MODULE_ID_SELECTOR; 
+window.UPT_MODULE_ID_SELECTOR = UPT_MODULE_ID_SELECTOR;
 
 document.addEventListener("DOMContentLoaded", function () {
+  const apiService = UPTApiService.getInstance();
+
+  apiService.getAllData().then((data) => {
+    // Zakładka Główny Panel
+    new UPTModuleMainPanel(`#panel-glowny`, data);
+
+    // Zakładka Zadania
+    // new UPTModuleTasksPanel(`#zadania`, data)
+
+    // Zakładka Kategorie
+    // new UPTModuleCategoryPanel(`#kategorie`, data)
+
+    // Zakładka Archiwum
+    // new UPTModuleArchivePanel(`#archiwum`, data)
+  });
+
   // Główna nawigacja
   new UPTModuleMainNavigation(UPT_MODULE_ID_SELECTOR);
-
-  // Wykres kołowy na głównym panelu
-  new CustomPieChart(UPT_MODULE_ID_SELECTOR + " .custom-pie-chart");
-
-  // Statystyki związane z datą i godziną na głównym panelu
-  new UPTDateTimeStatisics(
-    UPT_MODULE_ID_SELECTOR + " [data-date-time-statisics]"
-  );
 
   // Inicjalizacja wszystkich customowych select-ów
   CustomSelect.initAll();
 
   // Inicjacja wszystkich animowantych kołowych progress barów z klasą "circular-progress-bar"
   CircularProgressBar.initAll("pie", { size: 150 });
-
-
-
-
-  // new UPTModuleMainPanel(`#panel-glowny`)
-  // new UPTModuleTasksPanel(`#zadania`)
-  // new UPTModuleCategoryPanel(`#kategorie`)
-  // new UPTModuleArchivePanel(`#archiwum`)
-
-
-
 
   document.querySelector("#testuj").addEventListener("click", () => {
     const confirmButton = document.querySelector(
@@ -65,17 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  const task = new UPT_Task({
-    name: "Zadanie główne",
-    description: "Lorem ipsum dolor sit amet",
-    deadline: new Date(Date.now() + 1000 * 60 * 60 * 24),
-    category: new UPT_TaskCategory("Dzienne", "📅"),
-    priority: UPT_TaskPriority.GET_MEDIUM(),
-    type: UPT_TaskType.GET_MAIN(),
-    subTasks: [new UPT_SubTask("nowe pod zadanie")],
-  });
-
-  console.log(task);
+  new UPTApiService();
 });
 
 /**

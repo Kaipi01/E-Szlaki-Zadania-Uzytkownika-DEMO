@@ -1,3 +1,5 @@
+"use strict";
+
 class UPTDateTimeStatisics {
   /**
    * @param {string} containerSelector
@@ -1409,11 +1411,8 @@ class CustomCountdown extends HTMLElement {
 
   constructor() {
     super();
-    const timeUnitsToShowAttr = this.getAttribute("data-time-units-to-show");
-    this.dateEnd = this.getAttribute("data-date-end");
-    this.timeUnitsToShow = timeUnitsToShowAttr
-      ? JSON.parse(timeUnitsToShowAttr.replace(/'/g, '"'))
-      : ["days", "hours", "minutes", "seconds"];
+    this.dateEnd;
+    this.timeUnitsToShow;
     this.timer;
     this.days;
     this.hours;
@@ -1426,6 +1425,12 @@ class CustomCountdown extends HTMLElement {
   }
 
   connectedCallback() {
+    const timeUnitsToShowAttr = this.getAttribute("data-time-units-to-show");
+    this.dateEnd = this.getAttribute("data-date-end");
+    this.timeUnitsToShow = timeUnitsToShowAttr
+      ? JSON.parse(timeUnitsToShowAttr.replace(/'/g, '"'))
+      : ["days", "hours", "minutes", "seconds"];
+
     this.render();
     this.init();
   }
@@ -1624,42 +1629,209 @@ customElements.define(
 );
 
 class UPTModuleMainPanel {
+  static TASKS_DISPLAY_NUMBER = 5
+
   /**
    * @param {string} selector
+   * @param {{ tasks: UPT_Task[], categories: UPT_TaskCategory[] }}
    */
-  constructor(selector) {
+  constructor(selector, { tasks, categories }) {
     this.panel = document.querySelector(selector);
+    this.tasks = tasks;
+    this.categories = categories;
+    this.apiService = new UPTApiService();
 
     if (!this.panel) {
       console.error("this.panel is null");
       return;
     }
     this.init();
-    //[data-daily-tasks-list]
-    //[data-main-tasks-list]
   }
 
   init() {
     // Wykres kołowy na głównym panelu
-    this.initPieChart();
+    this.initPieChart(this.tasks);
+
+    // Liczba zadań
+    this.initStatisticTasks(this.tasks);
+
+    // Wyświetl liste zadań
+    this.renderTasksList(this.tasks);
+
+    // timer odliczający do końca dnia
+    this.initTimeToEndDayCountdown();
 
     // Statystyki związane z datą i godziną na głównym panelu
-    new UPTDateTimeStatisics(
-      UPT_MODULE_ID_SELECTOR + " [data-date-time-statisics]"
+    this.initDateTimeStatisics();
+  }
+
+  /** @param {UPT_Task[]} tasks */
+  renderTasksList(tasks) {
+    const dailyTasksList = this.panel.querySelector("[data-daily-tasks-list]");
+    const mainTasksList = this.panel.querySelector("[data-main-tasks-list]");
+    const tasksNumber = tasks.length;
+
+    for (let i = 0; i < tasksNumber; i++) {
+      if (i > UPTModuleMainPanel.TASKS_DISPLAY_NUMBER - 1) break;
+
+      const task = tasks[i];
+      const li = document.createElement("li");
+      let taskPrioritySubClass;
+      
+      switch(task.priority) {
+        case UPT_TaskPriority.LOW: taskPrioritySubClass = "task-priority--low"
+        case UPT_TaskPriority.MEDIUM: taskPrioritySubClass = "task-priority--medium"
+        case UPT_TaskPriority.HIGH: taskPrioritySubClass = "task-priority--high"
+        case UPT_TaskPriority.VERY_HIGH: taskPrioritySubClass = "task-priority--very-high"
+      }
+
+      // TODO: Dokończ
+
+      li.className = "task modern-card modern-card--opacity";
+      li.setAttribute("data-task-id", task.id);
+
+      li.innerHTML = `
+        <span class="task-checkbox tooltip custom-checkbox-group custom-checkbox-group--big">
+          <input id="checks" type="checkbox">
+          <label class="custom-checkbox-label" for="checks">
+            <span class="tooltip-content">Oznacz jako wykonane</span>
+            <span class="custom-checkbox-icon" aria-hidden="true"></span>
+          </label>
+        </span>
+
+        <span class="task-content">
+
+          <span class="task-priority ${taskPrioritySubClass}">${task.priority}</span>
+
+          <span class="task-header">
+              <span class="task-name"><i class="fa-solid fa-briefcase"></i> ${task.name}</span>
+
+              <span class="tooltip">
+                <span class="task-date-month">
+                  <i class="fa-regular fa-calendar"></i> 23 Paź
+                </span>
+                <span class="task-date-hours">
+                  <i class="fa-regular fa-clock"></i> 10:00 - 12:30
+                </span>
+                <span class="tooltip-content">
+                  23 Pażdziernika 2024 rok
+                  Poniedziałek
+                  <hr class="upt-hr">
+                  Od 10:00 do 12:30
+                </span>                                                                                                                                            
+              </span>
+          </span>
+        </span>
+
+        <span class="task-actions">
+          <button class="task-action-btn task-edit-btn tooltip">
+            <span class="tooltip-content">Edytuj Zadanie</span>
+            <i class="fa-solid fa-pen-to-square"></i>
+          </button>
+          <button class="task-action-btn task-delete-btn tooltip">
+            <span class="tooltip-content">Usuń Zadanie</span>
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </span>
+      `;
+
+      dailyTasksList.append(li);
+    }
+  }
+
+  initTimeToEndDayCountdown() {
+    const timeToEndDayCard = this.panel.querySelector("[data-time-to-end-day]");
+    const timeToEndDayCountdown = document.createElement("custom-countdown");
+    const now = new Date();
+    const tomorrowDate = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate() + 1,
+      0,
+      0,
+      0,
+      0
+    );
+
+    timeToEndDayCountdown.setAttribute(
+      "data-date-end",
+      tomorrowDate.toISOString()
+    );
+    timeToEndDayCountdown.setAttribute(
+      "data-time-units-to-show",
+      "['hours', 'minutes', 'seconds']"
+    );
+    timeToEndDayCard.append(timeToEndDayCountdown);
+  }
+
+  /** @param {UPT_Task[]} tasks */
+  initStatisticTasks(tasks) {
+    const getTaskStatusNumber = (status) => (value, task) =>
+      task.type === status ? value + 1 : value;
+
+    const dailyTasksNumberEl = this.panel.querySelector(
+      "[data-statistic-daily-tasks-number]"
+    );
+    const mainTasksNumberEl = this.panel.querySelector(
+      "[data-statistic-main-tasks-number]"
+    );
+    dailyTasksNumberEl.textContent = tasks.reduce(
+      getTaskStatusNumber(UPT_TaskType.DAILY),
+      0
+    );
+    mainTasksNumberEl.textContent = tasks.reduce(
+      getTaskStatusNumber(UPT_TaskType.MAIN),
+      0
     );
   }
 
-  initPieChart() {
+  /** @param {UPT_Task[]} tasks */
+  initPieChart(tasks) {
     const pieChartSelector = UPT_MODULE_ID_SELECTOR + " [data-pie-chart]";
-    const pieChartDataAttrSelector = pieChartSelector + " [data-pie]";
+    const pieChartAppearance = this.panel.querySelector(
+      pieChartSelector + " [data-pie-chart-appearance]"
+    );
+    const tasksNumber = tasks.length;
+    const getPercentOfTasksNumber = (number) =>
+      Math.round((number * 100) / tasksNumber);
 
-    pieChartDataAttrSelector.setAttribute(
+    let completedCount = 0,
+      inProgressCount = 0,
+      deletedCount = 0;
+
+    tasks.forEach((task) => {
+      switch (task.status) {
+        case UPT_TaskStatus.COMPLETED:
+          completedCount++;
+          break;
+        case UPT_TaskStatus.IN_PROGRESS:
+          inProgressCount++;
+          break;
+        case UPT_TaskStatus.DELETED:
+          deletedCount++;
+          break;
+      }
+    });
+
+    pieChartAppearance.setAttribute(
       "data-pie",
       JSON.stringify({
         data: [
-          { color: "#00c821", percent: 0, label: "Zrealizowane" },
-          { color: "#e74f4f", percent: 0, label: "Porzucone" },
-          { color: "#fc921f", percent: 0, label: "W trakcie" },
+          {
+            color: "#00c821",
+            percent: getPercentOfTasksNumber(completedCount),
+            label: `Zrealizowane(${completedCount})`,
+          },
+          {
+            color: "#e74f4f",
+            percent: getPercentOfTasksNumber(deletedCount),
+            label: `Porzucone(${deletedCount})`,
+          },
+          {
+            color: "#fc921f",
+            percent: getPercentOfTasksNumber(inProgressCount),
+            label: `W trakcie(${inProgressCount})`,
+          },
         ],
         animate: true,
         animationSpeed: 1250,
@@ -1667,6 +1839,12 @@ class UPTModuleMainPanel {
     );
 
     new CustomPieChart(pieChartSelector);
+  }
+
+  initDateTimeStatisics() {
+    new UPTDateTimeStatisics(
+      UPT_MODULE_ID_SELECTOR + " [data-date-time-statisics]"
+    );
   }
 }
 

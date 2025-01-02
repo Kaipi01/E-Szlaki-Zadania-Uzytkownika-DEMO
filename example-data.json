@@ -1,0 +1,401 @@
+{
+  "categories": [
+    { "name": "Praca", "icon": "💼", "createdAt": "2023-01-01T10:00:00Z" },
+    { "name": "Dom", "icon": "🏠", "createdAt": "2023-01-02T10:00:00Z" },
+    { "name": "Zdrowie", "icon": "💊", "createdAt": "2023-01-03T10:00:00Z" },
+    {
+      "name": "Rozwój osobisty",
+      "icon": "📚",
+      "createdAt": "2023-01-04T10:00:00Z"
+    },
+    { "name": "Hobby", "icon": "🎨", "createdAt": "2023-01-05T10:00:00Z" },
+    { "name": "Rodzina", "icon": "👨‍👩‍👧‍👦", "createdAt": "2023-01-06T10:00:00Z" },
+    { "name": "Podróże", "icon": "✈️", "createdAt": "2023-01-07T10:00:00Z" },
+    { "name": "Edukacja", "icon": "📚", "createdAt": "2023-01-06T00:00:00Z" }
+  ],
+  "tasks": [
+    {
+      "name": "Umyć naczynia",
+      "createdAt": "2023-06-01T10:00:00Z",
+      "deadline": "2023-06-01T15:00:00Z",
+      "category": "Dom",
+      "type": "Dzienne",
+      "priority": "Średni piorytet",
+      "status": "W trakcie",
+      "description": "Umyć wszystkie naczynia w kuchni",
+      "subTasks": [
+        { "name": "Zebrać naczynia", "deadline": null, "isCompleted": true },
+        { "name": "Umyć naczynia", "deadline": null, "isCompleted": false }
+      ],
+      "isArchived": false
+    },
+    {
+      "name": "Zakończyć raport",
+      "createdAt": "2023-06-02T10:00:00Z",
+      "deadline": "2023-06-05T18:00:00Z",
+      "category": "Praca",
+      "type": "Główne",
+      "priority": "Wysoki piorytet",
+      "status": "Zrealizowano",
+      "description": "Sporządzić końcowy raport dla projektu",
+      "subTasks": [
+        { "name": "Zebrać dane", "deadline": null, "isCompleted": true },
+        { "name": "Skompilować raport", "deadline": null, "isCompleted": true }
+      ],
+      "isArchived": true
+    },
+    {
+      "name": "Ćwiczenia jogi",
+      "createdAt": "2023-06-01T07:00:00Z",
+      "deadline": "2023-06-01T08:00:00Z",
+      "category": "Zdrowie",
+      "type": "Dzienne",
+      "priority": "Średni piorytet",
+      "status": "Zrealizowano",
+      "description": "Ćwiczenia relaksacyjne na poranne rozciąganie",
+      "subTasks": [
+        { "name": "Rozgrzewka", "deadline": null, "isCompleted": true },
+        { "name": "Podstawowe pozycje", "deadline": null, "isCompleted": true }
+      ],
+      "isArchived": true
+    },
+    {
+      "name": "Planowanie podróży",
+      "createdAt": "2023-05-20T12:00:00Z",
+      "deadline": "2023-06-10T12:00:00Z",
+      "category": "Podróże",
+      "type": "Główne",
+      "priority": "Bardzo Wysoki piorytet",
+      "status": "W trakcie",
+      "description": "Zorganizować wycieczkę wakacyjną",
+      "subTasks": [
+        {
+          "name": "Zarezerwować hotel",
+          "deadline": null,
+          "isCompleted": false
+        },
+        {
+          "name": "Kupić bilety lotnicze",
+          "deadline": null,
+          "isCompleted": false
+        }
+      ],
+      "isArchived": false
+    },
+    {
+      "name": "Zakupy spożywcze",
+      "createdAt": "2023-06-01T09:00:00Z",
+      "deadline": "2023-06-01T12:00:00Z",
+      "category": "Dom",
+      "type": "Dzienne",
+      "priority": "Niski piorytet",
+      "status": "Zrealizowano",
+      "description": "Kupić podstawowe produkty spożywcze",
+      "subTasks": [
+        {
+          "name": "Sporządzić listę zakupów",
+          "deadline": null,
+          "isCompleted": true
+        },
+        { "name": "Odwiedzić sklep", "deadline": null, "isCompleted": true }
+      ],
+      "isArchived": true
+    },
+    {
+      "name": "Nawadnianie roślin",
+      "createdAt": "2023-06-01T07:30:00Z",
+      "deadline": "2023-06-01T08:00:00Z",
+      "category": "Dom",
+      "type": "Dzienne",
+      "priority": "Niski piorytet",
+      "status": "W trakcie",
+      "description": "Podlewanie roślin w salonie i ogrodzie",
+      "subTasks": [
+        { "name": "Podlewanie ogrodu", "deadline": null, "isCompleted": true },
+        { "name": "Podlewanie salonu", "deadline": null, "isCompleted": false }
+      ],
+      "isArchived": false
+    },
+    {
+      "name": "E-mail do klienta",
+      "createdAt": "2023-06-02T09:00:00Z",
+      "deadline": "2023-06-02T10:00:00Z",
+      "category": "Praca",
+      "type": "Dzienne",
+      "priority": "Średni piorytet",
+      "status": "Zrealizowano",
+      "description": "Wysłanie raportu i prośby o informacje zwrotne",
+      "subTasks": [
+        {
+          "name": "Przygotowanie raportu",
+          "deadline": null,
+          "isCompleted": true
+        },
+        { "name": "Wysłanie wiadomości", "deadline": null, "isCompleted": true }
+      ],
+      "isArchived": true
+    },
+    {
+      "name": "Bieganie",
+      "createdAt": "2023-06-02T06:30:00Z",
+      "deadline": "2023-06-02T07:30:00Z",
+      "category": "Zdrowie",
+      "type": "Dzienne",
+      "priority": "Średni piorytet",
+      "status": "W trakcie",
+      "description": "Poranny bieg w parku na 5 km",
+      "subTasks": [
+        { "name": "Rozgrzewka", "deadline": null, "isCompleted": true },
+        { "name": "Główne bieganie", "deadline": null, "isCompleted": false }
+      ],
+      "isArchived": false
+    },
+    {
+      "name": "Przygotowanie prezentacji",
+      "createdAt": "2023-05-28T14:00:00Z",
+      "deadline": "2023-06-05T10:00:00Z",
+      "category": "Praca",
+      "type": "Główne",
+      "priority": "Wysoki piorytet",
+      "status": "W trakcie",
+      "description": "Stworzenie prezentacji dla klienta",
+      "subTasks": [
+        {
+          "name": "Zebranie materiałów",
+          "deadline": null,
+          "isCompleted": true
+        },
+        { "name": "Tworzenie slajdów", "deadline": null, "isCompleted": false },
+        {
+          "name": "Przygotowanie mówionych punktów",
+          "deadline": null,
+          "isCompleted": false
+        }
+      ],
+      "isArchived": false
+    },
+    {
+      "name": "Naprawa samochodu",
+      "createdAt": "2023-05-15T10:00:00Z",
+      "deadline": "2023-05-20T15:00:00Z",
+      "category": "Dom",
+      "type": "Główne",
+      "priority": "Średni piorytet",
+      "status": "Zrealizowano",
+      "description": "Oddanie samochodu do warsztatu",
+      "subTasks": [
+        { "name": "Wizyta w warsztacie", "deadline": null, "isCompleted": true }
+      ],
+      "isArchived": true
+    },
+    {
+      "name": "Przeczytać książkę",
+      "createdAt": "2023-05-10T08:00:00Z",
+      "deadline": "2023-06-30T20:00:00Z",
+      "category": "Rozwój osobisty",
+      "type": "Główne",
+      "priority": "Niski piorytet",
+      "status": "W trakcie",
+      "description": "Skończenie książki 'Sztuka Wojny'",
+      "subTasks": [
+        { "name": "Rozdział 1-5", "deadline": null, "isCompleted": true },
+        { "name": "Rozdział 6-10", "deadline": null, "isCompleted": false }
+      ],
+      "isArchived": false
+    },
+    {
+      "name": "Sprzątanie kuchni",
+      "createdAt": "2023-06-03T08:00:00Z",
+      "deadline": "2023-06-03T09:00:00Z",
+      "category": "Dom",
+      "type": "Dzienne",
+      "priority": "Średni piorytet",
+      "status": "W trakcie",
+      "description": "Umycie naczyń i przetarcie blatów",
+      "subTasks": [
+        { "name": "Umycie naczyń", "deadline": null, "isCompleted": true },
+        { "name": "Przetarcie blatów", "deadline": null, "isCompleted": false }
+      ],
+      "isArchived": false
+    },
+    {
+      "name": "Poranny trening",
+      "createdAt": "2023-06-04T06:30:00Z",
+      "deadline": "2023-06-04T07:30:00Z",
+      "category": "Zdrowie",
+      "type": "Dzienne",
+      "priority": "Wysoki piorytet",
+      "status": "Zrealizowano",
+      "description": "Rozciąganie i lekki jogging",
+      "subTasks": [
+        { "name": "Rozgrzewka", "deadline": null, "isCompleted": true },
+        { "name": "Jogging", "deadline": null, "isCompleted": true }
+      ],
+      "isArchived": true
+    },
+    {
+      "name": "Zakupy spożywcze",
+      "createdAt": "2023-06-05T10:00:00Z",
+      "deadline": "2023-06-05T12:00:00Z",
+      "category": "Dom",
+      "type": "Dzienne",
+      "priority": "Średni piorytet",
+      "status": "W trakcie",
+      "description": "Kupienie produktów na obiad i śniadanie",
+      "subTasks": [
+        { "name": "Lista zakupów", "deadline": null, "isCompleted": true },
+        { "name": "Wizyta w sklepie", "deadline": null, "isCompleted": false }
+      ],
+      "isArchived": false
+    },
+    {
+      "name": "Remont sypialni",
+      "createdAt": "2023-04-01T09:00:00Z",
+      "deadline": "2023-06-15T18:00:00Z",
+      "category": "Dom",
+      "type": "Główne",
+      "priority": "Bardzo Wysoki piorytet",
+      "status": "W trakcie",
+      "description": "Przemalowanie ścian i wymiana łóżka",
+      "subTasks": [
+        { "name": "Zakup farby", "deadline": null, "isCompleted": true },
+        { "name": "Malowanie ścian", "deadline": null, "isCompleted": false },
+        { "name": "Zakup nowego łóżka", "deadline": null, "isCompleted": false }
+      ],
+      "isArchived": false
+    },
+    {
+      "name": "Zorganizowanie urodzin",
+      "createdAt": "2023-05-01T08:00:00Z",
+      "deadline": "2023-06-10T20:00:00Z",
+      "category": "Rodzina",
+      "type": "Główne",
+      "priority": "Średni piorytet",
+      "status": "W trakcie",
+      "description": "Przygotowanie przyjęcia niespodzianki dla mamy",
+      "subTasks": [
+        { "name": "Lista gości", "deadline": null, "isCompleted": true },
+        { "name": "Zamówienie tortu", "deadline": null, "isCompleted": false },
+        { "name": "Dekoracje", "deadline": null, "isCompleted": false }
+      ],
+      "isArchived": false
+    },
+    {
+      "name": "Podsumowanie kwartalne",
+      "createdAt": "2023-05-15T09:00:00Z",
+      "deadline": "2023-06-01T18:00:00Z",
+      "category": "Praca",
+      "type": "Główne",
+      "priority": "Wysoki piorytet",
+      "status": "Zrealizowano",
+      "description": "Przygotowanie raportu za Q2",
+      "subTasks": [
+        { "name": "Zebranie danych", "deadline": null, "isCompleted": true },
+        { "name": "Analiza wyników", "deadline": null, "isCompleted": true },
+        { "name": "Prezentacja raportu", "deadline": null, "isCompleted": true }
+      ],
+      "isArchived": true
+    },
+    {
+      "name": "Poranny jogging",
+      "createdAt": "2023-06-01T06:00:00Z",
+      "deadline": "2023-06-01T07:00:00Z",
+      "category": "Zdrowie",
+      "type": "Dzienne",
+      "priority": "Średni piorytet",
+      "status": "W trakcie",
+      "description": "30 minut biegania w parku",
+      "subTasks": [
+        { "name": "Założenie stroju", "deadline": null, "isCompleted": true },
+        { "name": "Rozgrzewka", "deadline": null, "isCompleted": true }
+      ],
+      "isArchived": false
+    },
+    {
+      "name": "Medytacja",
+      "createdAt": "2023-06-01T08:00:00Z",
+      "deadline": "2023-06-01T08:30:00Z",
+      "category": "Relaks",
+      "type": "Dzienne",
+      "priority": "Niski piorytet",
+      "status": "Zrealizowano",
+      "description": "15 minut medytacji w ciszy",
+      "subTasks": [
+        {
+          "name": "Znalezienie cichego miejsca",
+          "deadline": null,
+          "isCompleted": true
+        },
+        {
+          "name": "Włączenie muzyki relaksacyjnej",
+          "deadline": null,
+          "isCompleted": true
+        }
+      ],
+      "isArchived": true
+    },
+    {
+      "name": "Sprzątanie kuchni",
+      "createdAt": "2023-06-03T08:00:00Z",
+      "deadline": "2023-06-03T09:00:00Z",
+      "category": "Dom",
+      "type": "Dzienne",
+      "priority": "Średni piorytet",
+      "status": "W trakcie",
+      "description": "Umycie naczyń i przetarcie blatów",
+      "subTasks": [
+        { "name": "Umycie naczyń", "deadline": null, "isCompleted": true },
+        { "name": "Przetarcie blatów", "deadline": null, "isCompleted": false }
+      ],
+      "isArchived": false
+    },
+    {
+      "name": "Remont sypialni",
+      "createdAt": "2023-04-01T09:00:00Z",
+      "deadline": "2023-06-15T18:00:00Z",
+      "category": "Dom",
+      "type": "Główne",
+      "priority": "Bardzo Wysoki piorytet",
+      "status": "W trakcie",
+      "description": "Przemalowanie ścian i wymiana łóżka",
+      "subTasks": [
+        { "name": "Zakup farby", "deadline": null, "isCompleted": true },
+        { "name": "Malowanie ścian", "deadline": null, "isCompleted": false },
+        { "name": "Zakup nowego łóżka", "deadline": null, "isCompleted": false }
+      ],
+      "isArchived": false
+    },
+    {
+      "name": "Zorganizowanie urodzin",
+      "createdAt": "2023-05-01T08:00:00Z",
+      "deadline": "2023-06-10T20:00:00Z",
+      "category": "Rodzina",
+      "type": "Główne",
+      "priority": "Średni piorytet",
+      "status": "W trakcie",
+      "description": "Przygotowanie przyjęcia niespodzianki dla mamy",
+      "subTasks": [
+        { "name": "Lista gości", "deadline": null, "isCompleted": true },
+        { "name": "Zamówienie tortu", "deadline": null, "isCompleted": false },
+        { "name": "Dekoracje", "deadline": null, "isCompleted": false }
+      ],
+      "isArchived": false
+    },
+    {
+      "name": "Podsumowanie kwartalne",
+      "createdAt": "2023-05-15T09:00:00Z",
+      "deadline": "2023-06-01T18:00:00Z",
+      "category": "Praca",
+      "type": "Główne",
+      "priority": "Wysoki piorytet",
+      "status": "Zrealizowano",
+      "description": "Przygotowanie raportu za Q2",
+      "subTasks": [
+        { "name": "Zebranie danych", "deadline": null, "isCompleted": true },
+        { "name": "Analiza wyników", "deadline": null, "isCompleted": true },
+        { "name": "Prezentacja raportu", "deadline": null, "isCompleted": true }
+      ],
+      "isArchived": true
+    }
+  ]
+} 
