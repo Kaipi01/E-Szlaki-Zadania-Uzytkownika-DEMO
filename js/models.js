@@ -22,13 +22,15 @@ class UPT_TaskPriority {
 
 class UPT_TaskCategory {
   /**
+   * @param {string} id
    * @param {string} name
    * @param {string} icon
    */
   constructor(name, icon) {
+    this.id = id;
     this.name = name;
     this.icon = icon;
-    this.createdAt = new Date();
+    this.createdAt = (new Date()).toISOString();
   }
 
   /** @param {string} icon */
@@ -39,27 +41,20 @@ class UPT_TaskCategory {
   setName(name) {
     this.name = name;
   }
-  getIcon() {
-    return this.icon;
-  }
-  getCreatedAt() {
-    return this.createdAt;
-  }
-  getName() {
-    return this.name;
-  }
   toString() {
-    return this.getName();
+    return this.name;
   }
 }
 
 class UPT_SubTask {
   /**
+   * @param {string} id
    * @param {string} name
    * @param {string | null} deadline
    * @param {bool} isCompleted
    */
-  constructor(name, deadline = null, isCompleted = false) {
+  constructor(id, name, deadline = null, isCompleted = false) {
+    this.id = id;
     this.name = name;
     this.deadline = deadline;
     this.isCompleted = isCompleted;
@@ -93,26 +88,29 @@ class UPT_SubTask {
 
 /**
  * @typedef {Object} UPT_TaskInterface
+ * @property {string} id - ID zadania.
  * @property {string} name - Nazwa zadania.
  * @property {string} createdAt - Data utworzenia.
  * @property {string} deadline - Termin wykonania.
- * @property {UPT_TaskCategory | null} category - Kategoria zadania.
+ * @property {string} categoryId - Kategoria zadania.
  * @property {UPT_SubTask[]} subTasks - Lista podzadań.
  * @property {string} status - Status zadania.
  * @property {string} priority - Priorytet zadania.
  * @property {string} description - Opis zadania.
  * @property {number} type - typ zadania.
  * @property {boolean} isArchived - Czy zadanie zostało zarchiwizowane.
+ * @property {string | null} archivedAt - Kiedy zostało zarchiwizowane.
  */
 class UPT_Task {
   /**
    * @param {UPT_TaskInterface} taskProps
    */
   constructor(taskProps) {
+    this.id = String(taskProps.id);
     this.name;
     this.type;
     this.deadline;
-    this.category;
+    this.categoryId;
     this.priority;
     this.status;
     this.description;
@@ -120,6 +118,7 @@ class UPT_Task {
     this.isArchived;
     this.createdAt = new Date().toISOString();
     this.updatedAt;
+    this.archivedAt
     this.validateTaskProps(taskProps);
   }
 
@@ -130,13 +129,14 @@ class UPT_Task {
     this.setName(taskProps.name);
     this.setUpdatedAt(this.createdAt);
     this.setDeadline(taskProps.deadline);
-    this.setCategory(taskProps.category);
+    this.setCategoryId(taskProps.categoryId);
     this.setSubTasks(taskProps.subTasks || []);
     this.setStatus(taskProps.status || UPT_TaskStatus.IN_PROGRESS);
     this.setPriority(taskProps.priority);
     this.setType(taskProps.type);
     this.setDescription(taskProps.description || "");
     this.setIsArchived(taskProps.isArchived || false);
+    this.setArchivedAt(taskProps.archivedAt)
   }
 
   /** @param {string} value */
@@ -157,17 +157,21 @@ class UPT_Task {
     this.updatedAt = new Date(value).toISOString();
   }
 
+  /** @param {string | null} value */
+  setArchivedAt(value) {
+    if (value) {
+      this.archivedAt = new Date(value).toISOString();
+    }
+  }
+
   /** @param {string} value */
   setDeadline(value) {
     this.deadline = new Date(value).toISOString();
   }
 
-  /** @param {UPT_TaskCategory | null} value */
-  setCategory(value) {
-    if (value && !(value instanceof UPT_TaskCategory)) {
-      console.error("category must be a UPT_TaskCategory object.");
-    }
-    this.category = value;
+  /** @param {string} value */
+  setCategoryId(value) {
+    this.categoryId = String(value);
   }
 
   /** @param {UPT_SubTask[]} value */

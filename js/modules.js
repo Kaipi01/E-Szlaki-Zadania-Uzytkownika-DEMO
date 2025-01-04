@@ -8,16 +8,12 @@ class UPTDateTimeStatisics {
     this.container = document.querySelector(containerSelector);
 
     if (!this.container) {
-      console.error(`Element with selector ${containerSelector} is not exist!`);
+      console.error(`Element with selector ${containerSelector} does not exist!`);
       return;
     }
 
-    this.currentTimeEl = this.container.querySelector(
-      "[data-statistic-current-time]"
-    );
-    this.currentDateEl = this.container.querySelector(
-      "[data-statistic-current-date]"
-    );
+    this.currentTimeEl = this.container.querySelector("[data-statistic-current-time]");
+    this.currentDateEl = this.container.querySelector("[data-statistic-current-date]");
 
     this.init();
   }
@@ -25,36 +21,18 @@ class UPTDateTimeStatisics {
   init() {
     this.setCurrentTime();
     this.setCurrentDate();
-    setInterval(() => this.setCurrentTime(), 1000);
+
+    setInterval(() => {
+      this.setCurrentTime();
+      this.setCurrentDate();
+    }, 1000);
   }
 
   setCurrentDate() {
-    const daysOfWeek = [
-      "Niedziela",
-      "Poniedziałek",
-      "Wtorek",
-      "Środa",
-      "Czwartek",
-      "Piątek",
-      "Sobota",
-    ];
+    const now = new Date(); // Pobierz aktualną datę
+    const daysOfWeek = ["Niedziela", "Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota"];
+    const months = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień", "Wrzesień", "Październik", "Listopad", "Grudzień"];
 
-    const months = [
-      "Styczeń",
-      "Luty",
-      "Marzec",
-      "Kwiecień",
-      "Maj",
-      "Czerwiec",
-      "Lipiec",
-      "Sierpień",
-      "Wrzesień",
-      "Październik",
-      "Listopad",
-      "Grudzień",
-    ];
-
-    const now = new Date();
     const dayName = daysOfWeek[now.getDay()];
     const day = now.getDate();
     const month = months[now.getMonth()];
@@ -69,10 +47,9 @@ class UPTDateTimeStatisics {
   }
 
   setCurrentTime() {
-    const date = new Date();
-
+    const now = new Date();
     if (this.currentTimeEl) {
-      this.currentTimeEl.textContent = date.toLocaleTimeString();
+      this.currentTimeEl.textContent = now.toLocaleTimeString(); // Ustawienie czasu w DOM
     } else {
       console.error(`this.currentTimeEl is null`);
     }
@@ -448,11 +425,11 @@ class UPTModuleModal {
     this.firstFocusable = null;
     this.lastFocusable = null;
     this.moveFocusEl = null; // focus will be moved to this element when modal is open
-    this.modalFocus = this.element.getAttribute("data-modal-first-focus")
-      ? this.element.querySelector(
-          this.element.getAttribute("data-modal-first-focus")
-        )
-      : null;
+    this.modalFocus = this.element.getAttribute("data-modal-first-focus") ?
+      this.element.querySelector(
+        this.element.getAttribute("data-modal-first-focus")
+      ) :
+      null;
     this.selectedTrigger = null;
     this.preventScrollEl = this.getPreventScrollEl();
     this.showClass = "modal--is-visible";
@@ -510,9 +487,9 @@ class UPTModuleModal {
     document.addEventListener(
       UPTModuleModal.START_LOADING_EVENT_NAME,
       (event) =>
-        catchModalEvent(event, () =>
-          this.element.classList.add("modal--loading")
-        )
+      catchModalEvent(event, () =>
+        this.element.classList.add("modal--loading")
+      )
     );
 
     // hide loading state modal
@@ -570,7 +547,7 @@ class UPTModuleModal {
       this.moveFocusEl.focus();
       // wait for the end of transitions before moving focus
       this.element.addEventListener("transitionend", function cb(event) {
-        self.moveFocusEl.focus();
+        if (self.moveFocusEl) self.moveFocusEl.focus();
         self.element.removeEventListener("transitionend", cb);
       });
     }
@@ -722,7 +699,9 @@ class UPTModuleModal {
    * @param {string} eventName
    */
   emitModalEvents(eventName) {
-    var event = new CustomEvent(eventName, { detail: this.selectedTrigger });
+    var event = new CustomEvent(eventName, {
+      detail: this.selectedTrigger,
+    });
     this.element.dispatchEvent(event);
   }
 }
@@ -802,9 +781,9 @@ class CircularProgressBar {
 
   initial(outside) {
     const triggeredOutside = outside || this._elements;
-    Array.isArray(triggeredOutside)
-      ? triggeredOutside.map((element) => this._createSVG(element))
-      : this._createSVG(triggeredOutside);
+    Array.isArray(triggeredOutside) ?
+      triggeredOutside.map((element) => this._createSVG(element)) :
+      this._createSVG(triggeredOutside);
   }
 
   _progress(svg, target, options) {
@@ -827,7 +806,12 @@ class CircularProgressBar {
     this._setAttribute(progressCircle, configCircle);
 
     // animation progress
-    this.animationTo({ ...options, element: progressCircle }, true);
+    this.animationTo({
+        ...options,
+        element: progressCircle,
+      },
+      true
+    );
 
     // set style and rotation
     progressCircle.setAttribute("style", this._styleTransform(options));
@@ -857,14 +841,13 @@ class CircularProgressBar {
     if (!circleElement) return;
 
     // merging all configuration objects
-    const commonConfiguration = initial
-      ? options
-      : {
-          ...CircularProgressBar.DEFAULT_OPTIONS,
-          ...previousConfigObj,
-          ...options,
-          ...this._globalObj,
-        };
+    const commonConfiguration = initial ?
+      options : {
+        ...CircularProgressBar.DEFAULT_OPTIONS,
+        ...previousConfigObj,
+        ...options,
+        ...this._globalObj,
+      };
 
     // update color circle
     if (!initial) {
@@ -894,7 +877,7 @@ class CircularProgressBar {
         "stroke-dashoffset",
         this._dashOffset(
           commonConfiguration.percent *
-            ((100 - (commonConfiguration.cut || 0)) / 100),
+          ((100 - (commonConfiguration.cut || 0)) / 100),
           commonConfiguration.inverse
         )
       );
@@ -1028,9 +1011,10 @@ class CircularProgressBar {
     }
 
     const typeCircle =
-      where === "top"
-        ? { class: `${this._className}-circle-${options.index}` }
-        : objCircle;
+      where === "top" ? {
+        class: `${this._className}-circle-${options.index}`,
+      } :
+      objCircle;
 
     const objConfig = {
       cx: "50%",
@@ -1045,10 +1029,13 @@ class CircularProgressBar {
     return circle;
   }
 
-  _styleTransform = ({ rotation, animationSmooth }) => {
-    const smoothAnimation = animationSmooth
-      ? `transition: stroke-dashoffset ${animationSmooth}`
-      : "";
+  _styleTransform = ({
+    rotation,
+    animationSmooth
+  }) => {
+    const smoothAnimation = animationSmooth ?
+      `transition: stroke-dashoffset ${animationSmooth}` :
+      "";
 
     return `transform:rotate(${rotation}deg);transform-origin: 50% 50%;${smoothAnimation}`;
   };
@@ -1059,7 +1046,9 @@ class CircularProgressBar {
     };
   };
 
-  _strokeLinecap = ({ round }) => {
+  _strokeLinecap = ({
+    round
+  }) => {
     return {
       "stroke-linecap": round ? "round" : "",
     };
@@ -1074,7 +1063,11 @@ class CircularProgressBar {
 
   _querySelector = (element) => document.querySelector(element);
 
-  _setColor = (element, { lineargradient, index, colorSlice }) => {
+  _setColor = (element, {
+    lineargradient,
+    index,
+    colorSlice
+  }) => {
     element.setAttribute(
       "stroke",
       lineargradient ? `url(#linear-${index})` : colorSlice
@@ -1108,7 +1101,10 @@ class CircularProgressBar {
   _insertAdElement = (element, el, type = "beforeend") =>
     element.insertAdjacentElement(type, el);
 
-  _gradient = ({ index, lineargradient }) => {
+  _gradient = ({
+    index,
+    lineargradient
+  }) => {
     const defsElement = this._createNSElement("defs");
     const linearGradient = this._createNSElement("linearGradient");
     linearGradient.id = `linear-${index}`;
@@ -1199,7 +1195,10 @@ class CustomPieChart {
     legendFigcaption.className = "legends";
 
     this.pieData.data.forEach((data) => {
-      const { percent, label } = data;
+      const {
+        percent,
+        label
+      } = data;
       const item = document.createElement("span");
       item.className = "legend-item";
       item.textContent = `${label} ${percent}%`;
@@ -1211,7 +1210,10 @@ class CustomPieChart {
 
   generateCSSForPieChart() {
     const pieChartData = this.pieData.data;
-    const { animate, animationSpeed } = this.pieData;
+    const {
+      animate,
+      animationSpeed
+    } = this.pieData;
     const showAnimation = animate && "registerProperty" in CSS;
 
     let pieCharLegendItems = "";
@@ -1226,7 +1228,10 @@ class CustomPieChart {
 
     pieChartData.forEach((data, index) => {
       const nr = index + 1;
-      const { color, percent } = data;
+      const {
+        color,
+        percent
+      } = data;
       const percentValue = percent + lastProcentValue;
 
       pieCharColors += `--color-${nr}: ${color};`;
@@ -1234,18 +1239,18 @@ class CustomPieChart {
 
       if (index === 0) {
         pieCharAnimationEndOpacity += `--opacity-${nr}: ${percentValue}%;`;
-        pieCharConicGradientValues += showAnimation
-          ? `var(--color-${nr}) var(--opacity-${nr}),`
-          : `${color} ${percentValue}%,`;
+        pieCharConicGradientValues += showAnimation ?
+          `var(--color-${nr}) var(--opacity-${nr}),` :
+          `${color} ${percentValue}%,`;
       } else if (index === pieChartData.length - 1) {
-        pieCharConicGradientValues += showAnimation
-          ? `var(--color-${nr}) 0 var(--opacity-${nr})`
-          : `${color} 0 ${percentValue}%`;
+        pieCharConicGradientValues += showAnimation ?
+          `var(--color-${nr}) 0 var(--opacity-${nr})` :
+          `${color} 0 ${percentValue}%`;
       } else {
         pieCharAnimationEndOpacity += `--opacity-${nr}: ${percentValue}%;`;
-        pieCharConicGradientValues += showAnimation
-          ? `var(--color-${nr}) 0 var(--opacity-${nr}),`
-          : `${color} 0 ${percentValue}%,`;
+        pieCharConicGradientValues += showAnimation ?
+          `var(--color-${nr}) 0 var(--opacity-${nr}),` :
+          `${color} 0 ${percentValue}%,`;
       }
 
       pieCharLegendItems += `${this.pieChartContainerSelector} .legends .legend-item:nth-child(${nr})::before {background-color: var(--color-${nr});}`;
@@ -1291,9 +1296,9 @@ class CustomSelect {
   constructor(selectElement) {
     this.selectElement = selectElement;
     this.numberOfOptions = selectElement.children.length;
-    this.className = selectElement.dataset.className
-      ? selectElement.dataset.className
-      : "custom-select";
+    this.className = selectElement.dataset.className ?
+      selectElement.dataset.className :
+      "custom-select";
     this.createCustomElements();
     this.attachEventListeners();
   }
@@ -1355,10 +1360,10 @@ class CustomSelect {
         });
       this.styledSelect.classList.toggle("active");
       this.optionList.style.display = this.styledSelect.classList.contains(
-        "active"
-      )
-        ? "block"
-        : "none";
+          "active"
+        ) ?
+        "block" :
+        "none";
     };
 
     /**
@@ -1397,9 +1402,19 @@ class CustomSelect {
     });
   }
 
-  static initAll() {
+  destroy() {
+    const wrapperParent = this.wrapper.parentElement
+
+    this.selectElement.classList.remove(`${this.className}-hidden`);
+
+    wrapperParent.append(this.selectElement)
+    this.wrapper.remove()
+  }
+
+  /** @param {string} selector */
+  static initAll(selector) {
     document
-      .querySelectorAll("select[data-custom-select]")
+      .querySelectorAll(selector)
       .forEach((selectElement) => {
         new CustomSelect(selectElement);
       });
@@ -1418,18 +1433,13 @@ class CustomCountdown extends HTMLElement {
     this.hours;
     this.minutes;
     this.seconds;
-    this.daysElement;
-    this.hoursElement;
-    this.minutesElement;
-    this.secondsElement;
+    this.elements = {};
   }
 
   connectedCallback() {
     const timeUnitsToShowAttr = this.getAttribute("data-time-units-to-show");
     this.dateEnd = this.getAttribute("data-date-end");
-    this.timeUnitsToShow = timeUnitsToShowAttr
-      ? JSON.parse(timeUnitsToShowAttr.replace(/'/g, '"'))
-      : ["days", "hours", "minutes", "seconds"];
+    this.timeUnitsToShow = timeUnitsToShowAttr ? JSON.parse(timeUnitsToShowAttr.replace(/'/g, '"')) : ["days", "hours", "minutes", "seconds"];
 
     this.render();
     this.init();
@@ -1441,12 +1451,9 @@ class CustomCountdown extends HTMLElement {
       return;
     }
 
-    this.dateEnd = new Date(this.dateEnd);
-    this.dateEnd = this.dateEnd.getTime();
+    this.dateEnd = new Date(this.dateEnd).getTime();
 
-    this.timer = setInterval(() => {
-      this.calculate();
-    }, 1000);
+    this.timer = setInterval(() => this.calculate(), 1000);
   }
 
   render() {
@@ -1456,115 +1463,66 @@ class CustomCountdown extends HTMLElement {
     const timer = document.createElement("p");
     timer.className = "timer";
 
-    /** @param {string} timeUnitName */
-    const createTimeUnit = (timeUnitName) => {
-      this.timeUnitElement = document.createElement("span");
-      this.timeUnitElement.className = "timer-data";
-      this.timeUnitElement.setAttribute("data-" + timeUnitName, "");
-      return this.timeUnitElement;
-    };
-
-    if (this.timeUnitsToShow.includes("days")) {
-      this.daysElement = createTimeUnit("days");
-      timer.append(this.daysElement);
-    }
-    if (this.timeUnitsToShow.includes("hours")) {
-      this.hoursElement = createTimeUnit("hours");
-      timer.append(this.hoursElement);
-    }
-    if (this.timeUnitsToShow.includes("minutes")) {
-      this.minutesElement = createTimeUnit("minutes");
-      timer.append(this.minutesElement);
-    }
-    if (this.timeUnitsToShow.includes("seconds")) {
-      this.secondsElement = createTimeUnit("seconds");
-      timer.append(this.secondsElement);
-    }
+    this.timeUnitsToShow.forEach((unit) => {
+      const unitElement = document.createElement("span");
+      unitElement.className = "timer-data";
+      unitElement.setAttribute(`data-${unit}`, "");
+      timer.append(unitElement);
+      this.elements[unit] = unitElement;
+    });
 
     wrapper.append(timer);
     this.append(wrapper);
   }
 
-  /**
-   * @param {number} days
-   * @param {number} hours
-   * @param {number} minutes
-   * @param {number} seconds
-   */
-  animate(days, hours, minutes, seconds) {
-    const attrName = CustomCountdown.ANIMATE_ATTRIBUTE_NAME;
+  animate(unit, newValue) {
+    const unitElement = this.elements[unit];
 
-    /**
-     * @param {number} value
-     * @param {number} thisValue
-     * @param {HTMLElement} thisValueEl
-     */
-    const animateTimeData = (value, thisValue, thisValueEl) => {
-      if (value != thisValue && thisValueEl) {
-        thisValueEl.setAttribute(attrName, "");
+    if (unitElement && this[unit] !== newValue) {
+      unitElement.setAttribute(CustomCountdown.ANIMATE_ATTRIBUTE_NAME, "");
 
-        setTimeout(() => {
-          thisValueEl.removeAttribute(attrName);
-        }, 2000);
-      }
-    };
-    animateTimeData(days, this.days, this.daysElement);
-    animateTimeData(hours, this.hours, this.hoursElement);
-    animateTimeData(minutes, this.minutes, this.minutesElement);
-    animateTimeData(seconds, this.seconds, this.secondsElement);
+      setTimeout(() => {
+        unitElement.removeAttribute(CustomCountdown.ANIMATE_ATTRIBUTE_NAME);
+      }, 2000);
+    }
   }
 
-  /**
-   * @param {number} days
-   * @param {number} hours
-   * @param {number} minutes
-   * @param {number} seconds
-   */
   display(days, hours, minutes, seconds) {
-    this.animate(days, hours, minutes, seconds);
+    this.animate("days", days);
+    this.animate("hours", hours);
+    this.animate("minutes", minutes);
+    this.animate("seconds", seconds);
 
-    if (this.daysElement) this.daysElement.innerHTML = parseInt(days, 10);
-    if (this.hoursElement)
-      this.hoursElement.innerHTML = ("0" + hours).slice(-2);
-    if (this.minutesElement)
-      this.minutesElement.innerHTML = ("0" + minutes).slice(-2);
-    if (this.secondsElement)
-      this.secondsElement.innerHTML = ("0" + seconds).slice(-2);
+    if (this.elements.days) this.elements.days.textContent = days;
+    if (this.elements.hours) this.elements.hours.textContent = ("0" + hours).slice(-2);
+    if (this.elements.minutes) this.elements.minutes.textContent = ("0" + minutes).slice(-2);
+    if (this.elements.seconds) this.elements.seconds.textContent = ("0" + seconds).slice(-2);
   }
 
   calculate() {
-    let dateStart = new Date();
-    dateStart = new Date(
-      dateStart.getUTCFullYear(),
-      dateStart.getUTCMonth(),
-      dateStart.getUTCDate(),
-      dateStart.getUTCHours(),
-      dateStart.getUTCMinutes(),
-      dateStart.getUTCSeconds()
-    );
-    let timeRemaining = parseInt((this.dateEnd - dateStart.getTime()) / 1000);
-    let days, hours, minutes, seconds;
+    const dateStart = new Date();
+    let timeRemaining = Math.max(0, (this.dateEnd - dateStart.getTime()) / 1000);
 
-    if (timeRemaining >= 0) {
-      days = Math.trunc(timeRemaining / 86400);
-      timeRemaining = timeRemaining % 86400;
-      hours = Math.trunc(timeRemaining / 3600);
-      timeRemaining = timeRemaining % 3600;
-      minutes = Math.trunc(timeRemaining / 60);
-      timeRemaining = timeRemaining % 60;
-      seconds = Math.trunc(timeRemaining);
+    const days = Math.floor(timeRemaining / 86400);
+    timeRemaining %= 86400;
+    const hours = Math.floor(timeRemaining / 3600);
+    timeRemaining %= 3600;
+    const minutes = Math.floor(timeRemaining / 60);
+    const seconds = Math.floor(timeRemaining % 60);
 
-      this.display(days, hours, minutes, seconds);
+    this.display(days, hours, minutes, seconds);
 
-      this.days = days;
-      this.hours = hours;
-      this.minutes = minutes;
-      this.seconds = seconds;
-    } else {
-      return;
+    this.days = days;
+    this.hours = hours;
+    this.minutes = minutes;
+    this.seconds = seconds;
+
+    if (timeRemaining <= 0) {
+      clearInterval(this.timer);
     }
   }
 }
+
 customElements.define("custom-countdown", CustomCountdown);
 
 class UserPrivateTasksModuleModal extends HTMLElement {
@@ -1582,22 +1540,20 @@ class UserPrivateTasksModuleModal extends HTMLElement {
 
   connectedCallback() {
     this.modalId = this.getAttribute(UserPrivateTasksModuleModal.ATTR_ID);
-    this.modalTitle = this.querySelector(
-      `[slot="${UserPrivateTasksModuleModal.SLOT_TITLE}"]`
-    );
+    this.modalTitle = this.querySelector(`[slot="${UserPrivateTasksModuleModal.SLOT_TITLE}"]`);
     this.modalTitleVal = this.modalTitle?.innerHTML || "";
+
     this.modalContentVal =
       this.querySelector(`[slot="${UserPrivateTasksModuleModal.SLOT_CONTENT}"]`)
-        ?.innerHTML || "";
-    this.modalFirstFocus = this.getAttribute(
-      UserPrivateTasksModuleModal.ATTR_FIRST_FOCUS
-    );
-    this.modalFirstFocusVal = this.modalFirstFocus
-      ? `${UserPrivateTasksModuleModal.ATTR_FIRST_FOCUS}="${this.modalFirstFocus}"`
-      : "";
-    this.modalContentClass = this.getAttribute(
-      UserPrivateTasksModuleModal.ATTR_CONTENT_CLASS
-    );
+      ?.innerHTML || "";
+
+    this.modalFirstFocus = this.getAttribute(UserPrivateTasksModuleModal.ATTR_FIRST_FOCUS);
+
+    this.modalFirstFocusVal = this.modalFirstFocus ?
+      `${UserPrivateTasksModuleModal.ATTR_FIRST_FOCUS}="${this.modalFirstFocus}"` :
+      "";
+
+    this.modalContentClass = this.getAttribute(UserPrivateTasksModuleModal.ATTR_CONTENT_CLASS);
     this.modalContentClassVal = this.modalContentClass ?? "";
     this.render();
     new UPTModuleModal(`#${this.modalId}`);
@@ -1623,40 +1579,413 @@ class UserPrivateTasksModuleModal extends HTMLElement {
   }
 }
 
-customElements.define(
-  UserPrivateTasksModuleModal.NAME,
-  UserPrivateTasksModuleModal
-);
+customElements.define(UserPrivateTasksModuleModal.NAME, UserPrivateTasksModuleModal);
 
-class UPTModuleMainPanel {
-  static TASKS_DISPLAY_NUMBER = 5
 
+
+class UPTCategoryForm {
+  static MODE_EDIT = "edit"
+  static MODE_CREATE = "create"
+
+  static FIELD_NAME = "upt-category-name";
+  static FIELD_DESC = "upt-category-desc"
+  static FIELD_ICON = "upt-category-icon"
+
+  /** @type {UPTCategoryForm} */
+  static instance;
+
+  constructor() {
+    /** @type {HTMLFormElement} */
+    this.form = document.querySelector(`#${UPT_CATEGORY_FORM_ID}`)
+    this.apiService = UPTApiService.getInstance()
+
+    if (!this.form) {
+      console.error("form is null");
+      return;
+    }
+    this.nameInput = this.form.querySelector(`input[name="${UPTCategoryForm.FIELD_NAME}"]`)
+    this.descTextarea = this.form.querySelector(`textarea[name="${UPTCategoryForm.FIELD_DESC}"]`)
+    this.iconSelect = this.form.querySelector(`select[name="${UPTCategoryForm.FIELD_ICON}"]`)
+
+    this.init()
+  }
+
+  static getInstance() {
+    if (!UPTCategoryForm.instance) {
+      UPTCategoryForm.instance = new UPTCategoryForm();
+    }
+    return UPTCategoryForm.instance;
+  }
+
+  /** @param {string} categoryId */
+  async loadFormData(categoryId) {
+    showModalLoading(UPT_CATEGORY_FORM_MODAL_ID)
+
+    const category = await this.apiService.getCategoryById(categoryId)
+
+    if (!category) {
+      UPTModuleToast.show(UPTModuleToast.ERROR, "Nie istnieje kateogria o id: " + categoryId)
+    } else {
+      UPTModuleToast.show(UPTModuleToast.INFO, "Pobrano informacje o kategorii")
+    }
+
+    hideModalLoading(UPT_CATEGORY_FORM_MODAL_ID)
+
+    return category
+  }
+
+  /**  
+   * @param {string} mode 
+   * @param {string | null} categoryId
+   */
+  async open(mode, categoryId = null) {
+    const isEditMode = mode === UPTCategoryForm.MODE_EDIT
+    const submitButton = this.form.querySelector("[data-form-submit-btn]")
+
+    submitButton.textContent = isEditMode ? "Edytuj" : "Dodaj"
+
+    this.form.reset()
+
+    showModal(UPT_CATEGORY_FORM_MODAL_ID, isEditMode ? "Edytuj Kategorię" : "Dodaj Kategorię")
+
+    if (isEditMode) {
+      const category = await this.loadFormData(categoryId)
+
+      this.nameInput.value = category.name
+      this.descTextarea.textContent = category.desc
+
+    } else {
+      this.nameInput.value = ""
+    }
+  }
+
+  init() {
+    this.form.addEventListener("submit", (e) => {
+      e.preventDefault()
+
+
+      const formData = new FormData(this.form)
+
+      console.log(formData)
+    })
+  }
+}
+
+
+class UPTTaskForm {
+  static MODE_EDIT = "edit"
+  static MODE_CREATE = "create"
+
+  static FIELD_NAME = "upt-tast-name";
+  static FIELD_DESC = "upt-tast-desc";
+  static FIELD_DATE_START = "upt-tast-date-start";
+  static FIELD_DATE_END = "upt-tast-date-end";
+  static FIELD_TYPE = "upt-tast-type"
+  static FIELD_CATEGORY = "upt-tast-category"
+  static FIELD_ALL_DAY = "upt-task-all-day"
+  static FIELD_PRIORITY = "upt-tast-priority"
+
+  /** @type {UPTTaskForm} */
+  static instance;
+
+  constructor() {
+    /** @type {HTMLFormElement} */
+    this.form = document.querySelector(`#${UPT_TASK_FORM_ID}`)
+    this.apiService = UPTApiService.getInstance()
+
+    if (!this.form) {
+      console.error("form is null");
+      return;
+    }
+    this.nameInput = this.form.querySelector(`input[name="${UPTTaskForm.FIELD_NAME}"]`)
+    this.descTextarea = this.form.querySelector(`textarea[name="${UPTTaskForm.FIELD_DESC}"]`)
+    this.prioritySelect = this.form.querySelector(`select[name="${UPTTaskForm.FIELD_PRIORITY}"]`)
+    this.typeSelect = this.form.querySelector(`select[name="${UPTTaskForm.FIELD_TYPE}"]`)
+    this.categorySelect = this.form.querySelector(`select[name="${UPTTaskForm.FIELD_CATEGORY}"]`)
+
+    this.categoryCustomSelect = new CustomSelect(this.categorySelect)
+    this.priorityCustomSelect = new CustomSelect(this.prioritySelect)
+    this.typeCustomSelect = new CustomSelect(this.typeSelect)
+
+    this.init()
+  }
+
+  static getInstance() {
+    if (!UPTTaskForm.instance) {
+      UPTTaskForm.instance = new UPTTaskForm();
+    }
+    return UPTTaskForm.instance;
+  }
+
+
+  /** @param {string} taskId */
+  async loadFormData(taskId) {
+    showModalLoading(UPT_TASK_FORM_MODAL_ID)
+
+    const task = await this.apiService.getTaskById(taskId)
+    const categories = await this.apiService.getCategories()
+
+    if (!task) {
+      UPTModuleToast.show(UPTModuleToast.ERROR, "Nie istnieje zadanie o id: " + taskId)
+    } else {
+      UPTModuleToast.show(UPTModuleToast.INFO, "Pobrano informacje o zadaniu")
+    }
+
+    hideModalLoading(UPT_TASK_FORM_MODAL_ID)
+
+    return {
+      task,
+      categories
+    }
+  }
+
+  /** 
+   * @param {string} mode 
+   * @param {string | null} taskId
+   */
+  async open(mode, taskId = null) {
+    const isEditMode = mode === UPTTaskForm.MODE_EDIT
+    const submitButton = this.form.querySelector("[data-form-submit-btn]")
+
+    submitButton.textContent = isEditMode ? "Edytuj" : "Dodaj"
+
+    showModal(UPT_TASK_FORM_MODAL_ID, isEditMode ? "Edytuj Zadanie" : "Dodaj Zadanie")
+
+    this.form.reset()
+    this.categorySelect.innerHTML = ''
+
+    if (isEditMode) {
+      const {
+        task,
+        categories
+      } = await this.loadFormData(taskId)
+
+      this.categoryCustomSelect.destroy()
+      this.priorityCustomSelect.destroy()
+      this.typeCustomSelect.destroy()
+
+      this.nameInput.value = task.name 
+      this.typeSelect.value = task.type
+      this.prioritySelect = task.priority
+
+      categories.forEach(category => {
+        const option = document.createElement("option")
+        option.value = category.id
+        option.textContent = `${category.icon} ${category.name}`
+
+        if (category.id === task.categoryId) {
+          this.categorySelect.prepend(option)
+          this.categorySelect.value = category.id
+        } else {
+          this.categorySelect.append(option)
+        }
+      })
+
+      this.categoryCustomSelect = new CustomSelect(this.categorySelect)
+      this.priorityCustomSelect = new CustomSelect(this.prioritySelect)
+      this.typeCustomSelect = new CustomSelect(this.typeSelect)
+
+    } else {
+      //this.nameInput.value = ""
+    }
+  }
+
+  init() {
+    this.form.addEventListener("submit", (e) => {
+      e.preventDefault()
+
+
+      const formData = new FormData(this.form)
+
+      console.log(formData)
+    })
+  }
+}
+
+
+
+class UPTModulePanel {
   /**
    * @param {string} selector
    * @param {{ tasks: UPT_Task[], categories: UPT_TaskCategory[] }}
    */
-  constructor(selector, { tasks, categories }) {
+  constructor(selector, {
+    tasks,
+    categories
+  }) {
     this.panel = document.querySelector(selector);
     this.tasks = tasks;
     this.categories = categories;
-    this.apiService = new UPTApiService();
+    this.apiService = UPTApiService.getInstance();
+    this.taskForm = UPTTaskForm.getInstance()
+    this.categoryForm = UPTCategoryForm.getInstance()
 
     if (!this.panel) {
       console.error("this.panel is null");
       return;
     }
+    CustomSelect.initAll(selector + " select[data-custom-select]");
+    this.setClickEventListeners()
+
+    hideLoading(this.panel);
+  }
+
+  /** @returns {number} */
+  getMainTasksNumber() {
+    return this.tasks.reduce((value, task) => (task.type === UPT_TaskType.MAIN ? value + 1 : value), 0);
+  }
+  /** @returns {number} */
+  getDailyTasksNumber() {
+    return this.tasks.reduce((value, task) => (task.type === UPT_TaskType.DAILY ? value + 1 : value), 0);
+  }
+
+  /** @param {UPT_Task} task */
+  getTaskPrioritySubClass(task) {
+    let taskPrioritySubClass;
+
+    switch (task.priority) {
+      case UPT_TaskPriority.VERY_HIGH:
+        taskPrioritySubClass = "task-priority--very-high";
+        break;
+      case UPT_TaskPriority.HIGH:
+        taskPrioritySubClass = "task-priority--high";
+        break;
+      case UPT_TaskPriority.MEDIUM:
+        taskPrioritySubClass = "task-priority--medium";
+        break;
+      default:
+        taskPrioritySubClass = "task-priority--low";
+    }
+
+    return taskPrioritySubClass;
+  }
+
+  /** @param {UPT_Task} task */
+  getCategoryByTask(task) {
+    return this.categories.find((cat) => cat.id === task.categoryId);
+  }
+
+  setClickEventListeners() {
+    this.panel.addEventListener("click", (e) => {
+
+      if (e.target.hasAttribute("data-add-task-button")) {
+        this.taskForm.open(UPTTaskForm.MODE_CREATE)
+      }
+      if (e.target.hasAttribute("data-add-category-button")) {
+        this.categoryForm.open(UPTCategoryForm.MODE_CREATE)
+      }
+      if (e.target.hasAttribute("data-edit-task-btn")) {
+        const taskId = e.target.dataset.taskId;
+        this.taskForm.open(UPTTaskForm.MODE_EDIT, taskId)
+      }
+      if (e.target.hasAttribute("data-details-task-btn")) {
+        this.handleShowDetailsTaskButton(e.target)
+      }
+      if (e.target.hasAttribute("data-delete-task-btn")) {
+        this.handleDeleteTaskButton(e.target);
+      }
+      if (e.target.hasAttribute("data-edit-category-btn")) {
+        const categoryId = e.target.dataset.categoryId;
+        this.categoryForm.open(UPTCategoryForm.MODE_EDIT, categoryId)
+      }
+      if (e.target.hasAttribute("data-delete-category-btn")) {
+        this.handleDeleteCategoryButton(e.target);
+      }
+    });
+  }
+
+  /** @param {HTMLButtonElement} button */
+  handleShowDetailsTaskButton(button) {
+    const taskId = button.dataset.taskId;
+
+    showModal(UPT_DETAILS_TASK_MODAL_ID)
+    showModalLoading(UPT_DETAILS_TASK_MODAL_ID)
+
+    this.apiService.getTaskById(taskId).then(task => {
+      
+      hideModalLoading(UPT_DETAILS_TASK_MODAL_ID)
+    })
+
+    
+  }
+
+  /** @param {HTMLButtonElement} button */
+  handleDeleteTaskButton(button) {
+    const taskId = button.dataset.taskId;
+    const confirmButton = document.querySelector(`#${UPT_CONFIRM_MODAL_ID} [data-modal-confirm-button]`); 
+    const taskName = document.querySelector(`[data-task-card][data-task-id="${taskId}"] [data-task-name]`).textContent;
+
+    showModal(UPT_CONFIRM_MODAL_ID, `Czy napewno chcesz usunąć zadanie "${taskName}"?`);
+
+    confirmButton.onclick = (e) => {
+      showLoading(e.target);
+
+      setTimeout(() => {
+        const taskCards = document.querySelectorAll(`[data-task-card][data-task-id="${taskId}"]`);
+
+        taskCards.forEach(card => removeDataCard(card)) 
+        //TODO: odkomentuj
+        // this.apiService.deleteTask(taskId)
+        hideModal(UPT_CONFIRM_MODAL_ID);
+
+        UPTModuleToast.show(UPTModuleToast.SUCCESS, "Pomyślnie usunięto zadanie");
+
+        hideLoading(e.target);
+
+      }, 2000);
+    };
+  }
+
+  /** @param {HTMLButtonElement} button */
+  handleDeleteCategoryButton(button) {
+    const categoryId = button.dataset.categoryId;
+    const confirmButton = document.querySelector(`#${UPT_CONFIRM_MODAL_ID} [data-modal-confirm-button]`);
+    const categoryCard = this.panel.querySelector(`[data-category-card][data-category-id="${categoryId}"]`);
+    const categoryName = categoryCard.querySelector("[data-category-name]").textContent;
+
+    showModal(UPT_CONFIRM_MODAL_ID, `Czy napewno chcesz usunąć kategorię "${categoryName}"?`);
+
+    confirmButton.onclick = (e) => {
+      showLoading(e.target);
+
+      // this.apiService.deleteCategory(categoryId).then(()=> {
+      //   removeDataCard(categoryCard); 
+      //   hideModal(UPT_CONFIRM_MODAL_ID); 
+      //   UPTModuleToast.show(UPTModuleToast.SUCCESS, "Pomyślnie usunięto kategorię"); 
+      //   hideLoading(e.target);
+      // })
+
+      setTimeout(() => {
+        removeDataCard(categoryCard);
+        hideModal(UPT_CONFIRM_MODAL_ID);
+        UPTModuleToast.show(UPTModuleToast.SUCCESS, "Pomyślnie usunięto zadanie");
+        hideLoading(e.target);
+      }, 2000);
+    };
+  }
+}
+
+class UPTModuleMainPanel extends UPTModulePanel {
+  static TASKS_DISPLAY_NUMBER = 5;
+  static CATEGORIES_DISPLAY_NUMBER = 5;
+
+  constructor(selector, data) {
+    super(selector, data);
     this.init();
   }
 
   init() {
     // Wykres kołowy na głównym panelu
-    this.initPieChart(this.tasks);
+    this.initPieChart();
 
     // Liczba zadań
-    this.initStatisticTasks(this.tasks);
+    this.initStatisticTasks();
 
     // Wyświetl liste zadań
-    this.renderTasksList(this.tasks);
+    this.renderTasksList();
+
+    // Wyświetl Kategorie
+    this.renderCategoriesList();
 
     // timer odliczający do końca dnia
     this.initTimeToEndDayCountdown();
@@ -1665,35 +1994,76 @@ class UPTModuleMainPanel {
     this.initDateTimeStatisics();
   }
 
-  /** @param {UPT_Task[]} tasks */
-  renderTasksList(tasks) {
+  renderCategoriesList() {
+    const categoriesList = this.panel.querySelector("[data-category-list]");
+    const categoriesNumber = this.categories.length;
+    const categoriesListFragment = document.createDocumentFragment();
+
+    for (let i = 0; i < categoriesNumber; i++) {
+      const category = this.categories[i];
+
+      if (i >= UPTModuleMainPanel.CATEGORIES_DISPLAY_NUMBER - 1) break;
+
+      const li = document.createElement("li");
+      //<i class="task-category-link-icon fa-regular fa-circle-question" aria-hidden="true"></i>
+
+      li.innerHTML = `
+        <a href="#kategorie" class="task-category-link link variant4"> 
+          <i class="task-category-link-icon" aria-hidden="true">${category.icon}</i>
+          <span>${category.name}</span>
+        </a>
+      `;
+
+      categoriesListFragment.append(li);
+    }
+
+    categoriesList.append(categoriesListFragment);
+  }
+
+  renderTasksList() {
+    //TODO: const tasks = this.tasks.sort(task => {})
     const dailyTasksList = this.panel.querySelector("[data-daily-tasks-list]");
     const mainTasksList = this.panel.querySelector("[data-main-tasks-list]");
-    const tasksNumber = tasks.length;
+    const tasksNumber = this.tasks.length;
+    const dailyTasksFragment = document.createDocumentFragment();
+    const mainTasksFragment = document.createDocumentFragment();
+    let mainTasksDisplayedNumber = 0,
+      dailyTasksDisplayedNumber = 0;
 
     for (let i = 0; i < tasksNumber; i++) {
-      if (i > UPTModuleMainPanel.TASKS_DISPLAY_NUMBER - 1) break;
+      const task = this.tasks[i];
+      const taskIsMain = task.type === UPT_TaskType.MAIN;
 
-      const task = tasks[i];
-      const li = document.createElement("li");
-      let taskPrioritySubClass;
-      
-      switch(task.priority) {
-        case UPT_TaskPriority.LOW: taskPrioritySubClass = "task-priority--low"
-        case UPT_TaskPriority.MEDIUM: taskPrioritySubClass = "task-priority--medium"
-        case UPT_TaskPriority.HIGH: taskPrioritySubClass = "task-priority--high"
-        case UPT_TaskPriority.VERY_HIGH: taskPrioritySubClass = "task-priority--very-high"
+      if (
+        task.isArchived ||
+        (taskIsMain && mainTasksDisplayedNumber >= UPTModuleMainPanel.TASKS_DISPLAY_NUMBER) ||
+        (!taskIsMain && dailyTasksDisplayedNumber >= UPTModuleMainPanel.TASKS_DISPLAY_NUMBER)
+      ) {
+        continue;
       }
 
-      // TODO: Dokończ
+      const li = document.createElement("li");
+      const category = this.getCategoryByTask(task);
+      const categoryIcon = category ? category.icon : "";
+      const taskPrioritySubClass = this.getTaskPrioritySubClass(task);
+      const taskRepeatIcon = !taskIsMain ? '<i class="fa-solid fa-rotate"></i>' : "";
+      const taskDateInfo = taskIsMain ? `
+          <span class="task-date-month"><i class="fa-regular fa-calendar"></i> 23 Paź</span>
+          <span class="task-date-hours"><i class="fa-regular fa-clock"></i> 10:00 - 12:30</span>
+        ` : `
+        <span class="task-date-hours"><i class="fa-regular fa-clock"></i> 10:00 - 12:30</span>
+      `
 
       li.className = "task modern-card modern-card--opacity";
       li.setAttribute("data-task-id", task.id);
+      li.setAttribute("data-task-card", "");
+
+      //<i class="fa-solid fa-briefcase"></i>
 
       li.innerHTML = `
         <span class="task-checkbox tooltip custom-checkbox-group custom-checkbox-group--big">
-          <input id="checks" type="checkbox">
-          <label class="custom-checkbox-label" for="checks">
+          <input data-mark-task-as-done id="mark-as-done-task-${task.id}" type="checkbox">
+          <label class="custom-checkbox-label" for="mark-as-done-task-${task.id}">
             <span class="tooltip-content">Oznacz jako wykonane</span>
             <span class="custom-checkbox-icon" aria-hidden="true"></span>
           </label>
@@ -1701,21 +2071,19 @@ class UPTModuleMainPanel {
 
         <span class="task-content">
 
-          <span class="task-priority ${taskPrioritySubClass}">${task.priority}</span>
+          <span class="task-priority ${taskPrioritySubClass}">
+            ${task.priority}
+          </span>
 
           <span class="task-header">
-              <span class="task-name"><i class="fa-solid fa-briefcase"></i> ${task.name}</span>
+              <span class="task-name">
+                <i>${categoryIcon}</i> <span data-task-name>${task.name}</span> ${taskRepeatIcon}
+              </span>
 
               <span class="tooltip">
-                <span class="task-date-month">
-                  <i class="fa-regular fa-calendar"></i> 23 Paź
-                </span>
-                <span class="task-date-hours">
-                  <i class="fa-regular fa-clock"></i> 10:00 - 12:30
-                </span>
+                ${taskDateInfo}
                 <span class="tooltip-content">
-                  23 Pażdziernika 2024 rok
-                  Poniedziałek
+                  ${getUserFriendlyDateFormat(task.deadline)}
                   <hr class="upt-hr">
                   Od 10:00 do 12:30
                 </span>                                                                                                                                            
@@ -1724,19 +2092,28 @@ class UPTModuleMainPanel {
         </span>
 
         <span class="task-actions">
-          <button class="task-action-btn task-edit-btn tooltip">
+          <button data-edit-task-btn data-task-id="${task.id}" class="task-action-btn task-edit-btn tooltip">
             <span class="tooltip-content">Edytuj Zadanie</span>
             <i class="fa-solid fa-pen-to-square"></i>
           </button>
-          <button class="task-action-btn task-delete-btn tooltip">
+          <button data-delete-task-btn data-task-id="${task.id}" class="task-action-btn task-delete-btn tooltip">
             <span class="tooltip-content">Usuń Zadanie</span>
             <i class="fa-solid fa-trash-can"></i>
           </button>
         </span>
       `;
 
-      dailyTasksList.append(li);
+      if (taskIsMain) {
+        mainTasksDisplayedNumber++;
+        mainTasksFragment.append(li);
+      } else {
+        dailyTasksDisplayedNumber++;
+        dailyTasksFragment.append(li);
+      }
     }
+
+    mainTasksList.append(mainTasksFragment);
+    dailyTasksList.append(dailyTasksFragment);
   }
 
   initTimeToEndDayCountdown() {
@@ -1746,60 +2123,32 @@ class UPTModuleMainPanel {
     const tomorrowDate = new Date(
       now.getFullYear(),
       now.getMonth(),
-      now.getDate() + 1,
-      0,
-      0,
-      0,
-      0
+      now.getDate() + 1, 0, 0, 0, 0
     );
 
-    timeToEndDayCountdown.setAttribute(
-      "data-date-end",
-      tomorrowDate.toISOString()
-    );
-    timeToEndDayCountdown.setAttribute(
-      "data-time-units-to-show",
-      "['hours', 'minutes', 'seconds']"
-    );
+    timeToEndDayCountdown.setAttribute("data-date-end", tomorrowDate.toISOString());
+    timeToEndDayCountdown.setAttribute("data-time-units-to-show", "['hours', 'minutes', 'seconds']");
     timeToEndDayCard.append(timeToEndDayCountdown);
   }
 
-  /** @param {UPT_Task[]} tasks */
-  initStatisticTasks(tasks) {
-    const getTaskStatusNumber = (status) => (value, task) =>
-      task.type === status ? value + 1 : value;
-
-    const dailyTasksNumberEl = this.panel.querySelector(
-      "[data-statistic-daily-tasks-number]"
-    );
-    const mainTasksNumberEl = this.panel.querySelector(
-      "[data-statistic-main-tasks-number]"
-    );
-    dailyTasksNumberEl.textContent = tasks.reduce(
-      getTaskStatusNumber(UPT_TaskType.DAILY),
-      0
-    );
-    mainTasksNumberEl.textContent = tasks.reduce(
-      getTaskStatusNumber(UPT_TaskType.MAIN),
-      0
-    );
+  initStatisticTasks() {
+    const dailyTasksNumberEl = this.panel.querySelector("[data-statistic-daily-tasks-number]");
+    const mainTasksNumberEl = this.panel.querySelector("[data-statistic-main-tasks-number]");
+    dailyTasksNumberEl.textContent = this.getDailyTasksNumber();
+    mainTasksNumberEl.textContent = this.getMainTasksNumber();
   }
 
-  /** @param {UPT_Task[]} tasks */
-  initPieChart(tasks) {
+  initPieChart() {
     const pieChartSelector = UPT_MODULE_ID_SELECTOR + " [data-pie-chart]";
-    const pieChartAppearance = this.panel.querySelector(
-      pieChartSelector + " [data-pie-chart-appearance]"
-    );
-    const tasksNumber = tasks.length;
-    const getPercentOfTasksNumber = (number) =>
-      Math.round((number * 100) / tasksNumber);
+    const pieChartAppearance = this.panel.querySelector(pieChartSelector + " [data-pie-chart-appearance]");
+    const tasksNumber = this.tasks.length;
+    const getPercentOfTasksNumber = (number) => Math.round((number * 100) / tasksNumber);
 
     let completedCount = 0,
       inProgressCount = 0,
       deletedCount = 0;
 
-    tasks.forEach((task) => {
+    this.tasks.forEach((task) => {
       switch (task.status) {
         case UPT_TaskStatus.COMPLETED:
           completedCount++;
@@ -1816,8 +2165,7 @@ class UPTModuleMainPanel {
     pieChartAppearance.setAttribute(
       "data-pie",
       JSON.stringify({
-        data: [
-          {
+        data: [{
             color: "#00c821",
             percent: getPercentOfTasksNumber(completedCount),
             label: `Zrealizowane(${completedCount})`,
@@ -1842,49 +2190,249 @@ class UPTModuleMainPanel {
   }
 
   initDateTimeStatisics() {
-    new UPTDateTimeStatisics(
-      UPT_MODULE_ID_SELECTOR + " [data-date-time-statisics]"
-    );
+    new UPTDateTimeStatisics(UPT_MODULE_ID_SELECTOR + " [data-date-time-statisics]");
   }
 }
 
-class UPTModuleCategoryPanel {
-  /**
-   * @param {string} selector
-   */
-  constructor(selector) {
-    this.panel = document.querySelector(selector);
+class UPTModuleCategoryPanel extends UPTModulePanel {
+  constructor(selector, data) {
+    super(selector, data);
+    this.init();
+  }
 
-    if (!this.panel) {
-      console.error("this.panel is null");
-      return;
+  init() {
+    this.renderCategoriesList();
+  }
+
+  renderCategoriesList() {
+    const categoriesList = this.panel.querySelector("[data-category-list]");
+    const categoriesNumber = this.categories.length;
+    const categoriesListFragment = document.createDocumentFragment();
+
+    for (let i = 0; i < categoriesNumber; i++) {
+      const category = this.categories[i];
+      categoriesListFragment.append(this.renderCategory(category));
     }
+
+    categoriesList.append(categoriesListFragment);
+  }
+
+  /** @param {UPT_TaskCategory} category */
+  renderCategory(category) {
+    const li = document.createElement("li");
+    li.setAttribute("data-category-id", category.id);
+    li.setAttribute("data-category-card", "");
+    li.className = "category-card modern-card";
+
+    //<i class="category-card-icon fa-regular fa-circle-question"></i>
+
+    li.innerHTML = `
+      <span class="category-card-header">
+        <span class="category-card-name">
+            <i class="category-card-icon">${category.icon}</i>
+            <span data-category-name>${category.name}</span>
+        </span>
+        <span class="category-card-createAt">Utworzono: ${formatDate(category.createdAt)}</span>
+      </span>
+      <span class="category-card-actions">
+        <button data-edit-category-btn data-category-id="${category.id}" class="category-card-action-btn tooltip">
+          <i class="fa-solid fa-pen-to-square"></i>
+          <span class="tooltip-content">Edytuj Zadanie</span>
+        </button>
+        <button data-delete-category-btn data-category-id="${category.id}" class="category-card-action-btn category-card-delete-btn tooltip">
+          <span class="tooltip-content">Usuń Zadanie</span>
+          <i class="fa-solid fa-trash-can"></i>
+        </button>
+      </span>
+    `;
+
+    return li
   }
 }
-class UPTModuleTasksPanel {
-  /**
-   * @param {string} selector
-   */
-  constructor(selector) {
-    this.panel = document.querySelector(selector);
 
-    if (!this.panel) {
-      console.error("this.panel is null");
-      return;
+class UPTModuleTasksPanel extends UPTModulePanel {
+  constructor(selector, data) {
+    super(selector, data);
+    // data-current-type-title
+    // data-tasks-type-toggle-btn data-current-type="daily"
+    this.currentTypeTitleEl = this.panel.querySelector("[data-current-type-title]")
+    this.typeToggleButton = this.panel.querySelector("[data-tasks-type-toggle-btn]")
+    this.init();
+  }
+
+  init() {
+    this.renderTasksList();
+    this.typeToggleButton.addEventListener('click', (e) => {
+      const currentType = e.target.dataset.currentType
+      const taskCardsToHide = this.panel.querySelectorAll(`[data-task-card][data-task-type="${currentType}"]`)
+
+      taskCardsToHide.forEach(taskCard => {
+        // taskCard.
+      })
+      // TODO:
+      // this.
+    })
+  }
+
+  renderTasksList() {
+    const tasksList = this.panel.querySelector("[data-tasks-list]");
+    const tasksListFragment = document.createDocumentFragment();
+    const tasksNumber = this.tasks.length;
+
+    for (let i = 0; i < tasksNumber; i++) {
+      const task = this.tasks[i];
+      const taskIsMain = task.type === UPT_TaskType.MAIN
+
+      if (task.isArchived) {
+        continue;
+      }
+
+      const card = document.createElement("div");
+      const category = this.getCategoryByTask(task);
+      const categoryIcon = category ? category.icon : "";
+      const taskPrioritySubClass = this.getTaskPrioritySubClass(task);
+      const taskRepeatIcon = !taskIsMain ? '<i class="fa-solid fa-rotate"></i>' : "";
+      const taskDescription =
+        task.description && task.description !== "" ?
+        `<p class="task-card-short-desc">${task.description}</p>` :
+        "";
+      const taskDateInfo = taskIsMain ? `
+          <span class="task-date-month"><i class="fa-regular fa-calendar"></i> 23 Paź</span>
+          <span class="task-date-hours"><i class="fa-regular fa-clock"></i> 10:00 - 12:30</span>
+        ` : `
+        <span class="task-date-hours"><i class="fa-regular fa-clock"></i> 10:00 - 12:30</span>
+      `
+
+      card.setAttribute("data-task-id", task.id);
+      card.setAttribute("data-task-type", task.type);
+      card.setAttribute("data-task-card", "");
+      card.className = "task-card modern-card";
+
+      if (taskIsMain) {
+        card.style.display = "none";
+      }
+
+      card.innerHTML = `
+        <div class="task-card-header">
+          <span class="task-priority task-card-priority ${taskPrioritySubClass}">${task.priority}</span>
+
+          <p class="task-name task-card-name">
+            <i class="task-icon">${categoryIcon}</i>
+            <span data-task-name>${task.name}</span> ${taskRepeatIcon}
+          </p>
+
+          <div class="category-card-actions task-card-actions-top">
+            <button data-edit-task-btn data-task-id="${task.id}" class="category-card-action-btn task-card-action-btn tooltip">
+              <i class="fa-solid fa-pen-to-square"></i>
+              <span class="tooltip-content">Edytuj Zadanie</span>
+            </button>
+            <button data-archive-task-btn data-task-id="${task.id}" class="category-card-action-btn task-card-action-btn tooltip">
+              <span class="tooltip-content">Archiwizuj Zadanie</span>
+              <i class="fa-regular fa-folder"></i>
+            </button>
+            <button data-delete-task-btn data-task-id="${task.id}"  class="category-card-action-btn category-card-delete-btn task-card-action-btn tooltip">
+              <span class="tooltip-content">Usuń Zadanie</span>
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>                                                          
+        </div>
+
+        <div class="tooltip">
+          ${taskDateInfo}
+          <span class="tooltip-content"> 
+            ${getUserFriendlyDateFormat(task.deadline)}
+            <hr class="upt-hr">
+            Od 10:00 do 12:30
+          </span>
+        </div>
+ 
+        ${taskDescription}
+
+        <div class="task-card-actions-bottom">
+          <button data-details-task-btn data-task-id="${task.id}" class="task-card-action-btn link small variant3" aria-controls="user-private-tasks-module-task-details-modal">
+            <i class="fa-solid fa-info"></i> Pokaż Szczegóły
+          </button>
+          <button data-end-task-btn data-task-id="${task.id}" class="task-card-action-btn link small variant2">
+            <i class="fa-solid fa-check"></i> Zakończ Zadanie
+          </button>
+        </div>                     
+      `;
+
+      tasksListFragment.append(card);
     }
+
+    tasksList.append(tasksListFragment);
   }
 }
 
-class UPTModuleArchivePanel {
-  /**
-   * @param {string} selector
-   */
-  constructor(selector) {
-    this.panel = document.querySelector(selector);
+class UPTModuleArchivePanel extends UPTModulePanel {
+  constructor(selector, data) {
+    super(selector, data);
+    this.init();
+  }
 
-    if (!this.panel) {
-      console.error("this.panel is null");
-      return;
+  init() {
+    this.renderTasksList();
+  }
+
+  renderTasksList() {
+    const tasksList = this.panel.querySelector("[data-tasks-archive-list]");
+    const tasksListFragment = document.createDocumentFragment();
+    const tasksNumber = this.tasks.length;
+
+    for (let i = 0; i < tasksNumber; i++) {
+      const task = this.tasks[i];
+
+      if (!task.isArchived) {
+        continue;
+      }
+
+      const li = document.createElement("li");
+      const category = this.getCategoryByTask(task);
+      const categoryIcon = category ? category.icon : "";
+      const taskPrioritySubClass = this.getTaskPrioritySubClass(task);
+      const taskRepeatIcon =
+        task.type === UPT_TaskType.DAILY ?
+        '<i class="fa-solid fa-rotate"></i>' :
+        "";
+
+      li.setAttribute("data-task-id", task.id);
+      li.setAttribute("data-task-card", "");
+      li.className = "task-archive category-card modern-card";
+
+      li.innerHTML = ` 
+         <span class="task-archive-header">
+          <span class="task-priority ${taskPrioritySubClass}">
+            ${task.priority}
+          </span>
+          <span class="task-archive-name category-card-name">
+            <i class="category-card-icon">${categoryIcon}</i>
+            <span data-task-name>${task.name}</span>
+            ${taskRepeatIcon}
+          </span>
+        </span>                                                 
+        <span class="category-card-createAt">
+          Zarchiwizowano: ${formatDate(task.archivedAt)}
+        </span>
+        <span class="task-archive-actions category-card-actions">
+          <button class="category-card-action-btn tooltip">
+            <i class="fa-solid fa-info"></i>
+            <span class="tooltip-content">Szczegóły Zadania</span>
+          </button>
+          <button class="category-card-action-btn tooltip">
+            <i class="fa-solid fa-rotate-right"></i>
+            <span class="tooltip-content">Przywróć Zadanie</span>
+          </button>
+          <button class="category-card-action-btn category-card-delete-btn tooltip">
+            <span class="tooltip-content">Usuń Zadanie</span>
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </span>                     
+      `;
+
+      tasksListFragment.append(li);
     }
+
+    tasksList.append(tasksListFragment);
   }
 }

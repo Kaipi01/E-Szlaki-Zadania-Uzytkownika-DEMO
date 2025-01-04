@@ -1,0 +1,39 @@
+@use "../base/variables" as *;
+@use "../functions/toRem" as *;
+
+#user-private-tasks-module { 
+    
+  .loading {
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      z-index: 8;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      transform: translate(-50%, -50%);
+      border-radius: inherit;
+      background-color: #ffffff85;
+      backdrop-filter: blur(15px);
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      z-index: 9;
+      top: 50%;
+      left: 50%;
+      width: min(40%, 12.5rem);
+      height: min(40%, 12.5rem);
+      transform: translate(-50%, -50%);
+      animation: var(--loading-icon-animation);
+      background-image: var(--loading-icon);
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+    }
+  }
+}

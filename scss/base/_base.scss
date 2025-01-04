@@ -60,9 +60,18 @@ main {
     text-decoration: none;
   }
 
+  i {
+    font-style: normal;
+  }
+
   button {
     border: none;
     cursor: pointer;
+
+    * {
+      /* ważne */
+      pointer-events: none;
+    }
   }
 
   .basic-list {

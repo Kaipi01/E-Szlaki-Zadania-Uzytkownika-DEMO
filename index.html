@@ -54,7 +54,7 @@
                 </nav>
                 <!-- MAIN NAVIGATION START -->
 
-                <div class="main-content-wrapper">
+                <div data-main-content class="main-content-wrapper">
 
                     <!-- MAIN PANEL PAGE START -->
                     <section data-content-page="#panel-glowny" id="panel-glowny" class="main-panel panel active">
@@ -109,11 +109,9 @@
                                     <label class="floating-label" for="input-search">Szukaj</label>
                                 </div>
                             </form>
-                            <button class="link link-100 variant3"
-                                aria-controls="user-private-tasks-module-add-task-modal"><i
-                                    class="link-icon fa-solid fa-plus"></i> Dodaj Nowe Zadanie</button>
-                            <button class="link link-100 variant3"
-                                aria-controls="user-private-tasks-module-add-category-modal">
+                            <button data-add-task-button class="link link-100 variant3">
+                                <i class="link-icon fa-solid fa-plus"></i> Dodaj Nowe Zadanie</button>
+                            <button data-add-category-button class="link link-100 variant3">
                                 <i class="link-icon fa-solid fa-plus"></i> Dodaj Nową Kategorię
                             </button>
                         </div>
@@ -128,7 +126,7 @@
                             <ul data-daily-tasks-list class="preview-tasks-list">
                                 <!-- <li class="modern-card no-tasks-card">
                                     <p class="no-tasks-card-info">Obecnie nie masz żadnych zadań dziennych</p>
-                                    <button class="link small link-100 variant3" aria-controls="user-private-tasks-module-add-task-modal">
+                                    <button data-add-task-button class="link small link-100 variant3">
                                         <i class="link-icon fa-solid fa-plus"></i> 
                                         Dodaj Nowe Zadanie
                                     </button>
@@ -143,145 +141,11 @@
                             <ul data-main-tasks-list class="preview-tasks-list">
                                 <!-- <li class="modern-card no-tasks-card">
                                     <p class="no-tasks-card-info">Obecnie nie masz żadnych zadań głównych</p>
-                                    <button class="link small link-100 variant3" aria-controls="user-private-tasks-module-add-task-modal">
+                                    <button data-add-task-button class="link small link-100 variant3">
                                         <i class="link-icon fa-solid fa-plus"></i> 
                                         Dodaj Nowe Zadanie
                                     </button>
-                                </li> -->
-
-                                <li class="task modern-card modern-card--opacity">
-
-                                    <span
-                                        class="task-checkbox tooltip custom-checkbox-group custom-checkbox-group--big">
-                                        <input id="check" type="checkbox">
-                                        <label class="custom-checkbox-label" for="check">
-                                            <span class="tooltip-content">Oznacz jako wykonane</span>
-                                            <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                                        </label>
-                                    </span>
-
-                                    <span class="task-content">
-                                        <span class="task-priority"></i> Wysoki
-                                            piorytet</span>
-                                        <span class="task-header">
-                                            <span class="task-name"><i class="fa-solid fa-briefcase"></i> Zadanie numer
-                                                1</span>
-                                            <span class="tooltip">
-                                                <span class="task-date-month">
-                                                    <i class="fa-regular fa-calendar"></i> 23 Paź
-                                                </span>
-                                                <span class="task-date-hours">
-                                                    <i class="fa-regular fa-clock"></i> 10:00 - 12:30
-                                                </span>
-                                                <span class="tooltip-content">Lorem ipsum dolor sit amet consectetur,
-                                                    adipisicing elit. Consequatur, quod quasi. Repellendus reiciendis
-                                                    officia repellat ipsam dignissimos magnam aliquam aspernatur,
-                                                    voluptatibus autem itaque.</span>
-                                            </span>
-                                        </span>
-                                    </span>
-
-                                    <span class="task-actions">
-                                        <button class="task-action-btn task-edit-btn tooltip">
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                            <span class="tooltip-content">Edytuj Zadanie</span>
-                                        </button>
-                                        <button class="task-action-btn task-delete-btn tooltip">
-                                            <span class="tooltip-content">Usuń Zadanie</span>
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </span>
-                                </li>
-                                <li class="task modern-card modern-card--opacity">
-
-                                    <span
-                                        class="task-checkbox tooltip custom-checkbox-group custom-checkbox-group--big">
-                                        <input id="checks" type="checkbox">
-                                        <label class="custom-checkbox-label" for="checks">
-                                            <span class="tooltip-content">Oznacz jako wykonane</span>
-                                            <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                                        </label>
-                                    </span>
-
-                                    <span class="task-content">
-                                        <span class="task-priority"></i> Wysoki
-                                            piorytet</span>
-                                        <span class="task-header">
-                                            <span class="task-name"><i class="fa-solid fa-briefcase"></i> Zadanie numer
-                                                1</span>
-                                            <span class="tooltip">
-                                                <span class="task-date-month">
-                                                    <i class="fa-regular fa-calendar"></i> 23 Paź
-                                                </span>
-                                                <span class="task-date-hours">
-                                                    <i class="fa-regular fa-clock"></i> 10:00 - 12:30
-                                                </span>
-                                                <span class="tooltip-content">
-                                                    23 Pażdziernika 2024 rok <br>
-                                                    Poniedziałek
-                                                    <hr class="upt-hr">
-                                                    Od 10:00 do 12:30
-                                                </span>
-                                            </span>
-                                        </span>
-                                    </span>
-
-                                    <span class="task-actions">
-                                        <button class="task-action-btn task-edit-btn tooltip">
-                                            <span class="tooltip-content">Edytuj Zadanie</span>
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </button>
-                                        <button class="task-action-btn task-delete-btn tooltip">
-                                            <span class="tooltip-content">Usuń Zadanie</span>
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </span>
-                                </li>
-                                <li class="task modern-card modern-card--opacity">
-
-                                    <span
-                                        class="task-checkbox tooltip custom-checkbox-group custom-checkbox-group--big">
-                                        <input id="checks" type="checkbox">
-                                        <label class="custom-checkbox-label" for="checks">
-                                            <span class="tooltip-content">Oznacz jako wykonane</span>
-                                            <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                                        </label>
-                                    </span>
-
-                                    <span class="task-content">
-                                        <span class="task-priority"></i> Wysoki
-                                            piorytet</span>
-                                        <span class="task-header">
-                                            <span class="task-name"><i class="fa-solid fa-briefcase"></i> Zadanie numer
-                                                1</span>
-                                            <span class="tooltip">
-                                                <span class="task-date-month">
-                                                    <i class="fa-regular fa-calendar"></i> 23 Paź
-                                                </span>
-                                                <span class="task-date-hours">
-                                                    <i class="fa-regular fa-clock"></i> 10:00 - 12:30
-                                                </span>
-                                                <span class="tooltip-content">
-                                                    23 Pażdziernika 2024 rok <br>
-                                                    Poniedziałek
-                                                    <hr class="upt-hr">
-                                                    Od 10:00 do 12:30
-                                                </span>
-                                            </span>
-                                        </span>
-                                    </span>
-
-                                    <span class="task-actions">
-                                        <button class="task-action-btn task-edit-btn tooltip">
-                                            <span class="tooltip-content">Edytuj Zadanie</span>
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </button>
-                                        <button class="task-action-btn task-delete-btn tooltip">
-                                            <span class="tooltip-content">Usuń Zadanie</span>
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </span>
-                                </li>
+                                </li> --> 
                             </ul>
                         </div>
                         <div class="categories-card modern-card">
@@ -290,41 +154,7 @@
                                 <a href="#kategorie" class="link small variant2">Pokaż więcej</a>
                             </div>
                             <ul data-category-list class="task-category-list">
-                                <li>
-                                    <a href="#kategorie" class="task-category-link link variant4">
-                                        <i class="task-category-link-icon fa-regular fa-circle-question"
-                                            aria-hidden="true"></i>
-                                        <span>Praca</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#kategorie" class="task-category-link link variant4">
-                                        <i class="task-category-link-icon fa-regular fa-circle-question"
-                                            aria-hidden="true"></i>
-                                        <span>Dom</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#kategorie" class="task-category-link link variant4">
-                                        <i class="task-category-link-icon fa-regular fa-circle-question"
-                                            aria-hidden="true"></i>
-                                        <span>Rozrywka</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#kategorie" class="task-category-link link variant4">
-                                        <i class="task-category-link-icon fa-regular fa-circle-question"
-                                            aria-hidden="true"></i>
-                                        <span>Trening</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#kategorie" class="task-category-link link variant4">
-                                        <i class="task-category-link-icon fa-regular fa-circle-question"
-                                            aria-hidden="true"></i>
-                                        <span>Nauka</span>
-                                    </a>
-                                </li>
+                                 
                             </ul>
                         </div>
                     </section>
@@ -337,8 +167,8 @@
                             <div class="actions-card-content-top">
 
                                 <div class="actions-card-header">
-                                    <p class="actions-card-title upt-header">Zadania Codzienne</p>
-                                    <button class="actions-card-toggle-btn link link-100 small variant2">
+                                    <p data-current-type-title class="actions-card-title upt-header">Zadania Codzienne</p>
+                                    <button data-tasks-type-toggle-btn data-current-type="daily" class="actions-card-toggle-btn link link-100 small variant2">
                                         Pokaż zadania główne
                                     </button>
                                 </div>
@@ -359,9 +189,9 @@
 
                             <div class="actions-card-content-bottom">
 
-                                <button class="add-task-btn link link-100 variant3"
-                                    aria-controls="user-private-tasks-module-add-task-modal"><i
-                                        class="link-icon fa-solid fa-plus"></i> Dodaj Nowe Zadanie</button>
+                                <button data-add-task-button class="add-task-btn link link-100 variant3">
+                                    <i class="link-icon fa-solid fa-plus"></i> Dodaj Nowe Zadanie
+                                </button>
 
                                 <select id="filter-tasks" data-custom-select data-class-name="custom-select-green">
                                     <option selected value="hide">Filtruj</option>
@@ -378,71 +208,7 @@
                             </div>
 
                         </div>
-                        <div class="tasks-cards-list">
-                            <div data-task-id="task12345" class="task-card modern-card">
-                                <div class="task-card-header">
-                                    <span class="task-priority task-card-priority task-priority--very-high">
-                                        Bardzo Wysoki piorytet
-                                    </span>
-
-                                    <p class="task-name task-card-name">
-                                        <i class="task-icon fa fa-briefcase"></i>
-                                        Zadanie numer 1234
-                                    </p>
-
-                                    <div class="category-card-actions task-card-actions-top">
-                                        <button class="category-card-action-btn task-card-action-btn tooltip">
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                            <span class="tooltip-content">Edytuj Zadanie</span>
-                                        </button>
-                                        <button class="category-card-action-btn task-card-action-btn tooltip">
-                                            <span class="tooltip-content">Archiwizuj Zadanie</span>
-                                            <i class="fa-regular fa-folder"></i>
-                                        </button>
-                                        <button
-                                            class="category-card-action-btn category-card-delete-btn task-card-action-btn tooltip">
-                                            <span class="tooltip-content">Usuń Zadanie</span>
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="tooltip">
-                                    <span class="task-date-month">
-                                        <i class="fa-regular fa-calendar"></i> 23 Paź
-                                    </span>
-                                    <span class="task-date-hours">
-                                        <i class="fa-regular fa-clock"></i> 10:00 - 12:30
-                                    </span>
-                                    <span class="tooltip-content">
-                                        23 Pażdziernika 2024 rok <br>
-                                        Poniedziałek
-                                        <hr class="upt-hr">
-                                        Od 10:00 do 12:30
-                                    </span>
-                                </div>
-
-                                <p class="task-card-short-desc">Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                    Unde beatae, corporis totam
-                                    ducimus sunt odit quia autem minima...</p>
-
-                                <div class="task-card-actions-bottom">
-                                    <button class="task-card-action-btn link small variant3"
-                                        aria-controls="user-private-tasks-module-task-details-modal">
-                                        <i class="fa-solid fa-info"></i>
-                                        Pokaż Szczegóły
-                                    </button>
-                                    <button class="task-card-action-btn link small variant2">
-                                        <i class="fa-solid fa-check"></i>
-                                        Zakończ Zadanie
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="task-card modern-card">Zadanie</div>
-                            <div class="task-card modern-card">Zadanie</div>
-                            <div class="task-card modern-card">Zadanie</div>
-                            <div class="task-card modern-card">Zadanie</div>
-                            <div class="task-card modern-card">Zadanie</div>
+                        <div data-tasks-list class="tasks-cards-list"> 
                         </div>
                     </section>
                     <!-- TASKS PAGE END -->
@@ -450,8 +216,7 @@
                     <!-- CATEGORIES PAGE START -->
                     <section data-content-page="#kategorie" id="kategorie" class="categories-panel panel">
                         <div class="actions-card modern-card">
-                            <button class="actions-card-left-content link link-100 variant3"
-                                aria-controls="user-private-tasks-module-add-category-modal">
+                            <button data-add-category-button class="actions-card-left-content link link-100 variant3">
                                 <i class="link-icon fa-solid fa-plus"></i> Dodaj Nową Kategorię
                             </button>
                             <div class="actions-card-right-content">
@@ -478,64 +243,8 @@
                                 </form>
                             </div>
                         </div>
-                        <ul class="categories-list">
-                            <li class="category-card modern-card">
-                                <span class="category-card-header">
-                                    <span class="category-card-name">
-                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
-                                        Kategoria
-                                    </span>
-                                    <span class="category-card-createAt">Utworzono: 23.12.2024</span>
-                                </span>
-                                <span class="category-card-actions">
-                                    <button class="category-card-action-btn tooltip">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                        <span class="tooltip-content">Edytuj Zadanie</span>
-                                    </button>
-                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
-                                        <span class="tooltip-content">Usuń Zadanie</span>
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </span>
-                            </li>
-                            <li class="category-card modern-card">
-                                <span class="category-card-header">
-                                    <span class="category-card-name">
-                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
-                                        Kategoria
-                                    </span>
-                                    <span class="category-card-createAt">Utworzono: 23.12.2024</span>
-                                </span>
-                                <span class="category-card-actions">
-                                    <button class="category-card-action-btn tooltip">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                        <span class="tooltip-content">Edytuj Zadanie</span>
-                                    </button>
-                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
-                                        <span class="tooltip-content">Usuń Zadanie</span>
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </span>
-                            </li>
-                            <li class="category-card modern-card">
-                                <span class="category-card-header">
-                                    <span class="category-card-name">
-                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
-                                        Kategoria
-                                    </span>
-                                    <span class="category-card-createAt">Utworzono: 23.12.2024</span>
-                                </span>
-                                <span class="category-card-actions">
-                                    <button class="category-card-action-btn tooltip">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                        <span class="tooltip-content">Edytuj Zadanie</span>
-                                    </button>
-                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
-                                        <span class="tooltip-content">Usuń Zadanie</span>
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </span>
-                            </li>
+                        <ul data-category-list class="categories-list">
+                             
                         </ul>
                     </section>
                     <!-- CATEGORIES PAGE END -->
@@ -571,34 +280,7 @@
 
                         </div>
 
-                        <ul class="tasks-archive-list">
-                            <li class="task-archive category-card modern-card">
-                                <span class="task-archive-header">
-                                    <span class="task-priority task-priority--very-high">
-                                        Bardzo Wysoki piorytet
-                                    </span>
-                                    <span class="task-archive-name category-card-name">
-                                        <i class="category-card-icon fa-regular fa-circle-question"></i>
-                                        Zadanie numer 34
-                                    </span>
-                                </span>
-                                <span class="category-card-createAt">Zarchiwizowano: 23.12.2024</span>
-                                <span class="task-archive-actions category-card-actions">
-                                    <button class="category-card-action-btn tooltip">
-                                        <i class="fa-solid fa-info"></i>
-                                        <span class="tooltip-content">Szczegóły Zadania</span>
-                                    </button>
-                                    <button class="category-card-action-btn tooltip">
-                                        <i class="fa-solid fa-rotate-right"></i>
-                                        <span class="tooltip-content">Przywróć Zadanie</span>
-                                    </button>
-                                    <button class="category-card-action-btn category-card-delete-btn tooltip">
-                                        <span class="tooltip-content">Usuń Zadanie</span>
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </span>
-                            </li>
-                            <li class="task-archive modern-card">Zadanie</li>
+                        <ul data-tasks-archive-list class="tasks-archive-list"> 
                         </ul>
                     </section>
                     <!-- ARCHIVE PAGE END -->
@@ -607,71 +289,72 @@
             </div>
             <!-- MAIN CONTENT LAYOUT END -->
 
-            <!-- ADD TASK MODAL FORM START -->
-            <user-private-tasks-module-modal data-modal-id="user-private-tasks-module-add-task-modal"
-                data-modal-first-focus="#upt-add-tast-input-name">
+            <!-- TASK MODAL FORM START -->
+            <user-private-tasks-module-modal data-modal-id="user-private-tasks-module-task-form-modal"
+                data-modal-first-focus="#upt-tast-input-name">
                 <template slot="modal-title">Dodaj Nowe Zadanie</template>
 
                 <template slot="modal-content">
-                    <form class="upt-add-tast-form">
+                    <form id="user-private-tasks-module-task-form" class="upt-tast-form">
 
                         <div class="upt-form-field">
-                            <input class="floating-label-control upt-form-control" type="text" name="upt-add-tast-name"
-                                id="upt-add-tast-input-name" placeholder="Nazwa">
-                            <label class="floating-label" for="upt-add-tast-input-name">Nazwa Zadania</label>
+                            <input class="floating-label-control upt-form-control" type="text" name="upt-tast-name"
+                                id="upt-tast-input-name" placeholder="Nazwa">
+                            <label class="floating-label" for="upt-tast-input-name">Nazwa Zadania</label>
 
                             <i class="upt-icon fa-solid fa-pen"></i>
                         </div>
 
                         <div>
-                            <select id="upt-add-tast-input-type" data-custom-select
-                                data-class-name="custom-select-green">
+                            <select id="upt-tast-input-type" name="upt-tast-type" data-custom-select data-class-name="custom-select-green">
                                 <option value="hide">Typ Zadania</option>
                                 <option value="daily">Codzienne</option>
                                 <option value="main">Główne</option>
                             </select>
-                            <label class="sr-only" for="upt-add-tast-input-type">Typ Zadania</label>
+                            <label class="sr-only" for="upt-tast-input-type">Typ Zadania</label>
                         </div>
 
                         <div>
-                            <select id="upt-add-tast-input-category" data-custom-select
+                            <select id="upt-tast-input-category" name="upt-tast-category" data-custom-select
                                 data-class-name="custom-select-green">
-                                <option value="hide">Wybierz Kategorie</option>
-                                <option value="magni" data-icon="fa-pen">Magni</option>
-                                <option value="doloremque" data-icon="fa-briefcase">Doloremque</option>
-                                <option value="remque" data-icon="fa-clock">Remquee</option>
-                                <option value="quantum" data-icon="fa-home">Quantum</option>
+                                <option value="hide">Wybierz Kategorie</option> 
                             </select>
-                            <label class="sr-only" for="upt-add-tast-input-category">Kategoria</label>
+                            <label class="sr-only" for="upt-tast-input-category">Kategoria</label>
+                        </div>
+
+                        <div class="upt-form-field mb-1">
+                            <input class="floating-label-control upt-form-control" type="time"
+                                name="upt-tast-time-start" id="upt-tast-input-time-start">
+                            <label class="floating-label" for="upt-tast-input-time-start">Od kiedy</label>
                         </div>
 
 
                         <div>
                             <div class="upt-form-field mb-1">
-                                <input class="floating-label-control upt-form-control" type="date"
-                                    name="upt-add-tast-name" id="upt-add-tast-input-date-start">
-                                <label class="floating-label" for="upt-add-tast-input-date-start">Od kiedy</label>
+                                <input class="floating-label-control upt-form-control" type="datetime-local"
+                                    name="upt-tast-date-start" id="upt-tast-input-date-start">
+                                <label class="floating-label" for="upt-tast-input-date-start">Od kiedy</label>
                             </div>
 
                             <div class="custom-checkbox-group">
-                                <input id="upt-add-tast-all-day" type="checkbox">
-                                <label class="custom-checkbox-label" for="upt-add-tast-all-day">
+                                <input id="upt-task-input-all-day" name="upt-task-all-day" type="checkbox">
+                                <label class="custom-checkbox-label" for="upt-task-input-all-day">
                                     <span class="custom-checkbox-icon" aria-hidden="true"></span>
                                 </label>
-                                <label class="custom-checkbox-label" for="upt-add-tast-all-day">Cały dzień</label>
+                                <label class="custom-checkbox-label" for="upt-task-input-all-day">Cały dzień</label>
                             </div>
                         </div>
 
 
                         <div class="upt-form-field">
                             <input class="floating-label-control upt-form-control" type="date"
-                                name="upt-add-tast-date-end" id="upt-add-tast-input-date-end">
-                            <label class="floating-label" for="upt-add-tast-input-date-end">Do kiedy</label>
+                                name="upt-tast-date-end" id="upt-tast-input-date-end">
+                            <label class="floating-label" for="upt-tast-input-date-end">Do kiedy</label>
                         </div>
 
 
                         <div>
-                            <select id="upt-add-tast-input-priority" data-custom-select
+                            <select id="upt-tast-input-priority" name="upt-tast-priority" data-custom-select
                                 data-class-name="custom-select-green">
                                 <option value="hide">Wybierz Piorytet</option>
                                 <option value="bardzo-wysoki">Bardzo Wysoki</option>
@@ -679,17 +362,17 @@
                                 <option value="sredni">Średni</option>
                                 <option value="niski">Niski</option>
                             </select>
-                            <label class="sr-only" for="upt-add-tast-input-priority">Piorytet</label>
+                            <label class="sr-only" for="upt-tast-input-priority">Piorytet</label>
                         </div>
 
 
-                        <div class="upt-add-tast-desc upt-form-field">
-                            <label class="floating-label" for="upt-add-tast-input-desc">Opis</label>
-                            <textarea rows="5" class="floating-label-control upt-form-control " name="upt-add-tast-desc"
-                                id="upt-add-tast-input-desc" placeholder="Maksymalnie 500 znaków"></textarea>
+                        <div class="upt-tast-desc upt-form-field">
+                            <label class="floating-label" for="upt-tast-input-desc">Opis</label>
+                            <textarea rows="5" class="floating-label-control upt-form-control" name="upt-tast-desc"
+                                id="upt-tast-input-desc" placeholder="Maksymalnie 500 znaków"></textarea>
                         </div>
 
-                        <ul class="upt-add-tast-subtasks-list subtasks-list">
+                        <ul class="upt-tast-subtasks-list subtasks-list">
                             <li class="subtask task modern-card">
 
                                 <span class="task-checkbox custom-checkbox-group">
@@ -780,7 +463,7 @@
                             </li>
                         </ul>
 
-                        <div class="upt-add-tast-form-actions">
+                        <div class="upt-tast-form-actions">
                             <div class="left-actions">
                                 <button class="link medium variant2">
                                     <i class="fa-solid fa-plus"></i>
@@ -791,7 +474,7 @@
                                 <button class="link medium variant1 js-modal__close">
                                     Anuluj
                                 </button>
-                                <button type="submit" class="link medium variant2">
+                                <button data-form-submit-btn type="submit" class="link medium variant2">
                                     Dodaj
                                 </button>
                             </div>
@@ -799,7 +482,7 @@
                     </form>
                 </template>
             </user-private-tasks-module-modal>
-            <!-- ADD TASK MODAL FORM END -->
+            <!-- TASK MODAL FORM END -->
 
             <!-- TASK DETAILS MODAL START -->
             <user-private-tasks-module-modal data-modal-id="user-private-tasks-module-task-details-modal"
@@ -1004,23 +687,23 @@
             </user-private-tasks-module-modal>
             <!-- TASK DETAILS MODAL END -->
 
-            <!-- ADD CATEGORY MODAL START -->
-            <user-private-tasks-module-modal data-modal-id="user-private-tasks-module-add-category-modal"
-                data-modal-content-class="upt-add-category">
+            <!-- CATEGORY FORM MODAL START -->
+            <user-private-tasks-module-modal data-modal-id="user-private-tasks-module-category-form-modal"
+                data-modal-content-class="upt-category">
                 <template slot="modal-title">Dodaj nową kategorię</template>
                 <template slot="modal-content">
-                    <form class="upt-add-category-form">
+                    <form id="user-private-tasks-module-category-form" class="upt-category-form">
                         <div class="upt-form-field">
                             <input class="floating-label-control upt-form-control" type="text"
-                                name="upt-add-category-name" id="upt-add-category-input-name"
+                                name="upt-category-name" id="upt-category-input-name"
                                 placeholder="Nazwa Kategorii">
-                            <label class="floating-label" for="upt-add-category-input-name">Nazwa Kategorii</label>
+                            <label class="floating-label" for="upt-category-input-name">Nazwa Kategorii</label>
 
                             <i class="upt-icon fa-solid fa-pen"></i>
                         </div>
 
                         <div>
-                            <select id="upt-add-category-input-icon" data-custom-select
+                            <select id="upt-category-input-icon" name="upt-category-icon" data-custom-select
                                 data-class-name="custom-select-green">
                                 <option value="hide">Wybierz Ikonę</option>
                                 <option value="magni" data-icon="fa-pen">Magni</option>
@@ -1028,21 +711,27 @@
                                 <option value="remque" data-icon="fa-clock">Remquee</option>
                                 <option value="quantum" data-icon="fa-home">Quantum</option>
                             </select>
-                            <label class="sr-only" for="upt-add-category-input-icon">Wybierz Ikonę</label>
+                            <label class="sr-only" for="upt-category-input-icon">Wybierz Ikonę</label>
                         </div>
 
-                        <div class="upt-add-category-form-actions">
+                        <div class="upt-category-desc upt-form-field">
+                            <label class="floating-label" for="upt-category-input-desc">Opis</label>
+                            <textarea rows="5" class="floating-label-control upt-form-control " name="upt-category-desc"
+                                id="upt-category-input-desc" placeholder="Maksymalnie 500 znaków"></textarea>
+                        </div>
+
+                        <div class="upt-category-form-actions">
                             <button class="link medium variant1 js-modal__close">
                                 Anuluj
                             </button>
-                            <button type="submit" class="link medium variant2">
+                            <button data-form-submit-btn type="submit" class="link medium variant2">
                                 Dodaj
                             </button>
                         </div>
                     </form>
                 </template>
             </user-private-tasks-module-modal>
-            <!-- ADD CATEGORY MODAL END -->
+            <!-- CATEGORY FORM MODAL END -->
 
             <!-- CONFIRM MODAL START -->
             <user-private-tasks-module-modal data-modal-id="user-private-tasks-module-confirm-modal"
@@ -1059,15 +748,13 @@
                     </div>
                 </template>
             </user-private-tasks-module-modal>
-            <!-- CONFIRM MODAL END -->
-
-            <button id="testuj" class="link variant2">testuj</button>
-
+            <!-- CONFIRM MODAL END -->  
 
         </section>
         <!-- USER PRIVATE TASKS MODULE END -->
     </main>
 
+    <script src="./js/utils.js"></script>
     <script src="./js/models.js"></script>
     <script src="./js/ApiService.js"></script>
     <script src="./js/modules.js"></script>

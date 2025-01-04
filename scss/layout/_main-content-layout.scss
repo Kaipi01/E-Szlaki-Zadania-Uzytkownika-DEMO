@@ -3,13 +3,14 @@
 
 #user-private-tasks-module {
   width: 100%;
-  min-height: 90vh; 
+  min-height: 90vh;
 
   .main-content-layout {
-    display: flex; 
+    display: flex;
     flex-direction: column;
     width: 100%;
     gap: $main-content-layout-gap-small;
+    min-height: 100%;
 
     @media (min-width: $content-breakpoint-desktop) {
       gap: $main-content-layout-gap;
@@ -17,8 +18,9 @@
 
     .main-content-wrapper {
       position: relative;
+      min-height: 80vh;
 
-      .panel {
+      .panel { 
         display: none;
         width: 100%;
         transition: all 0.35s ease-in-out;

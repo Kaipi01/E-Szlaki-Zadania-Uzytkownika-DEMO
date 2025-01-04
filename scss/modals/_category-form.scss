@@ -2,7 +2,7 @@
 @use "../functions/toRem" as *;
 
 #user-private-tasks-module {
-  .upt-add-category {
+  .upt-category {
     max-width: toRem(700);
 
     &-form {
@@ -20,7 +20,11 @@
         align-items: center;
         justify-content: flex-end;
         gap: 1rem;
-      }
+      } 
+    } 
+
+    &-desc {
+      grid-column: span 2;
     }
   }
 }

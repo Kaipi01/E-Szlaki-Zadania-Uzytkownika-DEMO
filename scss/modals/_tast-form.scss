@@ -2,26 +2,26 @@
 @use "../functions/toRem" as *;
 
 #user-private-tasks-module {
-  .upt-add-tast-form {
-    $add-tast-form-breakpoint: 55em;
+  .upt-tast-form {
+    $tast-form-breakpoint: 55em;
 
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.65rem;
     align-items: start;
 
-    @media (min-width: $add-tast-form-breakpoint) {
+    @media (min-width: $tast-form-breakpoint) {
       grid-template-columns: repeat(3, 1fr);
     }
 
-    .upt-add-tast-desc,
-    .upt-add-tast-subtasks-list {
-      @media (min-width: $add-tast-form-breakpoint) {
+    .upt-tast-desc,
+    .upt-tast-subtasks-list {
+      @media (min-width: $tast-form-breakpoint) {
         grid-column: span 3;
       }
     }
 
-    .upt-add-tast-form-actions {
+    .upt-tast-form-actions {
       --gap-value: 0.4rem;
 
       @media (min-width: $content-breakpoint-phone) {
@@ -31,7 +31,7 @@
         justify-content: space-between;
       }
 
-      @media (min-width: $add-tast-form-breakpoint) {
+      @media (min-width: $tast-form-breakpoint) {
         grid-column: span 3;
         --gap-value: 1rem;
       }

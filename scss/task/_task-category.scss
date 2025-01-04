@@ -20,14 +20,15 @@
     padding: 1.25rem 2rem;
     transition: all 0.4s ease-in-out;
     border-radius: 0;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; 
+    font-style: normal;
     cursor: pointer;
 
     &-icon {
       display: block;
       color: inherit;
       font-size: 1.5rem;
+      font-style: normal;
     }
 
     &:hover,

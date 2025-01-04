@@ -6,28 +6,28 @@ class UPTApiService {
   // tymaczasowe przechowywanie danych w localStorage
   static UPT_LOCAL_STORAGE_ITEM_NAME = "user-private-tasks-data";
   /** @type {UPTApiService} */
-  static instance
+  static instance;
 
   constructor() {
     this.baseUrl = UPTApiService.UPT_API_BASE_URL;
     // do obsługi localStorage
     this.storageKey = UPTApiService.UPT_LOCAL_STORAGE_ITEM_NAME;
-    this.initializeStorage()
+    this.initializeStorage();
   }
 
   static getInstance() {
     if (!UPTApiService.instance) {
-      UPTApiService.instance = new UPTApiService()
+      UPTApiService.instance = new UPTApiService();
     }
-    return UPTApiService.instance
+    return UPTApiService.instance;
   }
 
   /**
    * Uniwersalna funkcja do wysyłania żądań do API.
-   * @param {string} endpoint - Ścieżka endpointu.
-   * @param {string} method - Metoda HTTP (GET, POST, PUT, DELETE).
-   * @param {Object|null} body - Ciało żądania (dla POST i PUT).
-   * @returns {Promise<Object>} - Obiekt JSON zwrócony przez API.
+   * @param {string} endpoint 
+   * @param {string} method 
+   * @param {Object|null} body 
+   * @returns {Promise<Object>} 
    */
   async fetchAPI(endpoint, method = "GET", body = null) {
     const url = `${this.baseUrl}${endpoint}`;
@@ -127,46 +127,42 @@ class UPTApiService {
         categories: [],
         tasks: [],
       };
-      localStorage.setItem(this.storageKey, JSON.stringify(initialData));
 
-      // fetch("../example-data.json")
-      //   .then((res) => {
-      //     if (!res.ok) {
-      //       throw new Error(`HTTP error! Status: ${res.status}`);
-      //     }
-      //     return res.json();
-      //   })
-      //   .then((data) =>
-      //     localStorage.setItem(this.storageKey, JSON.stringify(data))
-      //   )
-      //   .catch((error) => console.error("Unable to fetch data:", error));
+      localStorage.setItem(this.storageKey, JSON.stringify(initialData));
     }
   }
 
-  getAllData_LocalStorage() {
-    const data = localStorage.getItem(this.storageKey);
-    return data ? JSON.parse(data) : { categories: [], tasks: [] };
+  async getAllData_LocalStorage() {
+    // const data = localStorage.getItem(this.storageKey);
+    // return data ? JSON.parse(data) : { categories: [], tasks: [] };
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const data = localStorage.getItem(this.storageKey);
+        resolve(data ? JSON.parse(data) : { categories: [], tasks: [] });
+      }, 1000);  
+    });
   }
 
   /** @param {Object} data */
-  saveAllData_LocalStorage(data) {
+  async saveAllData_LocalStorage(data) {
     localStorage.setItem(this.storageKey, JSON.stringify(data));
   }
 
-  getCategories_LocalStorage() {
-    const data = this.getAllData_LocalStorage();
+  async getCategories_LocalStorage() {
+    const data = await this.getAllData_LocalStorage();
     return data.categories;
   }
 
   /** @param {string} id */
-  getCategoryById_LocalStorage(id) {
-    const categories = this.getCategories_LocalStorage();
+  async getCategoryById_LocalStorage(id) {
+    const categories = await this.getCategories_LocalStorage();
     return categories.find((category) => category.id === id);
   }
 
   /** @param {UPT_TaskCategory} category */
-  createCategory_LocalStorage(category) {
-    const data = this.getAllData_LocalStorage();
+  async createCategory_LocalStorage(category) {
+    const data = await this.getAllData_LocalStorage();
     const newCategory = { ...category, id: this.generateId() };
     data.categories.push(newCategory);
     this.saveAllData_LocalStorage(data);
@@ -177,8 +173,8 @@ class UPTApiService {
    * @param {string} id
    * @param {UPT_TaskCategory} updatedCategory
    */
-  updateCategory_LocalStorage(id, updatedCategory) {
-    const data = this.getAllData_LocalStorage();
+  async updateCategory_LocalStorage(id, updatedCategory) {
+    const data = await this.getAllData_LocalStorage();
     const index = data.categories.findIndex((category) => category.id === id);
     if (index !== -1) {
       data.categories[index] = {
@@ -192,26 +188,26 @@ class UPTApiService {
   }
 
   /** @param {string} id */
-  deleteCategory_LocalStorage(id) {
-    const data = this.getAllData_LocalStorage();
+  async deleteCategory_LocalStorage(id) {
+    const data = await this.getAllData_LocalStorage();
     data.categories = data.categories.filter((category) => category.id !== id);
     this.saveAllData_LocalStorage(data);
   }
 
-  getTasks_LocalStorage() {
-    const data = this.getAllData_LocalStorage();
+  async getTasks_LocalStorage() {
+    const data = await this.getAllData_LocalStorage();
     return data.tasks;
   }
 
   /** @param {string} id */
-  getTaskById_LocalStorage(id) {
-    const tasks = this.getTasks_LocalStorage();
+  async getTaskById_LocalStorage(id) {
+    const tasks = await this.getTasks_LocalStorage();
     return tasks.find((task) => task.id === id);
   }
 
   /** @param {UPT_Task} task */
-  createTask_LocalStorage(task) {
-    const data = this.getAllData_LocalStorage();
+  async createTask_LocalStorage(task) {
+    const data = await this.getAllData_LocalStorage();
     const newTask = {
       ...task,
       id: this.generateId(),
@@ -226,8 +222,8 @@ class UPTApiService {
    * @param {string} id
    * @param {UPT_Task} updatedTask
    */
-  updateTask_LocalStorage(id, updatedTask) {
-    const data = this.getAllData_LocalStorage();
+  async updateTask_LocalStorage(id, updatedTask) {
+    const data = await this.getAllData_LocalStorage();
     const index = data.tasks.findIndex((task) => task.id === id);
     if (index !== -1) {
       data.tasks[index] = {
@@ -242,8 +238,8 @@ class UPTApiService {
   }
 
   /** @param {string} id */
-  deleteTask_LocalStorage(id) {
-    const data = this.getAllData_LocalStorage();
+  async deleteTask_LocalStorage(id) {
+    const data = await this.getAllData_LocalStorage();
     data.tasks = data.tasks.filter((task) => task.id !== id);
     this.saveAllData_LocalStorage(data);
   }

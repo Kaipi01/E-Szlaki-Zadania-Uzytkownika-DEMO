@@ -13,6 +13,10 @@
         gap: 3.5rem;
       }
 
+      .task-priority {
+        width: max-content;
+      }
+
       &-header {
         display: flex;
         flex-direction: column;

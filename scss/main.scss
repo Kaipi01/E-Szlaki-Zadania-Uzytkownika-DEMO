@@ -5,6 +5,7 @@
 @use "./components/modern-card"; 
 @use "./components/sr-only";
 @use "./components/toast";
+@use "./components/loading";
 @use "./components/modal";
 @use "./components/custom-checkbox"; 
 @use "./components/circular-progress-bar"; 
@@ -23,9 +24,9 @@
 @use "./pages/tasks-page/tasks-panel";
 @use "./pages/categories-page/categories-panel";
 
-@use "./modals/add-tast-form";
+@use "./modals/tast-form";
 @use "./modals/task-details";
-@use "./modals/upt-add-category";
+@use "./modals/category-form";
 @use "./modals/confirm-modal";
 
 @use "./task/task-category";
