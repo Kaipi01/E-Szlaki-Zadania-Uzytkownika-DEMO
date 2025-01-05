@@ -4,57 +4,57 @@
       "id": "cat-praca",
       "name": "Praca",
       "icon": "💼",
-      "createdAt": "2023-01-01T10:00:00Z"
+      "createdAt": "2025-01-01T10:00:00Z"
     },
     {
       "id": "cat-dom",
       "name": "Dom",
       "icon": "🏠",
-      "createdAt": "2023-01-02T10:00:00Z"
+      "createdAt": "2025-01-02T10:00:00Z"
     },
     {
       "id": "cat-zdrowie",
       "name": "Zdrowie",
       "icon": "💊",
-      "createdAt": "2023-01-03T10:00:00Z"
+      "createdAt": "2025-01-03T10:00:00Z"
     },
     {
       "id": "cat-rozwoj-osobisty",
       "name": "Rozwój osobisty",
       "icon": "📚",
-      "createdAt": "2023-01-04T10:00:00Z"
+      "createdAt": "2025-01-04T10:00:00Z"
     },
     {
       "id": "cat-hobby",
       "name": "Hobby",
       "icon": "🎨",
-      "createdAt": "2023-01-05T10:00:00Z"
+      "createdAt": "2025-01-05T10:00:00Z"
     },
     {
       "id": "cat-rodzina",
       "name": "Rodzina",
       "icon": "👨‍👩‍👧‍👦",
-      "createdAt": "2023-01-06T10:00:00Z"
+      "createdAt": "2025-01-06T10:00:00Z"
     },
     {
       "id": "cat-podroze",
       "name": "Podróże",
       "icon": "✈️",
-      "createdAt": "2023-01-07T10:00:00Z"
+      "createdAt": "2025-01-07T10:00:00Z"
     },
     {
       "id": "cat-edukacja",
       "name": "Edukacja",
       "icon": "📚",
-      "createdAt": "2023-01-06T00:00:00Z"
+      "createdAt": "2025-01-06T00:00:00Z"
     }
   ],
   "tasks": [
     {
       "id": "d6h334787fd78gf87g",
       "name": "Umyć naczynia",
-      "createdAt": "2023-06-01T10:00:00Z",
-      "deadline": "2023-06-01T15:00:00Z",
+      "createdAt": "2025-06-01T10:00:00Z",
+      "deadline": "2025-06-01T15:00:00Z",
       "categoryId": "cat-dom",
       "type": "Dzienne",
       "priority": "Średni piorytet",
@@ -69,8 +69,8 @@
     {
       "id": "d6h334787fd78gf",
       "name": "Zakończyć raport",
-      "createdAt": "2023-06-02T10:00:00Z",
-      "deadline": "2023-06-05T18:00:00Z",
+      "createdAt": "2025-06-02T10:00:00Z",
+      "deadline": "2025-06-05T18:00:00Z",
       "categoryId": "cat-praca",
       "type": "Główne",
       "priority": "Wysoki piorytet",
@@ -86,8 +86,8 @@
     {
       "id": "223fd3vvxcgs9nf",
       "name": "Ćwiczenia jogi",
-      "createdAt": "2023-06-01T07:00:00Z",
-      "deadline": "2023-06-01T08:00:00Z",
+      "createdAt": "2025-06-01T07:00:00Z",
+      "deadline": "2025-06-01T08:00:00Z",
       "categoryId": "cat-zdrowie",
       "type": "Dzienne",
       "priority": "Średni piorytet",
@@ -103,8 +103,8 @@
     {
       "id": "24dfvxcgs9nf",
       "name": "Planowanie podróży",
-      "createdAt": "2023-05-20T12:00:00Z",
-      "deadline": "2023-06-10T12:00:00Z",
+      "createdAt": "2025-05-20T12:00:00Z",
+      "deadline": "2025-06-10T12:00:00Z",
       "categoryId": "cat-podroze",
       "type": "Główne",
       "priority": "Bardzo Wysoki piorytet",
@@ -127,8 +127,8 @@
     {
       "id": "223fd3vv7fbbvvccxgs9nf",
       "name": "Zakupy spożywcze",
-      "createdAt": "2023-06-01T09:00:00Z",
-      "deadline": "2023-06-01T12:00:00Z",
+      "createdAt": "2025-06-01T09:00:00Z",
+      "deadline": "2025-06-01T12:00:00Z",
       "categoryId": "cat-dom",
       "type": "Dzienne",
       "priority": "Niski piorytet",
@@ -148,8 +148,8 @@
     {
       "id": "223fd3999999f",
       "name": "Nawadnianie roślin",
-      "createdAt": "2023-06-01T07:30:00Z",
-      "deadline": "2023-06-01T08:00:00Z",
+      "createdAt": "2025-06-01T07:30:00Z",
+      "deadline": "2025-06-01T08:00:00Z",
       "categoryId": "cat-dom",
       "type": "Dzienne",
       "priority": "Niski piorytet",
@@ -164,8 +164,8 @@
     {
       "id": "24dfvxcgs9nf87877887",
       "name": "E-mail do klienta",
-      "createdAt": "2023-06-02T09:00:00Z",
-      "deadline": "2023-06-02T10:00:00Z",
+      "createdAt": "2025-06-02T09:00:00Z",
+      "deadline": "2025-06-02T10:00:00Z",
       "categoryId": "cat-praca",
       "type": "Dzienne",
       "priority": "Średni piorytet",
@@ -185,8 +185,8 @@
     {
       "id": "94dfvxcgs9nf87877887",
       "name": "Bieganie",
-      "createdAt": "2023-06-02T06:30:00Z",
-      "deadline": "2023-06-02T07:30:00Z",
+      "createdAt": "2025-06-02T06:30:00Z",
+      "deadline": "2025-06-02T07:30:00Z",
       "categoryId": "cat-zdrowie",
       "type": "Dzienne",
       "priority": "Średni piorytet",
@@ -201,8 +201,8 @@
     {
       "id": "xcgs9nf87877887",
       "name": "Przygotowanie prezentacji",
-      "createdAt": "2023-05-28T14:00:00Z",
-      "deadline": "2023-06-05T10:00:00Z",
+      "createdAt": "2025-05-28T14:00:00Z",
+      "deadline": "2025-06-05T10:00:00Z",
       "categoryId": "cat-praca",
       "type": "Główne",
       "priority": "Wysoki piorytet",
@@ -226,8 +226,8 @@
     {
       "id": "7777gs9nf87877887",
       "name": "Naprawa samochodu",
-      "createdAt": "2023-05-15T10:00:00Z",
-      "deadline": "2023-05-20T15:00:00Z",
+      "createdAt": "2025-05-15T10:00:00Z",
+      "deadline": "2025-05-20T15:00:00Z",
       "categoryId": "cat-dom",
       "type": "Główne",
       "priority": "Średni piorytet",
@@ -242,8 +242,8 @@
     {
       "id": "87877887nnbnbbn",
       "name": "Przeczytać książkę",
-      "createdAt": "2023-05-10T08:00:00Z",
-      "deadline": "2023-06-30T20:00:00Z",
+      "createdAt": "2025-05-10T08:00:00Z",
+      "deadline": "2025-06-30T20:00:00Z",
       "categoryId": "cat-rozwoj-osobisty",
       "type": "Główne",
       "priority": "Niski piorytet",
@@ -258,8 +258,8 @@
     {
       "id": "555nbbnb87nnbnbbn",
       "name": "Sprzątanie kuchni",
-      "createdAt": "2023-06-03T08:00:00Z",
-      "deadline": "2023-06-03T09:00:00Z",
+      "createdAt": "2025-06-03T08:00:00Z",
+      "deadline": "2025-06-03T09:00:00Z",
       "categoryId": "cat-dom",
       "type": "Dzienne",
       "priority": "Średni piorytet",
@@ -274,8 +274,8 @@
     {
       "id": "09099bbnb87nnbnbbn",
       "name": "Poranny trening",
-      "createdAt": "2023-06-04T06:30:00Z",
-      "deadline": "2023-06-04T07:30:00Z",
+      "createdAt": "2025-06-04T06:30:00Z",
+      "deadline": "2025-06-04T07:30:00Z",
       "categoryId": "cat-zdrowie",
       "type": "Dzienne",
       "priority": "Wysoki piorytet",
@@ -291,8 +291,8 @@
     {
       "id": "BGFGFF099bbnb87nnbnbbn",
       "name": "Zakupy spożywcze",
-      "createdAt": "2023-06-05T10:00:00Z",
-      "deadline": "2023-06-05T12:00:00Z",
+      "createdAt": "2025-06-05T10:00:00Z",
+      "deadline": "2025-06-05T12:00:00Z",
       "categoryId": "cat-dom",
       "type": "Dzienne",
       "priority": "Średni piorytet",
@@ -307,8 +307,8 @@
     {
       "id": "FF099bbnb8898998bbn",
       "name": "Remont sypialni",
-      "createdAt": "2023-04-01T09:00:00Z",
-      "deadline": "2023-06-15T18:00:00Z",
+      "createdAt": "2025-04-01T09:00:00Z",
+      "deadline": "2025-06-15T18:00:00Z",
       "categoryId": "cat-dom",
       "type": "Główne",
       "priority": "Bardzo Wysoki piorytet",
@@ -324,8 +324,8 @@
     {
       "id": "900909990099bbnb8898998bbn",
       "name": "Zorganizowanie urodzin",
-      "createdAt": "2023-05-01T08:00:00Z",
-      "deadline": "2023-06-10T20:00:00Z",
+      "createdAt": "2025-05-01T08:00:00Z",
+      "deadline": "2025-06-10T20:00:00Z",
       "categoryId": "cat-rodzina",
       "type": "Główne",
       "priority": "Średni piorytet",
@@ -341,8 +341,8 @@
     {
       "id": "BNNBNB90099bbnb8898998bbn",
       "name": "Podsumowanie kwartalne",
-      "createdAt": "2023-05-15T09:00:00Z",
-      "deadline": "2023-06-01T18:00:00Z",
+      "createdAt": "2025-05-15T09:00:00Z",
+      "deadline": "2025-06-01T18:00:00Z",
       "categoryId": "cat-praca",
       "type": "Główne",
       "priority": "Wysoki piorytet",
@@ -359,8 +359,8 @@
     {
       "id": "bbn989879876hghffgfg",
       "name": "Poranny jogging",
-      "createdAt": "2023-06-01T06:00:00Z",
-      "deadline": "2023-06-01T07:00:00Z",
+      "createdAt": "2025-06-01T06:00:00Z",
+      "deadline": "2025-06-01T07:00:00Z",
       "categoryId": "cat-zdrowie",
       "type": "Dzienne",
       "priority": "Średni piorytet",
@@ -375,8 +375,8 @@
     {
       "id": "989879876hghffgfg",
       "name": "Medytacja",
-      "createdAt": "2023-06-01T08:00:00Z",
-      "deadline": "2023-06-01T08:30:00Z",
+      "createdAt": "2025-06-01T08:00:00Z",
+      "deadline": "2025-06-01T08:30:00Z",
       "categoryId": "cat-rozwoj-osobisty",
       "type": "Dzienne",
       "priority": "Niski piorytet",
@@ -400,8 +400,8 @@
     {
       "id": "876hghffg7878hhjjhfg",
       "name": "Sprzątanie kuchni",
-      "createdAt": "2023-06-03T08:00:00Z",
-      "deadline": "2023-06-03T09:00:00Z",
+      "createdAt": "2025-06-03T08:00:00Z",
+      "deadline": "2025-06-03T09:00:00Z",
       "categoryId": "cat-dom",
       "type": "Dzienne",
       "priority": "Średni piorytet",
@@ -416,8 +416,8 @@
     {
       "id": "GDFDDFfg7878hhjjhfg",
       "name": "Remont sypialni",
-      "createdAt": "2023-04-01T09:00:00Z",
-      "deadline": "2023-06-15T18:00:00Z",
+      "createdAt": "2025-04-01T09:00:00Z",
+      "deadline": "2025-06-15T18:00:00Z",
       "categoryId": "cat-dom",
       "type": "Główne",
       "priority": "Bardzo Wysoki piorytet",
@@ -433,8 +433,8 @@
     {
       "id": "Ffg7878hhjjhfg",
       "name": "Zorganizowanie urodzin",
-      "createdAt": "2023-05-01T08:00:00Z",
-      "deadline": "2023-06-10T20:00:00Z",
+      "createdAt": "2025-05-01T08:00:00Z",
+      "deadline": "2025-06-10T20:00:00Z",
       "categoryId": "cat-rodzina",
       "type": "Główne",
       "priority": "Średni piorytet",
@@ -450,8 +450,8 @@
     {
       "id": "78776Ffg7878hhjjhfg",
       "name": "Podsumowanie kwartalne",
-      "createdAt": "2023-05-15T09:00:00Z",
-      "deadline": "2023-06-01T18:00:00Z",
+      "createdAt": "2025-05-15T09:00:00Z",
+      "deadline": "2025-06-01T18:00:00Z",
       "categoryId": "cat-praca",
       "type": "Główne",
       "priority": "Wysoki piorytet",

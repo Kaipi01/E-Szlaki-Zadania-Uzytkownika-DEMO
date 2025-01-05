@@ -119,7 +119,7 @@ class UPTApiService {
     return this.deleteTask_LocalStorage(id);
   }
 
-  //-------------------- Obsługa localStorage --------------------
+  //-------------------- Obsługa localStorage (odpowiada za przechowywanie stanu aplikacji) --------------------
 
   initializeStorage() {
     if (!localStorage.getItem(this.storageKey)) {
@@ -163,7 +163,7 @@ class UPTApiService {
   /** @param {UPT_TaskCategory} category */
   async createCategory_LocalStorage(category) {
     const data = await this.getAllData_LocalStorage();
-    const newCategory = { ...category, id: this.generateId() };
+    const newCategory = { ...category, id: generateId("category") };
     data.categories.push(newCategory);
     this.saveAllData_LocalStorage(data);
     return newCategory;
@@ -210,7 +210,7 @@ class UPTApiService {
     const data = await this.getAllData_LocalStorage();
     const newTask = {
       ...task,
-      id: this.generateId(),
+      id: generateId("task"),
       createdAt: new Date().toISOString(),
     };
     data.tasks.push(newTask);
@@ -242,10 +242,5 @@ class UPTApiService {
     const data = await this.getAllData_LocalStorage();
     data.tasks = data.tasks.filter((task) => task.id !== id);
     this.saveAllData_LocalStorage(data);
-  }
-
-  /** @returns {string} Unikalny identyfikator. */
-  generateId() {
-    return "_" + Math.random().toString(36).slice(2, 11);
-  }
+  } 
 }

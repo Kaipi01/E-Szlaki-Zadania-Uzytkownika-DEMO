@@ -143,33 +143,10 @@ class UPTModuleMainNavigation {
   }
 
   bindPageLinks() {
-    // Mechanizm throttle do zabezpieczenia animacji
-    /**
-     * @returns {(...args: any[]) => void}
-     * @param {Function} callback
-     * @param {number} delay
-     */
-    const throttle = (
-      callback,
-      delay = UPTModuleMainNavigation.ANIMATION_DURATION_TIME
-    ) => {
-      let shouldWait = false;
-
-      return (...args) => {
-        if (shouldWait) return;
-
-        callback(...args);
-        shouldWait = true;
-
-        setTimeout(() => {
-          shouldWait = false;
-        }, delay);
-      };
-    };
 
     const showPageThrottle = throttle((link) => {
       this.showPage(link);
-    });
+    }, UPTModuleMainNavigation.ANIMATION_DURATION_TIME);
 
     this.pageLinks.forEach((link) => {
       link.addEventListener("click", (event) => {
@@ -287,7 +264,7 @@ class UPTModuleToast {
       return;
     }
 
-    this.toastId = this.generateToastId();
+    this.toastId = generateId("upt-toast");
     this.toast;
     this.countdown;
     this.init();
@@ -304,13 +281,6 @@ class UPTModuleToast {
 
     if (this.closeToastBtn)
       this.closeToastBtn.addEventListener("click", () => this.close());
-  }
-
-  /**
-   * @returns {string}
-   */
-  generateToastId() {
-    return "upt-toast-" + Date.now().toString(36) + Math.random().toString(36);
   }
 
   /**
@@ -1421,6 +1391,46 @@ class CustomSelect {
   }
 }
 
+class CustomCircularProgressBar extends HTMLElement {
+
+  constructor() {
+    super();
+    this.dataPie
+    this.percentValue
+    this.labelText
+    this.size
+  }
+
+  connectedCallback() {
+    this.dataPie = this.getAttribute("data-pie");
+    this.percent = Number(this.getAttribute("data-percent"));
+    this.labelText = this.getAttribute("data-label") ?? "";
+    this.size = this.getAttribute("data-size") ?? 150;
+    this.render();
+    this.init();
+  }
+
+  init() { 
+    const circle = new CircularProgressBar("pie", {
+      size: this.size
+    });
+    circle.initial(this.querySelector(".pie"));
+  }
+
+  render() {
+    this.innerHTML = `
+      <div class="upt-task-details-chart circular-progress-bar">
+        <div class="upt-task-details-chart pie" data-pie='${this.dataPie}' data-pie-index="0">
+          <meter class="visually-hidden" id="upt-task-details-chart-label" value="${this.percent / 100.0}">${this.percent}%</meter>
+        </div> 
+        <label class="progress-desc" for="upt-task-details-chart-label">${this.labelText}</label>
+      </div>
+    `
+  }
+}
+
+customElements.define("custom-circular-progress-bar", CustomCircularProgressBar);
+
 class CustomCountdown extends HTMLElement {
   static ANIMATE_ATTRIBUTE_NAME = "data-animate-now";
 
@@ -1582,6 +1592,263 @@ class UserPrivateTasksModuleModal extends HTMLElement {
 customElements.define(UserPrivateTasksModuleModal.NAME, UserPrivateTasksModuleModal);
 
 
+class UPTModuleTaskDetails {
+  static ATTR_NAME = "data-task-details-name";
+  static ATTR_DESC = "data-task-details-desc";
+  // static ATTR_DATE_START = "data-task-details-date-start";
+  // static ATTR_DATE_END = "data-task-details-date-end";
+  static ATTR_TYPE = "data-task-details-type"
+  static ATTR_STATUS = "data-task-details-status"
+  static ATTR_CATEGORY = "data-task-details-category"
+  static ATTR_PRIORITY = "data-task-details-priority"
+  static ATTR_SUBTASKS_LIST = "data-task-details-subtasks-list"
+  static ATTR_SUBTASKS_WRAPPER = "data-task-details-subtasks-wrapper"
+  static ATTR_DEADLINE_TIMER = "data-task-details-deadline-timer"
+  static ATTR_END_TASK_BTN = "data-task-details-end-btn"
+  static ATTR_ARCHIVE_TASK_BTN = "data-task-details-archive-btn"
+  static ATTR_EDIT_TASK_BTN = "data-task-details-edit-btn"
+
+
+  /** @type {UPTModuleTaskDetails} */
+  static instance;
+
+  constructor() {
+    /** @type {HTMLElement} */
+    this.modalId = UPT_DETAILS_TASK_MODAL_ID
+    this.modal = document.querySelector(`#${this.modalId}`)
+    this.apiService = UPTApiService.getInstance()
+
+    if (!this.modal) {
+      console.error("this.modal is null");
+      return;
+    }
+    this.currentTaskId = null
+    this.editForm = UPTTaskForm.getInstance()
+    this.nameElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_NAME)
+    this.descElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_DESC)
+    this.priorityElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_PRIORITY)
+    this.typeElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_TYPE)
+    this.statusElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_STATUS)
+    this.categoryElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_CATEGORY)
+    this.subTasksListElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_SUBTASKS_LIST)
+    this.subTasksWrapperElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_SUBTASKS_WRAPPER)
+    this.endTaskButton = this.getElementByAttr(UPTModuleTaskDetails.ATTR_END_TASK_BTN)
+    this.editTaskButton = this.getElementByAttr(UPTModuleTaskDetails.ATTR_EDIT_TASK_BTN)
+    this.archiveTaskButton = this.getElementByAttr(UPTModuleTaskDetails.ATTR_ARCHIVE_TASK_BTN)
+    this.deadlineTimerElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_DEADLINE_TIMER)
+    this.subTaskModule = new UPTModuleSubTask(this.subTasksListElement)
+    this.init()
+  }
+
+  static getInstance() {
+    if (!UPTModuleTaskDetails.instance) {
+      UPTModuleTaskDetails.instance = new UPTModuleTaskDetails();
+    }
+    return UPTModuleTaskDetails.instance;
+  }
+
+  init() {
+    this.editTaskButton.addEventListener('click', (e) => {
+      hideModal(this.modalId)
+      this.editForm.open(UPTTaskForm.MODE_EDIT, this.currentTaskId)
+    })
+  }
+
+  /** 
+   * @param {UPT_Task} task
+   * @param {UPT_TaskCategory | null} category
+   */
+  displayData(task, category = null) {
+    const taskIsMain = task.type === UPT_TaskType.MAIN
+    const timeToEndDayCountdown = document.createElement("custom-countdown");
+    const now = new Date();
+    const deadlineTimeUnitsToShow = taskIsMain ? "['days', 'hours', 'minutes', 'seconds']" : "['hours', 'minutes', 'seconds']"
+    const deadlineDate = taskIsMain ?
+      new Date(task.deadline) :
+      new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+
+    this.deadlineTimerElement.querySelector("custom-countdown")?.remove()
+    timeToEndDayCountdown.setAttribute("data-date-end", deadlineDate.toISOString());
+    timeToEndDayCountdown.setAttribute("data-time-units-to-show", deadlineTimeUnitsToShow);
+    this.deadlineTimerElement.append(timeToEndDayCountdown);
+
+    this.nameElement.textContent = task.name
+    this.categoryElement.textContent = category ? category.name : "Brak"
+    this.typeElement.textContent = task.type
+    this.statusElement.textContent = task.status
+    this.statusElement.classList.remove(...UPTModulePanel.getAllTaskStatusSubClasses().values())
+    this.statusElement.classList.add(UPTModulePanel.getTaskStatusSubClass(task))
+    this.priorityElement.textContent = task.priority
+    this.priorityElement.classList.remove(...UPTModulePanel.getAllTaskPrioritySubClasses().values())
+    this.priorityElement.classList.add(UPTModulePanel.getTaskPrioritySubClass(task))
+
+    if (task.description !== "") {
+      this.descElement.style.removeProperty("display")
+      this.descElement.textContent = task.description
+    } else {
+      this.descElement.style.display = "none"
+    }
+
+    this.subTaskModule.clearSubTasksList()
+    this.subTasksWrapperElement.querySelector("custom-circular-progress-bar")?.remove()
+
+    if (task.subTasks.length === 0) {
+      this.subTasksWrapperElement.style.display = "none"
+    } else {
+      const circularProgressBar = document.createElement("custom-circular-progress-bar");
+      // const completedSubTasksPercent = TODO:
+      this.subTasksWrapperElement.style.removeProperty("display")
+      this.subTaskModule.renderSubTasksList(task.subTasks)
+      
+      
+
+      circularProgressBar.setAttribute("data-label", "Procent ukończonych podzadań")
+      circularProgressBar.setAttribute("data-percent", "41")
+      circularProgressBar.setAttribute("data-pie", JSON.stringify({
+        lineargradient: ["#14a5ff","#008be2"], 
+        round: true, 
+        percent: 41, 
+        colorCircle: "rgba(63, 98, 74, 0.25)" 
+      }))
+ 
+      this.subTasksWrapperElement.append(circularProgressBar)
+
+      // circle.animationTo()
+    }
+  }
+
+  /** @param {string} taskId */
+  async show(taskId) {
+    showModalLoading(this.modalId)
+    showModal(this.modalId, `Edytuj Zadanie`)
+
+    try {
+      const task = await this.apiService.getTaskById(taskId)
+
+      if (!task) {
+        throw new Error("Nie istnieje zadanie o id: " + taskId);
+      }
+
+      const category = task.categoryId ?
+        await this.apiService.getCategoryById(task.categoryId) :
+        null
+
+      this.currentTaskId = task.id
+
+      this.displayData(task, category)
+
+      UPTModuleToast.show(UPTModuleToast.INFO, "Pobrano i załadowano informacje o zadaniu")
+    } catch (e) {
+      hideModal(this.modalId)
+      console.error(e)
+      UPTModuleToast.show(UPTModuleToast.ERROR, e.message)
+    } finally {
+      hideModalLoading(this.modalId)
+    }
+  }
+
+  /** @param {string} attributeName */
+  getElementByAttr(attributeName) {
+    const element = this.modal.querySelector(`[${attributeName}]`)
+
+    if (!element) {
+      console.error(`element[${attributeName}] is null`);
+      return null;
+    }
+    return element
+  }
+}
+
+
+class UPTModuleSubTask {
+  static MODE_EDIT = "edit"
+  static MODE_SHOW = "show"
+
+  /** @param {HTMLElement} container */
+  constructor(container) { 
+    this.container = container
+  }
+
+  /** @param {UPT_SubTask[]} subTasks */
+  renderSubTasksList(subTasks) {
+    const subTasksNumber = subTasks.length
+    const subTasksListFragment = document.createDocumentFragment()
+
+    for (let i = 0; i < subTasksNumber; i++) {
+      const subTask = subTasks[i]
+
+      subTasksListFragment.append(
+        this.renderSubTaskCard(subTask, UPTModuleSubTask.MODE_SHOW)
+      )
+    }
+    this.container.append(subTasksListFragment)
+  }
+
+  clearSubTasksList() {
+    this.container.innerHTML = ""
+  }
+
+  /** @param {string} subTaskId */
+  getSubTaskElement(subTaskId) {
+    return this.container.querySelector(`[data-subtask-id="${subTaskId}"]`)
+  }
+
+  /** 
+   * @param {UPT_SubTask} subTask 
+   * @param {string} mode
+   */
+  renderSubTaskCard(subTask, mode = UPTModuleSubTask.MODE_SHOW) {
+    const isEditMode = mode === UPTModuleSubTask.MODE_EDIT
+    const li = document.createElement("li")
+    const deleteSubTaskButton = isEditMode ? `
+      <span class="category-card-actions subtask-actions">
+          <button data-delete-subtask-btn data-subtask-id="${subTask.id}" class="category-card-action-btn category-card-delete-btn subtask-action-btn tooltip">
+            <span class="tooltip-content">Usuń Podzadanie</span>
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+      </span>  
+    ` : ''
+
+    const subTaskHeaderContent = isEditMode ?
+      `<span class="upt-form-field">
+        <input class="floating-label-control upt-form-control" type="text" name="upt-subtast-name-${subTask.id}" id="upt-subtast-input-name-${subTask.id}" placeholder="Nazwa Podzadania" value="${subTask.name}">
+          <label class="floating-label" for="upt-subtast-input-name-${subTask.id}">Nazwa Podzadania</label> 
+          <i class="upt-icon fa-solid fa-pen"></i>
+      </span>
+      <span class="upt-form-field">
+        <input class="floating-label-control upt-form-control" type="datetime-local" name="upt-subtast-date-${subTask.id}" id="upt-subtast-input-date-${subTask.id}">
+        <label class="floating-label" for="upt-subtast-input-date-${subTask.id}">Od kiedy</label>
+      </span>
+    ` :
+      `
+        <span data-subtask-name class="subtask-name">${subTask.name}</span>
+        <span data-subtask-date class="subtask-date">${subTask.deadline ?? ''}</span>
+      `
+
+    li.className = "subtask task modern-card"
+    li.setAttribute("data-subtask-card", "")
+    li.setAttribute("data-subtask-id", subTask.id)
+    li.innerHTML = `
+        <span class="task-checkbox custom-checkbox-group">
+          <input data-mark-subtask-as-done id="mark-subtask-as-done-${subTask.id}" type="checkbox">
+          <label class="custom-checkbox-label" for="mark-subtask-as-done-${subTask.id}">
+            <span class="sr-only">Oznacz jako wykonane</span>
+            <span class="custom-checkbox-icon" aria-hidden="true"></span>
+          </label>
+        </span>
+        <span class="task-content">
+          <span class="task-header subtask-header">${subTaskHeaderContent}</span>
+        </span>
+        ${deleteSubTaskButton}                        
+    `
+
+    return li;
+  }
+}
+
+
+// ---------------------------------------- FORMULARZE ---------------------------------------------
+
 
 class UPTCategoryForm {
   static MODE_EDIT = "edit"
@@ -1642,7 +1909,7 @@ class UPTCategoryForm {
     const isEditMode = mode === UPTCategoryForm.MODE_EDIT
     const submitButton = this.form.querySelector("[data-form-submit-btn]")
 
-    submitButton.textContent = isEditMode ? "Edytuj" : "Dodaj"
+    submitButton.textContent = isEditMode ? "Zapisz zmiany" : "Dodaj"
 
     this.form.reset()
 
@@ -1671,7 +1938,6 @@ class UPTCategoryForm {
   }
 }
 
-
 class UPTTaskForm {
   static MODE_EDIT = "edit"
   static MODE_CREATE = "create"
@@ -1684,6 +1950,7 @@ class UPTTaskForm {
   static FIELD_CATEGORY = "upt-tast-category"
   static FIELD_ALL_DAY = "upt-task-all-day"
   static FIELD_PRIORITY = "upt-tast-priority"
+  static FIELD_SUBTASKS = "upt-tast-subtasks"
 
   /** @type {UPTTaskForm} */
   static instance;
@@ -1697,6 +1964,8 @@ class UPTTaskForm {
       console.error("form is null");
       return;
     }
+    this.subTaskModule = new UPTModuleSubTask(this.form.querySelector("[data-subtasks-list]"))
+    this.addSubTaskButton = this.form.querySelector("[data-form-add-subtask]")
     this.nameInput = this.form.querySelector(`input[name="${UPTTaskForm.FIELD_NAME}"]`)
     this.descTextarea = this.form.querySelector(`textarea[name="${UPTTaskForm.FIELD_DESC}"]`)
     this.prioritySelect = this.form.querySelector(`select[name="${UPTTaskForm.FIELD_PRIORITY}"]`)
@@ -1717,25 +1986,71 @@ class UPTTaskForm {
     return UPTTaskForm.instance;
   }
 
+  init() {
+    this.addSubTaskButton.addEventListener('click', (e) => this.addSubTask(e))
+    this.form.addEventListener("submit", (e) => this.handleFormSubmit(e))
+  }
+
+
+  /** 
+   * @param {UPT_Task} task 
+   * @param {UPT_TaskCategory[]} categories 
+   */
+  displayFormData(task, categories) {
+    this.subTaskModule.renderSubTasksList(task.subTasks ?? [])
+    this.categoryCustomSelect.destroy()
+    //this.priorityCustomSelect.destroy()
+    //this.typeCustomSelect.destroy()
+
+    this.nameInput.value = task.name
+    this.typeSelect.value = task.type
+    this.prioritySelect = task.priority
+
+    categories.forEach(category => {
+      const option = document.createElement("option")
+      option.value = category.id
+      option.textContent = `${category.icon} ${category.name}`
+
+      if (category.id === task.categoryId) {
+        this.categorySelect.prepend(option)
+        this.categorySelect.value = category.id
+      } else {
+        this.categorySelect.append(option)
+      }
+    })
+
+    this.categoryCustomSelect = new CustomSelect(this.categorySelect)
+    //this.priorityCustomSelect = new CustomSelect(this.prioritySelect)
+    //this.typeCustomSelect = new CustomSelect(this.typeSelect)
+  }
+
+  reset() {
+    this.form.reset()
+    this.categorySelect.innerHTML = '<option value="hide">Wybierz Kategorie</option>'
+    this.subTaskModule.clearSubTasksList()
+  }
 
   /** @param {string} taskId */
   async loadFormData(taskId) {
     showModalLoading(UPT_TASK_FORM_MODAL_ID)
 
-    const task = await this.apiService.getTaskById(taskId)
-    const categories = await this.apiService.getCategories()
+    try {
+      const task = await this.apiService.getTaskById(taskId)
+      const categories = await this.apiService.getCategories()
 
-    if (!task) {
-      UPTModuleToast.show(UPTModuleToast.ERROR, "Nie istnieje zadanie o id: " + taskId)
-    } else {
-      UPTModuleToast.show(UPTModuleToast.INFO, "Pobrano informacje o zadaniu")
-    }
+      if (!task) {
+        throw new Error("Nie istnieje zadanie o id: " + taskId);
+      }
 
-    hideModalLoading(UPT_TASK_FORM_MODAL_ID)
+      this.displayFormData(task, categories)
 
-    return {
-      task,
-      categories
+      UPTModuleToast.show(UPTModuleToast.INFO, "Pobrano i załadowano informacje o zadaniu")
+    } catch (e) {
+      hideModal(UPT_TASK_FORM_MODAL_ID)
+      console.error(e)
+      UPTModuleToast.show(UPTModuleToast.ERROR, e.message)
+    } finally {
+      hideModalLoading(UPT_TASK_FORM_MODAL_ID)
     }
   }
 
@@ -1745,66 +2060,66 @@ class UPTTaskForm {
    */
   async open(mode, taskId = null) {
     const isEditMode = mode === UPTTaskForm.MODE_EDIT
-    const submitButton = this.form.querySelector("[data-form-submit-btn]")
 
-    submitButton.textContent = isEditMode ? "Edytuj" : "Dodaj"
+    manipulateDOMElement(`#${UPT_TASK_FORM_ID} [data-form-submit-btn]`, (submitButton) => {
+      submitButton.textContent = isEditMode ? "Zapisz zmiany" : "Dodaj"
+    })
+
+    this.reset()
 
     showModal(UPT_TASK_FORM_MODAL_ID, isEditMode ? "Edytuj Zadanie" : "Dodaj Zadanie")
 
-    this.form.reset()
-    this.categorySelect.innerHTML = ''
-
     if (isEditMode) {
-      const {
-        task,
-        categories
-      } = await this.loadFormData(taskId)
-
-      this.categoryCustomSelect.destroy()
-      this.priorityCustomSelect.destroy()
-      this.typeCustomSelect.destroy()
-
-      this.nameInput.value = task.name 
-      this.typeSelect.value = task.type
-      this.prioritySelect = task.priority
-
-      categories.forEach(category => {
-        const option = document.createElement("option")
-        option.value = category.id
-        option.textContent = `${category.icon} ${category.name}`
-
-        if (category.id === task.categoryId) {
-          this.categorySelect.prepend(option)
-          this.categorySelect.value = category.id
-        } else {
-          this.categorySelect.append(option)
-        }
-      })
-
-      this.categoryCustomSelect = new CustomSelect(this.categorySelect)
-      this.priorityCustomSelect = new CustomSelect(this.prioritySelect)
-      this.typeCustomSelect = new CustomSelect(this.typeSelect)
-
-    } else {
-      //this.nameInput.value = ""
+      this.loadFormData(taskId)
     }
   }
 
-  init() {
-    this.form.addEventListener("submit", (e) => {
-      e.preventDefault()
+  addSubTask(e) {
+    e.preventDefault()
 
+    const newSubTask = new UPT_SubTask(generateId(), "")
 
-      const formData = new FormData(this.form)
+    const newSubTaskCard = this.subTaskModule.renderSubTaskCard(newSubTask, UPTModuleSubTask.MODE_EDIT)
 
-      console.log(formData)
-    })
+    this.subTaskModule.container.append(newSubTaskCard)
   }
+
+  handleFormSubmit(e) {
+    e.preventDefault()
+    const formData = new FormData(this.form)
+    const formDataObject = {};
+    const subTaskCards = this.subTaskModule.container.querySelectorAll("[data-subtask-card]")
+
+    formData.forEach((value, key) => formDataObject[key] = value);
+    formDataObject[UPTTaskForm.FIELD_SUBTASKS] = []
+
+    subTaskCards.forEach(card => {
+      const subTaskName = card.querySelector("[data-subtask-name]").textContent
+      const subTaskId = card.dataset.subtaskId
+
+      formDataObject[UPTTaskForm.FIELD_SUBTASKS].push({
+        id: subTaskId,
+        name: subTaskName
+      })
+    })
+    // console.log(formData)
+    console.log(formDataObject)
+
+    UPTModuleToast.show(UPTModuleToast.SUCCESS, "Zadanie zostało zaktualizowane!")
+
+    // const formDataJson = JSON.stringify(formDataObject);
+    // console.log(formDataJson)
+  }
+
+
 }
 
 
+// ---------------------------------------- ZAKŁADKI ---------------------------------------------
+
 
 class UPTModulePanel {
+
   /**
    * @param {string} selector
    * @param {{ tasks: UPT_Task[], categories: UPT_TaskCategory[] }}
@@ -1819,6 +2134,7 @@ class UPTModulePanel {
     this.apiService = UPTApiService.getInstance();
     this.taskForm = UPTTaskForm.getInstance()
     this.categoryForm = UPTCategoryForm.getInstance()
+    this.taskDetails = UPTModuleTaskDetails.getInstance()
 
     if (!this.panel) {
       console.error("this.panel is null");
@@ -1830,34 +2146,40 @@ class UPTModulePanel {
     hideLoading(this.panel);
   }
 
-  /** @returns {number} */
-  getMainTasksNumber() {
-    return this.tasks.reduce((value, task) => (task.type === UPT_TaskType.MAIN ? value + 1 : value), 0);
+  static getAllTaskStatusSubClasses() {
+    const statusSubClasses = new Map();
+
+    statusSubClasses.set(UPT_TaskStatus.COMPLETED, "task-status--completed")
+    statusSubClasses.set(UPT_TaskStatus.DELETED, "task-status--deleted")
+    statusSubClasses.set(UPT_TaskStatus.IN_PROGRESS, "task-status--in-progress")
+
+    return statusSubClasses
   }
-  /** @returns {number} */
-  getDailyTasksNumber() {
-    return this.tasks.reduce((value, task) => (task.type === UPT_TaskType.DAILY ? value + 1 : value), 0);
+
+  static getAllTaskPrioritySubClasses() {
+    const prioritySubClasses = new Map();
+
+    prioritySubClasses.set(UPT_TaskPriority.VERY_HIGH, "task-priority--very-high")
+    prioritySubClasses.set(UPT_TaskPriority.HIGH, "task-priority--high")
+    prioritySubClasses.set(UPT_TaskPriority.MEDIUM, "task-priority--medium")
+    prioritySubClasses.set(UPT_TaskPriority.LOW, "task-priority--low")
+
+    return prioritySubClasses
+  }
+
+  /** @param {UPT_Task} task */
+  static getTaskStatusSubClass(task) {
+    return UPTModulePanel.getAllTaskStatusSubClasses().get(task.status)
+  }
+
+  /** @param {UPT_Task} task */
+  static getTaskPrioritySubClass(task) {
+    return UPTModulePanel.getAllTaskPrioritySubClasses().get(task.priority)
   }
 
   /** @param {UPT_Task} task */
   getTaskPrioritySubClass(task) {
-    let taskPrioritySubClass;
-
-    switch (task.priority) {
-      case UPT_TaskPriority.VERY_HIGH:
-        taskPrioritySubClass = "task-priority--very-high";
-        break;
-      case UPT_TaskPriority.HIGH:
-        taskPrioritySubClass = "task-priority--high";
-        break;
-      case UPT_TaskPriority.MEDIUM:
-        taskPrioritySubClass = "task-priority--medium";
-        break;
-      default:
-        taskPrioritySubClass = "task-priority--low";
-    }
-
-    return taskPrioritySubClass;
+    return UPTModulePanel.getTaskPrioritySubClass(task)
   }
 
   /** @param {UPT_Task} task */
@@ -1866,53 +2188,33 @@ class UPTModulePanel {
   }
 
   setClickEventListeners() {
-    this.panel.addEventListener("click", (e) => {
 
-      if (e.target.hasAttribute("data-add-task-button")) {
-        this.taskForm.open(UPTTaskForm.MODE_CREATE)
-      }
-      if (e.target.hasAttribute("data-add-category-button")) {
-        this.categoryForm.open(UPTCategoryForm.MODE_CREATE)
-      }
-      if (e.target.hasAttribute("data-edit-task-btn")) {
-        const taskId = e.target.dataset.taskId;
-        this.taskForm.open(UPTTaskForm.MODE_EDIT, taskId)
-      }
-      if (e.target.hasAttribute("data-details-task-btn")) {
-        this.handleShowDetailsTaskButton(e.target)
-      }
-      if (e.target.hasAttribute("data-delete-task-btn")) {
-        this.handleDeleteTaskButton(e.target);
-      }
-      if (e.target.hasAttribute("data-edit-category-btn")) {
-        const categoryId = e.target.dataset.categoryId;
-        this.categoryForm.open(UPTCategoryForm.MODE_EDIT, categoryId)
-      }
-      if (e.target.hasAttribute("data-delete-category-btn")) {
-        this.handleDeleteCategoryButton(e.target);
+    const actionMap = {
+      "data-add-task-button": () => this.taskForm.open(UPTTaskForm.MODE_CREATE),
+      "data-add-category-button": () => this.categoryForm.open(UPTCategoryForm.MODE_CREATE),
+      "data-edit-task-btn": (target) => this.taskForm.open(UPTTaskForm.MODE_EDIT, target.dataset.taskId),
+      "data-details-task-btn": (target) => this.taskDetails.show(target.dataset.taskId),
+      "data-delete-task-btn": (target) => this.handleDeleteTaskButton(target),
+      "data-edit-category-btn": (target) => this.categoryForm.open(UPTCategoryForm.MODE_EDIT, target.dataset.categoryId),
+      "data-delete-category-btn": (target) => this.handleDeleteCategoryButton(target),
+    };
+
+    this.panel.addEventListener("click", (e) => {
+      const target = e.target;
+
+      for (const [attr, action] of Object.entries(actionMap)) {
+        if (target.hasAttribute(attr)) {
+          action(target);
+          break;
+        }
       }
     });
   }
 
   /** @param {HTMLButtonElement} button */
-  handleShowDetailsTaskButton(button) {
-    const taskId = button.dataset.taskId;
-
-    showModal(UPT_DETAILS_TASK_MODAL_ID)
-    showModalLoading(UPT_DETAILS_TASK_MODAL_ID)
-
-    this.apiService.getTaskById(taskId).then(task => {
-      
-      hideModalLoading(UPT_DETAILS_TASK_MODAL_ID)
-    })
-
-    
-  }
-
-  /** @param {HTMLButtonElement} button */
   handleDeleteTaskButton(button) {
     const taskId = button.dataset.taskId;
-    const confirmButton = document.querySelector(`#${UPT_CONFIRM_MODAL_ID} [data-modal-confirm-button]`); 
+    const confirmButton = document.querySelector(`#${UPT_CONFIRM_MODAL_ID} [data-modal-confirm-button]`);
     const taskName = document.querySelector(`[data-task-card][data-task-id="${taskId}"] [data-task-name]`).textContent;
 
     showModal(UPT_CONFIRM_MODAL_ID, `Czy napewno chcesz usunąć zadanie "${taskName}"?`);
@@ -1923,7 +2225,7 @@ class UPTModulePanel {
       setTimeout(() => {
         const taskCards = document.querySelectorAll(`[data-task-card][data-task-id="${taskId}"]`);
 
-        taskCards.forEach(card => removeDataCard(card)) 
+        taskCards.forEach(card => removeDataCard(card))
         //TODO: odkomentuj
         // this.apiService.deleteTask(taskId)
         hideModal(UPT_CONFIRM_MODAL_ID);
@@ -2132,10 +2434,12 @@ class UPTModuleMainPanel extends UPTModulePanel {
   }
 
   initStatisticTasks() {
+    const dailyTasksNumber = this.tasks.reduce((value, task) => (task.type === UPT_TaskType.MAIN ? value + 1 : value), 0);
+    const mainTasksNumber = this.tasks.reduce((value, task) => (task.type === UPT_TaskType.DAILY ? value + 1 : value), 0);
     const dailyTasksNumberEl = this.panel.querySelector("[data-statistic-daily-tasks-number]");
     const mainTasksNumberEl = this.panel.querySelector("[data-statistic-main-tasks-number]");
-    dailyTasksNumberEl.textContent = this.getDailyTasksNumber();
-    mainTasksNumberEl.textContent = this.getMainTasksNumber();
+    dailyTasksNumberEl.textContent = dailyTasksNumber;
+    mainTasksNumberEl.textContent = mainTasksNumber;
   }
 
   initPieChart() {
@@ -2195,6 +2499,8 @@ class UPTModuleMainPanel extends UPTModulePanel {
 }
 
 class UPTModuleCategoryPanel extends UPTModulePanel {
+  static TOGGLE_ANIMATION_DURATION = 300
+
   constructor(selector, data) {
     super(selector, data);
     this.init();
@@ -2253,8 +2559,7 @@ class UPTModuleCategoryPanel extends UPTModulePanel {
 class UPTModuleTasksPanel extends UPTModulePanel {
   constructor(selector, data) {
     super(selector, data);
-    // data-current-type-title
-    // data-tasks-type-toggle-btn data-current-type="daily"
+    this.tasksList = this.panel.querySelector("[data-tasks-list]");
     this.currentTypeTitleEl = this.panel.querySelector("[data-current-type-title]")
     this.typeToggleButton = this.panel.querySelector("[data-tasks-type-toggle-btn]")
     this.init();
@@ -2262,20 +2567,39 @@ class UPTModuleTasksPanel extends UPTModulePanel {
 
   init() {
     this.renderTasksList();
-    this.typeToggleButton.addEventListener('click', (e) => {
-      const currentType = e.target.dataset.currentType
-      const taskCardsToHide = this.panel.querySelectorAll(`[data-task-card][data-task-type="${currentType}"]`)
+    this.typeToggleButton.addEventListener('click', (e) => this.toggleTasks(e))
+  }
 
-      taskCardsToHide.forEach(taskCard => {
-        // taskCard.
+  toggleTasks(e) {
+    const toggleButton = e.target
+    const currentType = toggleButton.dataset.currentType
+    const isCurrentTypeDaily = currentType === UPT_TaskType.DAILY
+    /**@type {NodeListOf<HTMLElement>}  */
+    const taskCards = this.panel.querySelectorAll(`[data-task-card]`)
+
+    toggleButton.setAttribute("data-current-type", isCurrentTypeDaily ? UPT_TaskType.MAIN : UPT_TaskType.DAILY)
+    toggleButton.textContent = isCurrentTypeDaily ? "Pokaż zadania codzienne" : "Pokaż zadania główne"
+
+    fadeAnimation(() => {
+      taskCards.forEach(taskCard => {
+        taskCard.style.removeProperty("display")
+
+        if (taskCard.getAttribute("data-task-type") === currentType) {
+          taskCard.style.display = "none"
+        } else {
+          taskCard.style.display = "block"
+        }
       })
-      // TODO:
-      // this.
-    })
+
+    }, this.tasksList, UPTModuleCategoryPanel.TOGGLE_ANIMATION_DURATION)
+
+    fadeAnimation(() => {
+      this.currentTypeTitleEl.textContent = isCurrentTypeDaily ? "Zadania Główne" : "Zadania Codzienne"
+
+    }, this.currentTypeTitleEl, UPTModuleCategoryPanel.TOGGLE_ANIMATION_DURATION)
   }
 
   renderTasksList() {
-    const tasksList = this.panel.querySelector("[data-tasks-list]");
     const tasksListFragment = document.createDocumentFragment();
     const tasksNumber = this.tasks.length;
 
@@ -2361,7 +2685,7 @@ class UPTModuleTasksPanel extends UPTModulePanel {
       tasksListFragment.append(card);
     }
 
-    tasksList.append(tasksListFragment);
+    this.tasksList.append(tasksListFragment);
   }
 }
 

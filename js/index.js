@@ -27,20 +27,17 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   // Zakładka Główny Panel
   new UPTModuleMainPanel('#panel-glowny', applicationStateData);
+
   // Zakładka Zadania
   new UPTModuleTasksPanel('#zadania', applicationStateData)
+
   // Zakładka Kategorie
   new UPTModuleCategoryPanel('#kategorie', applicationStateData)
+  
   // Zakładka Archiwum
   new UPTModuleArchivePanel('#archiwum', applicationStateData)
 
   hideLoading(mainContent)
 
-  UPTModuleToast.show(UPTModuleToast.INFO, "Zadania zostaly pobrane z bazy danych")
-
-  // TODO: ????
-  // Inicjacja wszystkich animowantych kołowych progress barów z klasą "circular-progress-bar"
-  CircularProgressBar.initAll("pie", {
-    size: 150
-  });
+  UPTModuleToast.show(UPTModuleToast.INFO, "Zadania zostaly pobrane z bazy danych") 
 });

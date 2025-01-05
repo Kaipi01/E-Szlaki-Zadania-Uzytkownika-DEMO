@@ -168,7 +168,7 @@
 
                                 <div class="actions-card-header">
                                     <p data-current-type-title class="actions-card-title upt-header">Zadania Codzienne</p>
-                                    <button data-tasks-type-toggle-btn data-current-type="daily" class="actions-card-toggle-btn link link-100 small variant2">
+                                    <button data-tasks-type-toggle-btn data-current-type="Dzienne" class="actions-card-toggle-btn link link-100 small variant2">
                                         Pokaż zadania główne
                                     </button>
                                 </div>
@@ -372,100 +372,11 @@
                                 id="upt-tast-input-desc" placeholder="Maksymalnie 500 znaków"></textarea>
                         </div>
 
-                        <ul class="upt-tast-subtasks-list subtasks-list">
-                            <li class="subtask task modern-card">
-
-                                <span class="task-checkbox custom-checkbox-group">
-                                    <input id="checks" type="checkbox">
-                                    <label class="custom-checkbox-label" for="checks">
-                                        <span class="sr-only">Oznacz jako wykonane</span>
-                                        <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                                    </label>
-                                </span>
-
-                                <span class="task-content">
-                                    <span class="task-header">
-                                        <span class="subtask-name" contenteditable>Zadanie numer 1</span>
-                                    </span>
-                                </span>
-
-                                <span class="category-card-actions subtask-actions">
-                                    <button class="category-card-action-btn subtask-action-btn tooltip">
-                                        <span class="tooltip-content">Zapisz zmiany</span>
-                                        <i class="fa-solid fa-save"></i>
-                                    </button>
-                                    <button class="category-card-action-btn subtask-action-btn tooltip">
-                                        <span class="tooltip-content">Anuluj edycje podzadania</span>
-                                        <i class="fa-solid fa-cancel"></i>
-                                    </button>
-                                    <button
-                                        class="category-card-action-btn category-card-delete-btn subtask-action-btn tooltip">
-                                        <span class="tooltip-content">Usuń Podzadanie</span>
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </span>
-                            </li>
-                            <li class="subtask task modern-card">
-
-                                <span class="task-checkbox custom-checkbox-group">
-                                    <input id="checks" type="checkbox">
-                                    <label class="custom-checkbox-label" for="checks">
-                                        <span class="sr-only">Oznacz jako wykonane</span>
-                                        <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                                    </label>
-                                </span>
-
-                                <span class="task-content">
-                                    <span class="task-header">
-                                        <span class="subtask-name">Zadanie numer 1</span>
-                                    </span>
-                                </span>
-
-                                <span class="category-card-actions subtask-actions">
-                                    <button class="category-card-action-btn subtask-action-btn tooltip">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                        <span class="tooltip-content">Edytuj Podzadanie</span>
-                                    </button>
-                                    <button
-                                        class="category-card-action-btn category-card-delete-btn subtask-action-btn tooltip">
-                                        <span class="tooltip-content">Usuń Podzadanie</span>
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </span>
-                            </li>
-                            <li class="subtask task modern-card">
-
-                                <span class="task-checkbox custom-checkbox-group">
-                                    <input id="checks" type="checkbox">
-                                    <label class="custom-checkbox-label" for="checks">
-                                        <span class="sr-only">Oznacz jako wykonane</span>
-                                        <span class="custom-checkbox-icon" aria-hidden="true"></span>
-                                    </label>
-                                </span>
-
-                                <span class="task-content">
-                                    <span class="task-header">
-                                        <span class="subtask-name">Zadanie numer 1</span>
-                                    </span>
-                                </span>
-
-                                <span class="category-card-actions subtask-actions">
-                                    <button class="category-card-action-btn subtask-action-btn tooltip">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                        <span class="tooltip-content">Edytuj Podzadanie</span>
-                                    </button>
-                                    <button
-                                        class="category-card-action-btn category-card-delete-btn subtask-action-btn tooltip">
-                                        <span class="tooltip-content">Usuń Podzadanie</span>
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </span>
-                            </li>
-                        </ul>
+                        <ul data-subtasks-list class="upt-tast-subtasks-list subtasks-list"></ul>
 
                         <div class="upt-tast-form-actions">
                             <div class="left-actions">
-                                <button class="link medium variant2">
+                                <button data-form-add-subtask class="link medium variant2">
                                     <i class="fa-solid fa-plus"></i>
                                     Dodaj Podzadanie
                                 </button>
@@ -488,32 +399,31 @@
             <user-private-tasks-module-modal data-modal-id="user-private-tasks-module-task-details-modal"
                 data-modal-content-class="upt-task-details">
                 <template slot="modal-title">
-                    Zadanie numer 23
+                    <span data-task-details-name>Szczegóły Zadania</span>
                 </template>
                 <template slot="modal-content">
 
                     <div class="upt-task-details-top-content">
                         <div class="upt-task-details-top-content-left">
-                            <span
-                                class="task-priority upt-task-details-priority task-priority--very-high task-priority--big">
-                                Bardzo Wysoki piorytet
+                            <span data-task-details-priority class="task-priority upt-task-details-priority task-priority--big">
+                                Wysoki piorytet
                             </span>
 
-                            <span class="task-status upt-task-details-status task-status--in-progress task-status--big">
+                            <span data-task-details-status class="task-status upt-task-details-status task-status--big">
                                 W Trakcie
                             </span>
                         </div>
 
                         <div class="upt-task-details-top-content-right">
-                            <button class="link variant2 medium">
+                            <button data-task-details-edit-btn class="link variant2 medium">
                                 <i class="fa-solid fa-pen-to-square"></i>
                                 Edytuj
                             </button>
-                            <button class="link variant2 medium">
+                            <button data-task-details-archive-btn class="link variant2 medium">
                                 <i class="fa-regular fa-folder"></i>
                                 Archiwizuj
                             </button>
-                            <button class="link variant2 medium">
+                            <button data-task-details-end-btn class="link variant2 medium">
                                 <i class="fa-solid fa-check"></i>
                                 Zakończ Zadanie
                             </button>
@@ -546,7 +456,7 @@
                         <li class="upt-task-details-stats-category">
                             <span class="text">
                                 <span class="li-title">Kategoria:</span>
-                                Praca
+                                <span data-task-details-category>Praca</span> 
                             </span>
                             <span class="li-icon" aria-hidden="true">
                                 <i class="fa-solid fa-briefcase"></i>
@@ -572,27 +482,26 @@
                         </li>
                         <li class="upt-task-details-stats-type">
                             <span class="text">
-                                <span class="li-title">Typ Zadania:</span>
-                                Codzienne
+                                <span class="li-title">Typ Zadania:</span> 
+                                <span data-task-details-type>Codzienne</span>
                             </span>
                             <span class="li-icon" aria-hidden="true">
                                 <i class="fa-solid fa-list-check"></i>
                             </span>
                         </li>
-                        <li class="upt-task-details-stats-deadline-timer">
-                            <span class="text">
+                        <li class="upt-task-details-stats-deadline-timer"> 
+                            <span data-task-details-deadline-timer class="text">
                                 <span class="li-title">Do ukończenia zostało:</span>
-                                <custom-countdown data-date-end="01/19/2025 03:14:07 AM"></custom-countdown>
-                            </span>
+                            </span> 
                         </li>
                         <li class="upt-task-details-stats-desc">
                             <span class="text">
                                 <span class="li-title">Opis:</span>
-                                Lorem, ipsum dolor sit amet
-                                consectetur adipisicing elit. Quidem rem exercitationem pariatur, mollitia dolore at
-                                dolores vel corrupti. Lorem ipsum dolor sit, amet consectetur adipisicing elit. Aliquam
-                                tenetur, sint quidem quam molestiae quos nam, esse facere eligendi maiores excepturi
-                                quaerat iste.
+                                <span data-task-details-desc>
+                                    Lorem, ipsum dolor sit amet
+                                    consectetur adipisicing elit. Quidem rem exercitationem pariatur, mollitia dolore at
+                                    dolores vel corrupti.
+                                </span>
                             </span>
                             <span class="li-icon" aria-hidden="true">
                                 <i class="fa-solid fa-pen"></i>
@@ -600,26 +509,18 @@
                         </li>
                     </ul>
 
-                    <div class="upt-task-details-subtasks">
+                    <div data-task-details-subtasks-wrapper class="upt-task-details-subtasks">
 
                         <p class="upt-task-details-subtasks-title">Lista podzadań:</p>
 
-                        <div class="upt-task-details-chart circular-progress-bar">
+                        <!-- <custom-circular-progress-bar data-label="Procent ukończonych podzadań" data-percent="60" data-pie='{ 
+                            "lineargradient": ["#14a5ff","#008be2"], 
+                            "round": true, 
+                            "percent": 60, 
+                            "colorCircle": "rgba(63, 98, 74, 0.25)" 
+                        }'></custom-circular-progress-bar>  -->
 
-                            <div class="upt-task-details-chart pie" data-pie='{ 
-                                    "lineargradient": ["#14a5ff","#008be2"], 
-                                    "round": true, 
-                                    "percent": 75, 
-                                    "colorCircle": "rgba(63, 98, 74, 0.25)" 
-                                }' data-pie-index="0">
-                                <meter class="visually-hidden" id="d-harum-sedipsam" value="0.6">60%</meter>
-                            </div>
-
-                            <label class="progress-desc" for="d-harum-sedipsam">Procent ukończonych podzadań</label>
-
-                        </div>
-
-                        <ul class="upt-task-details-subtasks-list subtasks-list">
+                        <ul data-task-details-subtasks-list class="upt-task-details-subtasks-list subtasks-list">
                             <li class="subtask task modern-card">
 
                                 <span class="task-checkbox custom-checkbox-group">
@@ -754,8 +655,7 @@
         <!-- USER PRIVATE TASKS MODULE END -->
     </main>
 
-    <script src="./js/utils.js"></script>
-    <script src="./js/models.js"></script>
+    <script src="./js/utils.js"></script> 
     <script src="./js/ApiService.js"></script>
     <script src="./js/modules.js"></script>
     <script src="./js/index.js"></script>
