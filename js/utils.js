@@ -1,4 +1,4 @@
-"use strict"; 
+"use strict";
 
 class UPT_TaskType {
   static DAILY = "Dzienne";
@@ -12,10 +12,10 @@ class UPT_TaskStatus {
 }
 
 class UPT_TaskPriority {
-  static LOW = "Niski piorytet";
-  static MEDIUM = "Średni piorytet";
-  static HIGH = "Wysoki piorytet";
-  static VERY_HIGH = "Bardzo Wysoki piorytet";
+  static LOW = "Niski";
+  static MEDIUM = "Średni";
+  static HIGH = "Wysoki";
+  static VERY_HIGH = "Bardzo Wysoki";
 }
 
 class UPT_TaskCategory {
@@ -223,6 +223,102 @@ class UPT_Task {
   }
 }
 
+class UPT_Utils {
+
+  /** @param {UPT_Task} task */
+  static getPercentOfCompletedSubTasks(task) {
+    const subTasksLength = task.subTasks.length
+    const completedSubTasksNumber = task.subTasks.reduce(
+      (value, subTask) => (subTask.isCompleted ? value + 1 : value), 0
+    );
+
+    return Math.round((completedSubTasksNumber * 100) / subTasksLength);
+  }
+
+  static getCategoryIconClass(category) {
+    if (!category) return '' 
+
+    return `fa-solid ${category.icon }`
+  }
+
+  /** @returns {Map<string, string>} */
+  static getAllCategoryIcons() {
+    const categoryIcons = new Map()
+
+    categoryIcons.set("fa-briefcase", "Teczka")
+    categoryIcons.set("fa-house", "Dom")
+    categoryIcons.set("fa-notes-medical", "Notatki Medyczne")
+    categoryIcons.set("fa-palette", "Paleta z Kolorami")
+    categoryIcons.set("fa-heart", "Serce")
+    categoryIcons.set("fa-plane", "Samolot")
+    categoryIcons.set("fa-book", "Książka")
+    categoryIcons.set("fa-medal", "Medal")
+    categoryIcons.set("fa-image", "Obraz")
+    categoryIcons.set("fa-user", "Osoba")
+    categoryIcons.set("fa-volleyball", "Piłka do siatkówki")
+    categoryIcons.set("fa-gamepad", "Gamepad")
+    categoryIcons.set("fa-wand-magic-sparkles", "Różczka")
+    categoryIcons.set("fa-music", "Nuta")
+    categoryIcons.set("fa-truck", "Ciężarówka")
+    categoryIcons.set("fa-shield-halved", "Tarcza")
+    categoryIcons.set("fa-film", "Taśma Filmowa")
+    categoryIcons.set("fa-fire", "Ogień")
+    categoryIcons.set("fa-tree", "Drzewo")
+    categoryIcons.set("fa-spa", "Spa")
+    categoryIcons.set("fa-flask", "Szklana Kolba")
+
+    return categoryIcons
+  }
+
+  /** @param {UPT_Task[]} tasks */
+  static sortTasksByPriority(tasks) {
+    return tasks.sort((a, b) => UPT_Utils.getTaskPriorityValue(a) < UPT_Utils.getTaskPriorityValue(b))
+  }
+
+  /** @param {UPT_Task} task */
+  static getTaskPriorityValue(task) {
+    const priorityValues = new Map();
+
+    priorityValues.set(UPT_TaskPriority.VERY_HIGH, 4)
+    priorityValues.set(UPT_TaskPriority.HIGH, 3)
+    priorityValues.set(UPT_TaskPriority.MEDIUM, 2)
+    priorityValues.set(UPT_TaskPriority.LOW, 1)
+
+    return priorityValues.get(task.priority)
+  }
+
+  static getAllTaskStatusSubClasses() {
+    const statusSubClasses = new Map();
+
+    statusSubClasses.set(UPT_TaskStatus.COMPLETED, "task-status--completed")
+    statusSubClasses.set(UPT_TaskStatus.DELETED, "task-status--deleted")
+    statusSubClasses.set(UPT_TaskStatus.IN_PROGRESS, "task-status--in-progress")
+
+    return statusSubClasses
+  }
+
+  static getAllTaskPrioritySubClasses() {
+    const prioritySubClasses = new Map();
+
+    prioritySubClasses.set(UPT_TaskPriority.VERY_HIGH, "task-priority--very-high")
+    prioritySubClasses.set(UPT_TaskPriority.HIGH, "task-priority--high")
+    prioritySubClasses.set(UPT_TaskPriority.MEDIUM, "task-priority--medium")
+    prioritySubClasses.set(UPT_TaskPriority.LOW, "task-priority--low")
+
+    return prioritySubClasses
+  }
+
+  /** @param {UPT_Task} task */
+  static getTaskStatusSubClass(task) {
+    return UPT_Utils.getAllTaskStatusSubClasses().get(task.status)
+  }
+
+  /** @param {UPT_Task} task */
+  static getTaskPrioritySubClass(task) {
+    return UPT_Utils.getAllTaskPrioritySubClasses().get(task.priority)
+  }
+}
+
 // ---------------------------- FUNCTIONS ----------------------------
 
 
@@ -341,7 +437,7 @@ function getUserFriendlyDateFormat(dateString) {
  * @returns {string} Unikalny identyfikator. 
  */
 function generateId(prefix = "") {
-  return prefix + Math.random().toString(36).slice(2, 11);
+  return prefix + Math.random().toString(36);
 }
 
 /**

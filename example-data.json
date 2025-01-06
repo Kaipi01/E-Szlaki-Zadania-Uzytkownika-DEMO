@@ -3,49 +3,49 @@
     {
       "id": "cat-praca",
       "name": "Praca",
-      "icon": "💼",
+      "icon": "fa-briefcase",
       "createdAt": "2025-01-01T10:00:00Z"
     },
     {
       "id": "cat-dom",
       "name": "Dom",
-      "icon": "🏠",
+      "icon": "fa-house",
       "createdAt": "2025-01-02T10:00:00Z"
     },
     {
       "id": "cat-zdrowie",
       "name": "Zdrowie",
-      "icon": "💊",
+      "icon": "fa-notes-medical",
       "createdAt": "2025-01-03T10:00:00Z"
     },
     {
       "id": "cat-rozwoj-osobisty",
       "name": "Rozwój osobisty",
-      "icon": "📚",
+      "icon": "fa-medal",
       "createdAt": "2025-01-04T10:00:00Z"
     },
     {
       "id": "cat-hobby",
       "name": "Hobby",
-      "icon": "🎨",
+      "icon": "fa-palette",
       "createdAt": "2025-01-05T10:00:00Z"
     },
     {
       "id": "cat-rodzina",
       "name": "Rodzina",
-      "icon": "👨‍👩‍👧‍👦",
+      "icon": "fa-heart",
       "createdAt": "2025-01-06T10:00:00Z"
     },
     {
       "id": "cat-podroze",
       "name": "Podróże",
-      "icon": "✈️",
+      "icon": "fa-plane",
       "createdAt": "2025-01-07T10:00:00Z"
     },
     {
       "id": "cat-edukacja",
       "name": "Edukacja",
-      "icon": "📚",
+      "icon": "fa-book",
       "createdAt": "2025-01-06T00:00:00Z"
     }
   ],
@@ -57,12 +57,22 @@
       "deadline": "2025-06-01T15:00:00Z",
       "categoryId": "cat-dom",
       "type": "Dzienne",
-      "priority": "Średni piorytet",
+      "priority": "Średni",
       "status": "W trakcie",
       "description": "Umyć wszystkie naczynia w kuchni",
       "subTasks": [
-        { "name": "Zebrać naczynia", "deadline": null, "isCompleted": true },
-        { "name": "Umyć naczynia", "deadline": null, "isCompleted": false }
+        {
+          "id": "d6h334787fd78gf87g-1",
+          "name": "Zebrać naczynia",
+          "deadline": null,
+          "isCompleted": true
+        },
+        {
+          "id": "d6h334787fd78gf87g-2",
+          "name": "Umyć naczynia",
+          "deadline": null,
+          "isCompleted": false
+        }
       ],
       "isArchived": false
     },
@@ -73,12 +83,22 @@
       "deadline": "2025-06-05T18:00:00Z",
       "categoryId": "cat-praca",
       "type": "Główne",
-      "priority": "Wysoki piorytet",
+      "priority": "Wysoki",
       "status": "Zrealizowano",
       "description": "Sporządzić końcowy raport dla projektu",
       "subTasks": [
-        { "name": "Zebrać dane", "deadline": null, "isCompleted": true },
-        { "name": "Skompilować raport", "deadline": null, "isCompleted": true }
+        {
+          "id": "d6hvcc4787fd78gf87g-1",
+          "name": "Zebrać dane",
+          "deadline": null,
+          "isCompleted": true
+        },
+        {
+          "id": "d6bvb7fd78gf87g-2",
+          "name": "Skompilować raport",
+          "deadline": null,
+          "isCompleted": true
+        }
       ],
       "isArchived": true,
       "archivedAt": "2023-06-05T18:00:00Z"
@@ -90,12 +110,22 @@
       "deadline": "2025-06-01T08:00:00Z",
       "categoryId": "cat-zdrowie",
       "type": "Dzienne",
-      "priority": "Średni piorytet",
+      "priority": "Średni",
       "status": "Zrealizowano",
       "description": "Ćwiczenia relaksacyjne na poranne rozciąganie",
       "subTasks": [
-        { "name": "Rozgrzewka", "deadline": null, "isCompleted": true },
-        { "name": "Podstawowe pozycje", "deadline": null, "isCompleted": true }
+        {
+          "id": "d6hvcnm-1",
+          "name": "Rozgrzewka",
+          "deadline": null,
+          "isCompleted": true
+        },
+        {
+          "id": "d6hvcc4nm-2",
+          "name": "Podstawowe pozycje",
+          "deadline": null,
+          "isCompleted": true
+        }
       ],
       "isArchived": true,
       "archivedAt": "2023-06-05T18:00:00Z"
@@ -107,16 +137,18 @@
       "deadline": "2025-06-10T12:00:00Z",
       "categoryId": "cat-podroze",
       "type": "Główne",
-      "priority": "Bardzo Wysoki piorytet",
+      "priority": "Bardzo Wysoki",
       "status": "W trakcie",
       "description": "Zorganizować wycieczkę wakacyjną",
       "subTasks": [
         {
+          "id": "d6hv4554f45-1",
           "name": "Zarezerwować hotel",
           "deadline": null,
           "isCompleted": false
         },
         {
+          "id": "d6hvcf5454gffg-2",
           "name": "Kupić bilety lotnicze",
           "deadline": null,
           "isCompleted": false
@@ -131,16 +163,22 @@
       "deadline": "2025-06-01T12:00:00Z",
       "categoryId": "cat-dom",
       "type": "Dzienne",
-      "priority": "Niski piorytet",
+      "priority": "Niski",
       "status": "Zrealizowano",
       "description": "Kupić podstawowe produkty spożywcze",
       "subTasks": [
         {
+          "id": "xccxcxf5454gffg-1",
           "name": "Sporządzić listę zakupów",
           "deadline": null,
           "isCompleted": true
         },
-        { "name": "Odwiedzić sklep", "deadline": null, "isCompleted": true }
+        {
+          "id": "vcvc5454gffg-2",
+          "name": "Odwiedzić sklep",
+          "deadline": null,
+          "isCompleted": true
+        }
       ],
       "isArchived": true,
       "archivedAt": "2023-06-05T18:00:00Z"
@@ -152,12 +190,22 @@
       "deadline": "2025-06-01T08:00:00Z",
       "categoryId": "cat-dom",
       "type": "Dzienne",
-      "priority": "Niski piorytet",
+      "priority": "Niski",
       "status": "W trakcie",
       "description": "Podlewanie roślin w salonie i ogrodzie",
       "subTasks": [
-        { "name": "Podlewanie ogrodu", "deadline": null, "isCompleted": true },
-        { "name": "Podlewanie salonu", "deadline": null, "isCompleted": false }
+        {
+          "id": "566cxf5454gffg-1",
+          "name": "Podlewanie ogrodu",
+          "deadline": null,
+          "isCompleted": true
+        },
+        {
+          "id": "v56655xf5454gffg-2",
+          "name": "Podlewanie salonu",
+          "deadline": null,
+          "isCompleted": false
+        }
       ],
       "isArchived": false
     },
@@ -168,16 +216,22 @@
       "deadline": "2025-06-02T10:00:00Z",
       "categoryId": "cat-praca",
       "type": "Dzienne",
-      "priority": "Średni piorytet",
+      "priority": "Średni",
       "status": "Zrealizowano",
       "description": "Wysłanie raportu i prośby o informacje zwrotne",
       "subTasks": [
         {
+          "id": "dffdvdfg-1",
           "name": "Przygotowanie raportu",
           "deadline": null,
           "isCompleted": true
         },
-        { "name": "Wysłanie wiadomości", "deadline": null, "isCompleted": true }
+        {
+          "id": "34gffg-2",
+          "name": "Wysłanie wiadomości",
+          "deadline": null,
+          "isCompleted": true
+        }
       ],
       "isArchived": true,
       "archivedAt": "2023-06-05T18:00:00Z"
@@ -189,12 +243,22 @@
       "deadline": "2025-06-02T07:30:00Z",
       "categoryId": "cat-zdrowie",
       "type": "Dzienne",
-      "priority": "Średni piorytet",
+      "priority": "Średni",
       "status": "W trakcie",
       "description": "Poranny bieg w parku na 5 km",
       "subTasks": [
-        { "name": "Rozgrzewka", "deadline": null, "isCompleted": true },
-        { "name": "Główne bieganie", "deadline": null, "isCompleted": false }
+        {
+          "id": "2332gfgffg6776n1",
+          "name": "Rozgrzewka",
+          "deadline": null,
+          "isCompleted": true
+        },
+        {
+          "id": "cvcvvcvcvccfdvdfg-2",
+          "name": "Główne bieganie",
+          "deadline": null,
+          "isCompleted": false
+        }
       ],
       "isArchived": false
     },
@@ -205,17 +269,24 @@
       "deadline": "2025-06-05T10:00:00Z",
       "categoryId": "cat-praca",
       "type": "Główne",
-      "priority": "Wysoki piorytet",
+      "priority": "Wysoki",
       "status": "W trakcie",
       "description": "Stworzenie prezentacji dla klienta",
       "subTasks": [
         {
+          "id": "2332gfgf-3232vcvvc",
           "name": "Zebranie materiałów",
           "deadline": null,
           "isCompleted": true
         },
-        { "name": "Tworzenie slajdów", "deadline": null, "isCompleted": false },
         {
+          "id": "2332gfgf-3232",
+          "name": "Tworzenie slajdów",
+          "deadline": null,
+          "isCompleted": false
+        },
+        {
+          "id": "2332gfgffg6776n-3232",
           "name": "Przygotowanie mówionych punktów",
           "deadline": null,
           "isCompleted": false
@@ -230,11 +301,11 @@
       "deadline": "2025-05-20T15:00:00Z",
       "categoryId": "cat-dom",
       "type": "Główne",
-      "priority": "Średni piorytet",
+      "priority": "Średni",
       "status": "Zrealizowano",
       "description": "Oddanie samochodu do warsztatu",
       "subTasks": [
-        { "name": "Wizyta w warsztacie", "deadline": null, "isCompleted": true }
+        { "id": "2332gvvc56gffgcvvcv-ghhg","name": "Wizyta w warsztacie", "deadline": null, "isCompleted": true }
       ],
       "isArchived": true,
       "archivedAt": "2023-06-05T18:00:00Z"
@@ -246,12 +317,12 @@
       "deadline": "2025-06-30T20:00:00Z",
       "categoryId": "cat-rozwoj-osobisty",
       "type": "Główne",
-      "priority": "Niski piorytet",
+      "priority": "Niski",
       "status": "W trakcie",
       "description": "Skończenie książki 'Sztuka Wojny'",
       "subTasks": [
-        { "name": "Rozdział 1-5", "deadline": null, "isCompleted": true },
-        { "name": "Rozdział 6-10", "deadline": null, "isCompleted": false }
+        { "id": "vbbv2332gcvvcv-ghhg","name": "Rozdział 1-5", "deadline": null, "isCompleted": true },
+        { "id": "2vbbv33vcv-ghhg","name": "Rozdział 6-10", "deadline": null, "isCompleted": false }
       ],
       "isArchived": false
     },
@@ -262,12 +333,12 @@
       "deadline": "2025-06-03T09:00:00Z",
       "categoryId": "cat-dom",
       "type": "Dzienne",
-      "priority": "Średni piorytet",
+      "priority": "Średni",
       "status": "W trakcie",
       "description": "Umycie naczyń i przetarcie blatów",
       "subTasks": [
-        { "name": "Umycie naczyń", "deadline": null, "isCompleted": true },
-        { "name": "Przetarcie blatów", "deadline": null, "isCompleted": false }
+        { "id": "vbbv2332gc98899888989hhg","name": "Umycie naczyń", "deadline": null, "isCompleted": true },
+        { "id": "v89989898998g","name": "Przetarcie blatów", "deadline": null, "isCompleted": false }
       ],
       "isArchived": false
     },
@@ -278,12 +349,12 @@
       "deadline": "2025-06-04T07:30:00Z",
       "categoryId": "cat-zdrowie",
       "type": "Dzienne",
-      "priority": "Wysoki piorytet",
+      "priority": "Wysoki",
       "status": "Zrealizowano",
       "description": "Rozciąganie i lekki jogging",
       "subTasks": [
-        { "name": "Rozgrzewka", "deadline": null, "isCompleted": true },
-        { "name": "Jogging", "deadline": null, "isCompleted": true }
+        { "id": "zzzbbv288989hhg","name": "Rozgrzewka", "deadline": null, "isCompleted": true },
+        { "id": "zzzzbbv2332gc88989hhg","name": "Jogging", "deadline": null, "isCompleted": true }
       ],
       "isArchived": true,
       "archivedAt": "2023-06-05T18:00:00Z"
@@ -295,12 +366,12 @@
       "deadline": "2025-06-05T12:00:00Z",
       "categoryId": "cat-dom",
       "type": "Dzienne",
-      "priority": "Średni piorytet",
+      "priority": "Średni",
       "status": "W trakcie",
       "description": "Kupienie produktów na obiad i śniadanie",
       "subTasks": [
-        { "name": "Lista zakupów", "deadline": null, "isCompleted": true },
-        { "name": "Wizyta w sklepie", "deadline": null, "isCompleted": false }
+        { "id": "qqzqqv288989hhg","name": "Lista zakupów", "deadline": null, "isCompleted": true },
+        { "id": "zzqqqqq989hhg","name": "Wizyta w sklepie", "deadline": null, "isCompleted": false }
       ],
       "isArchived": false
     },
@@ -311,13 +382,13 @@
       "deadline": "2025-06-15T18:00:00Z",
       "categoryId": "cat-dom",
       "type": "Główne",
-      "priority": "Bardzo Wysoki piorytet",
+      "priority": "Bardzo Wysoki",
       "status": "W trakcie",
       "description": "Przemalowanie ścian i wymiana łóżka",
       "subTasks": [
-        { "name": "Zakup farby", "deadline": null, "isCompleted": true },
-        { "name": "Malowanie ścian", "deadline": null, "isCompleted": false },
-        { "name": "Zakup nowego łóżka", "deadline": null, "isCompleted": false }
+        { "id": "zzqqqbbbbb77hhg","name": "Zakup farby", "deadline": null, "isCompleted": true },
+        { "id": "zzbbb9hhg","name": "Malowanie ścian", "deadline": null, "isCompleted": false },
+        { "id": "bbbqqq989hhg","name": "Zakup nowego łóżka", "deadline": null, "isCompleted": false }
       ],
       "isArchived": false
     },
@@ -328,13 +399,13 @@
       "deadline": "2025-06-10T20:00:00Z",
       "categoryId": "cat-rodzina",
       "type": "Główne",
-      "priority": "Średni piorytet",
+      "priority": "Średni",
       "status": "W trakcie",
       "description": "Przygotowanie przyjęcia niespodzianki dla mamy",
       "subTasks": [
-        { "name": "Lista gości", "deadline": null, "isCompleted": true },
-        { "name": "Zamówienie tortu", "deadline": null, "isCompleted": false },
-        { "name": "Dekoracje", "deadline": null, "isCompleted": false }
+        { "id": "wwwzqqqbbbbb77hhg","name": "Lista gości", "deadline": null, "isCompleted": true },
+        { "id": "wzqqqbbbbb77hhg","name": "Zamówienie tortu", "deadline": null, "isCompleted": false },
+        { "id": "wwwwwwqbbbbb77hhg","name": "Dekoracje", "deadline": null, "isCompleted": false }
       ],
       "isArchived": false
     },
@@ -345,13 +416,13 @@
       "deadline": "2025-06-01T18:00:00Z",
       "categoryId": "cat-praca",
       "type": "Główne",
-      "priority": "Wysoki piorytet",
+      "priority": "Wysoki",
       "status": "Zrealizowano",
       "description": "Przygotowanie raportu za Q2",
       "subTasks": [
-        { "name": "Zebranie danych", "deadline": null, "isCompleted": true },
-        { "name": "Analiza wyników", "deadline": null, "isCompleted": true },
-        { "name": "Prezentacja raportu", "deadline": null, "isCompleted": true }
+        { "id": "1223323223zqqqbbbbb77hhg","name": "Zebranie danych", "deadline": null, "isCompleted": true },
+        { "id": "1222wzqqqbbbbb77hhg","name": "Analiza wyników", "deadline": null, "isCompleted": true },
+        { "id": "12333qqqbbbbb77hhg","name": "Prezentacja raportu", "deadline": null, "isCompleted": true }
       ],
       "isArchived": true,
       "archivedAt": "2023-06-05T18:00:00Z"
@@ -363,12 +434,12 @@
       "deadline": "2025-06-01T07:00:00Z",
       "categoryId": "cat-zdrowie",
       "type": "Dzienne",
-      "priority": "Średni piorytet",
+      "priority": "Średni",
       "status": "W trakcie",
       "description": "30 minut biegania w parku",
       "subTasks": [
-        { "name": "Założenie stroju", "deadline": null, "isCompleted": true },
-        { "name": "Rozgrzewka", "deadline": null, "isCompleted": true }
+        { "id": "0000000qbbbbb77hhg","name": "Założenie stroju", "deadline": null, "isCompleted": true },
+        { "id": "00002333qqqbbbbb77hhg","name": "Rozgrzewka", "deadline": null, "isCompleted": true }
       ],
       "isArchived": false
     },
@@ -379,16 +450,16 @@
       "deadline": "2025-06-01T08:30:00Z",
       "categoryId": "cat-rozwoj-osobisty",
       "type": "Dzienne",
-      "priority": "Niski piorytet",
+      "priority": "Niski",
       "status": "Zrealizowano",
       "description": "15 minut medytacji w ciszy",
       "subTasks": [
-        {
+        {"id": "77770000000qbbbbb77hhg",
           "name": "Znalezienie cichego miejsca",
           "deadline": null,
           "isCompleted": true
         },
-        {
+        {"id": "770000000qbbbbb77hhg",
           "name": "Włączenie muzyki relaksacyjnej",
           "deadline": null,
           "isCompleted": true
@@ -404,12 +475,12 @@
       "deadline": "2025-06-03T09:00:00Z",
       "categoryId": "cat-dom",
       "type": "Dzienne",
-      "priority": "Średni piorytet",
+      "priority": "Średni",
       "status": "W trakcie",
       "description": "Umycie naczyń i przetarcie blatów",
       "subTasks": [
-        { "name": "Umycie naczyń", "deadline": null, "isCompleted": true },
-        { "name": "Przetarcie blatów", "deadline": null, "isCompleted": false }
+        { "id": "66bbbbb77hhg","name": "Umycie naczyń", "deadline": null, "isCompleted": true },
+        { "id": "56655600qbbbbb77hhg","name": "Przetarcie blatów", "deadline": null, "isCompleted": false }
       ],
       "isArchived": false
     },
@@ -420,13 +491,13 @@
       "deadline": "2025-06-15T18:00:00Z",
       "categoryId": "cat-dom",
       "type": "Główne",
-      "priority": "Bardzo Wysoki piorytet",
+      "priority": "Bardzo Wysoki",
       "status": "W trakcie",
       "description": "Przemalowanie ścian i wymiana łóżka",
       "subTasks": [
-        { "name": "Zakup farby", "deadline": null, "isCompleted": true },
-        { "name": "Malowanie ścian", "deadline": null, "isCompleted": false },
-        { "name": "Zakup nowego łóżka", "deadline": null, "isCompleted": false }
+        { "id": "bfcxcxcvvbvc6hhg","name": "Zakup farby", "deadline": null, "isCompleted": true },
+        { "id": "bf6645656bf6645656hhg","name": "Malowanie ścian", "deadline": null, "isCompleted": false },
+        { "id": "bf664565655bbbb77hhg","name": "Zakup nowego łóżka", "deadline": null, "isCompleted": false }
       ],
       "isArchived": false
     },
@@ -437,13 +508,13 @@
       "deadline": "2025-06-10T20:00:00Z",
       "categoryId": "cat-rodzina",
       "type": "Główne",
-      "priority": "Średni piorytet",
+      "priority": "Średni",
       "status": "W trakcie",
       "description": "Przygotowanie przyjęcia niespodzianki dla mamy",
       "subTasks": [
-        { "name": "Lista gości", "deadline": null, "isCompleted": true },
-        { "name": "Zamówienie tortu", "deadline": null, "isCompleted": false },
-        { "name": "Dekoracje", "deadline": null, "isCompleted": false }
+        { "id": "xcvvcxxcxccvx6hhg","name": "Lista gości", "deadline": null, "isCompleted": true },
+        { "id": "bfcxcvcxvc6hhg","name": "Zamówienie tortu", "deadline": null, "isCompleted": false },
+        { "id": "bfcxcxcvfgdggddfdgfhg","name": "Dekoracje", "deadline": null, "isCompleted": false }
       ],
       "isArchived": false
     },
@@ -454,13 +525,13 @@
       "deadline": "2025-06-01T18:00:00Z",
       "categoryId": "cat-praca",
       "type": "Główne",
-      "priority": "Wysoki piorytet",
+      "priority": "Wysoki",
       "status": "Zrealizowano",
       "description": "Przygotowanie raportu za Q2",
       "subTasks": [
-        { "name": "Zebranie danych", "deadline": null, "isCompleted": true },
-        { "name": "Analiza wyników", "deadline": null, "isCompleted": true },
-        { "name": "Prezentacja raportu", "deadline": null, "isCompleted": true }
+        { "id": "bfcxcxcrewrreer6hhg","name": "Zebranie danych", "deadline": null, "isCompleted": true },
+        { "id": "cvbbvcvvbvc6hhg","name": "Analiza wyników", "deadline": null, "isCompleted": true },
+        { "id": "bvccvbcvvbvc6hhg","name": "Prezentacja raportu", "deadline": null, "isCompleted": true }
       ],
       "isArchived": true,
       "archivedAt": "2023-06-05T18:00:00Z"

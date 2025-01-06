@@ -308,8 +308,8 @@
                         <div>
                             <select id="upt-tast-input-type" name="upt-tast-type" data-custom-select data-class-name="custom-select-green">
                                 <option value="hide">Typ Zadania</option>
-                                <option value="daily">Codzienne</option>
-                                <option value="main">Główne</option>
+                                <option value="Dzienne">Codzienne</option>
+                                <option value="Główne">Główne</option>
                             </select>
                             <label class="sr-only" for="upt-tast-input-type">Typ Zadania</label>
                         </div>
@@ -357,10 +357,10 @@
                             <select id="upt-tast-input-priority" name="upt-tast-priority" data-custom-select
                                 data-class-name="custom-select-green">
                                 <option value="hide">Wybierz Piorytet</option>
-                                <option value="bardzo-wysoki">Bardzo Wysoki</option>
-                                <option value="wysoki">Wysoki</option>
-                                <option value="sredni">Średni</option>
-                                <option value="niski">Niski</option>
+                                <option value="Bardzo Wysoki">Bardzo Wysoki</option>
+                                <option value="Wysoki">Wysoki</option>
+                                <option value="Średni">Średni</option>
+                                <option value="Niski">Niski</option>
                             </select>
                             <label class="sr-only" for="upt-tast-input-priority">Piorytet</label>
                         </div>
@@ -419,6 +419,10 @@
                                 <i class="fa-solid fa-pen-to-square"></i>
                                 Edytuj
                             </button>
+                            <button data-task-details-restore-btn class="link variant2 medium">
+                                <i class="fa-solid fa-rotate-right"></i>
+                                Przywróć Zadanie
+                            </button>
                             <button data-task-details-archive-btn class="link variant2 medium">
                                 <i class="fa-regular fa-folder"></i>
                                 Archiwizuj
@@ -456,10 +460,10 @@
                         <li class="upt-task-details-stats-category">
                             <span class="text">
                                 <span class="li-title">Kategoria:</span>
-                                <span data-task-details-category>Praca</span> 
+                                <span data-task-details-category>Brak</span> 
                             </span>
                             <span class="li-icon" aria-hidden="true">
-                                <i class="fa-solid fa-briefcase"></i>
+                                <i data-task-details-category-icon class="fa-solid fa-layer-group"></i> 
                             </span>
                         </li>
                         <li class="upt-task-details-stats-deadline-date">
@@ -511,14 +515,7 @@
 
                     <div data-task-details-subtasks-wrapper class="upt-task-details-subtasks">
 
-                        <p class="upt-task-details-subtasks-title">Lista podzadań:</p>
-
-                        <!-- <custom-circular-progress-bar data-label="Procent ukończonych podzadań" data-percent="60" data-pie='{ 
-                            "lineargradient": ["#14a5ff","#008be2"], 
-                            "round": true, 
-                            "percent": 60, 
-                            "colorCircle": "rgba(63, 98, 74, 0.25)" 
-                        }'></custom-circular-progress-bar>  -->
+                        <p class="upt-task-details-subtasks-title">Lista podzadań:</p> 
 
                         <ul data-task-details-subtasks-list class="upt-task-details-subtasks-list subtasks-list">
                             <li class="subtask task modern-card">
@@ -606,11 +603,7 @@
                         <div>
                             <select id="upt-category-input-icon" name="upt-category-icon" data-custom-select
                                 data-class-name="custom-select-green">
-                                <option value="hide">Wybierz Ikonę</option>
-                                <option value="magni" data-icon="fa-pen">Magni</option>
-                                <option value="doloremque" data-icon="fa-briefcase">Doloremque</option>
-                                <option value="remque" data-icon="fa-clock">Remquee</option>
-                                <option value="quantum" data-icon="fa-home">Quantum</option>
+                                <option value="hide">Wybierz Ikonę</option> 
                             </select>
                             <label class="sr-only" for="upt-category-input-icon">Wybierz Ikonę</label>
                         </div>

@@ -714,41 +714,6 @@ class CircularProgressBar {
     this._elements = elements;
   }
 
-  /**
-   * @param {string} pieName
-   * @param {object} globalObj
-   */
-  static initAll(pieName, globalObj = {}) {
-    const pie = document.querySelectorAll(".pie");
-    const elements = [].slice.call(pie);
-    const circle = new CircularProgressBar(pieName, globalObj);
-
-    if ("IntersectionObserver" in window) {
-      const config = {
-        root: null,
-        rootMargin: "0px",
-        threshold: 0.75,
-      };
-
-      const ovserver = new IntersectionObserver((entries, observer) => {
-        entries.map((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.75) {
-            circle.initial(entry.target);
-            observer.unobserve(entry.target);
-          }
-        });
-      }, config);
-
-      elements.map((item) => {
-        ovserver.observe(item);
-      });
-    } else {
-      elements.map((element) => {
-        circle.initial(element);
-      });
-    }
-  }
-
   initial(outside) {
     const triggeredOutside = outside || this._elements;
     Array.isArray(triggeredOutside) ?
@@ -1273,6 +1238,15 @@ class CustomSelect {
     this.attachEventListeners();
   }
 
+  /** @param {() => void} callback */
+  reRender(callback) {
+    this.destroy()
+    callback()
+    this.numberOfOptions = this.selectElement.children.length;
+    this.createCustomElements();
+    this.attachEventListeners();
+  }
+
   createCustomElements() {
     this.selectElement.classList.add(`${this.className}-hidden`);
     this.wrapper = document.createElement("div");
@@ -1284,7 +1258,13 @@ class CustomSelect {
     this.wrapper.appendChild(this.selectElement);
     this.styledSelect = document.createElement("div");
     this.styledSelect.classList.add(`${this.className}-styled`);
-    this.styledSelect.textContent = this.selectElement.options[0].textContent;
+    const firstOption = this.selectElement.options[0]
+    const firstOptionIcon = firstOption.dataset.icon
+
+    this.styledSelect.innerHTML = `
+      ${firstOptionIcon ? `<i class="fa-solid ${firstOptionIcon}"></i>` : ''}
+      ${firstOption.textContent}
+    `;
     this.wrapper.appendChild(this.styledSelect);
     this.optionList = document.createElement("ul");
     this.optionList.classList.add(`${this.className}-options`);
@@ -1314,55 +1294,52 @@ class CustomSelect {
     this.listItems = this.optionList.querySelectorAll("li");
   }
 
+  /** @param {string | null} value */
+  chooseOption(value) {
+    let listItem = this.optionList.querySelector(`[rel="${value}"]`)
+
+    if (!listItem) {
+      listItem = this.optionList.querySelector(`[rel="hide"]`)
+    }
+
+    this.styledSelect.innerHTML = listItem.innerHTML;
+    this.styledSelect.classList.remove("active");
+    this.selectElement.value = listItem.getAttribute("rel");
+    this.optionList
+      .querySelector("li.is-selected")
+      .classList.remove("is-selected");
+    listItem.classList.add("is-selected");
+    this.optionList.style.display = "none";
+  };
+
+  openSelect(e) {
+    e.stopPropagation()
+
+    document
+      .querySelectorAll(`div.${this.className}-styled.active`)
+      .forEach((activeStyledSelect) => {
+        if (activeStyledSelect !== this.styledSelect) {
+          activeStyledSelect.classList.remove("active");
+          activeStyledSelect.nextElementSibling.style.display = "none";
+        }
+      });
+    this.styledSelect.classList.toggle("active");
+    this.optionList.style.display = this.styledSelect.classList.contains("active") ? "block" : "none";
+  };
+
   attachEventListeners() {
-    /**
-     * @param {Event} e
-     */
-    const openSelect = (e) => {
-      e.stopPropagation();
-      document
-        .querySelectorAll(`div.${this.className}-styled.active`)
-        .forEach((activeStyledSelect) => {
-          if (activeStyledSelect !== this.styledSelect) {
-            activeStyledSelect.classList.remove("active");
-            activeStyledSelect.nextElementSibling.style.display = "none";
-          }
-        });
-      this.styledSelect.classList.toggle("active");
-      this.optionList.style.display = this.styledSelect.classList.contains(
-          "active"
-        ) ?
-        "block" :
-        "none";
-    };
 
-    /**
-     * @param {Event} e
-     * @param {HTMLElement} listItem
-     */
-    const chooseOption = (e, listItem) => {
-      e.stopPropagation();
-      this.styledSelect.innerHTML = listItem.innerHTML;
-      this.styledSelect.classList.remove("active");
-      this.selectElement.value = listItem.getAttribute("rel");
-      this.optionList
-        .querySelector("li.is-selected")
-        .classList.remove("is-selected");
-      listItem.classList.add("is-selected");
-      this.optionList.style.display = "none";
-    };
-
-    this.styledSelect.addEventListener("click", (e) => openSelect(e));
+    this.styledSelect.addEventListener("click", (e) => this.openSelect(e));
     this.styledSelect.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") openSelect(e);
+      if (e.key === "Enter") this.openSelect(e);
     });
 
     this.listItems.forEach((listItem) => {
       listItem.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") chooseOption(e, listItem);
+        if (e.key === "Enter") this.chooseOption(listItem.getAttribute('rel'));
       });
-      listItem.addEventListener("click", (e) => {
-        chooseOption(e, listItem);
+      listItem.addEventListener("click", () => {
+        this.chooseOption(listItem.getAttribute('rel'));
       });
     });
 
@@ -1393,12 +1370,20 @@ class CustomSelect {
 
 class CustomCircularProgressBar extends HTMLElement {
 
+  static get observedAttributes() {
+    return ["data-percent"];
+  }
+
   constructor() {
     super();
     this.dataPie
     this.percentValue
     this.labelText
     this.size
+    this.circle
+    this.circle
+    this.pieElement
+    this.isInitialized = false;
   }
 
   connectedCallback() {
@@ -1408,19 +1393,37 @@ class CustomCircularProgressBar extends HTMLElement {
     this.size = this.getAttribute("data-size") ?? 150;
     this.render();
     this.init();
+    this.isInitialized = true;
   }
 
-  init() { 
-    const circle = new CircularProgressBar("pie", {
-      size: this.size
+  init() {
+    this.pieElement = this.querySelector(".pie")
+    this.circle = new CircularProgressBar("pie", {
+      size: this.size,
     });
-    circle.initial(this.querySelector(".pie"));
+    this.circle.initial(this.pieElement);
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (this.isInitialized && name === "data-percent" && oldValue !== newValue) {
+      this.reanimateComponent(newValue);
+    }
+  }
+
+  /** @param {string} percentStr */
+  reanimateComponent(percentStr) {
+    const index = this.pieElement.getAttribute('data-pie-index')
+
+    this.circle.animationTo({
+      index,
+      percent: percentStr
+    });
   }
 
   render() {
     this.innerHTML = `
       <div class="upt-task-details-chart circular-progress-bar">
-        <div class="upt-task-details-chart pie" data-pie='${this.dataPie}' data-pie-index="0">
+        <div class="upt-task-details-chart pie" data-percent="${this.percent}" data-pie='${this.dataPie}' data-pie-index="0">
           <meter class="visually-hidden" id="upt-task-details-chart-label" value="${this.percent / 100.0}">${this.percent}%</meter>
         </div> 
         <label class="progress-desc" for="upt-task-details-chart-label">${this.labelText}</label>
@@ -1434,6 +1437,10 @@ customElements.define("custom-circular-progress-bar", CustomCircularProgressBar)
 class CustomCountdown extends HTMLElement {
   static ANIMATE_ATTRIBUTE_NAME = "data-animate-now";
 
+  static get observedAttributes() {
+    return ["data-stop"];
+  }
+
   constructor() {
     super();
     this.dateEnd;
@@ -1444,11 +1451,13 @@ class CustomCountdown extends HTMLElement {
     this.minutes;
     this.seconds;
     this.elements = {};
+    this.stop
   }
 
   connectedCallback() {
     const timeUnitsToShowAttr = this.getAttribute("data-time-units-to-show");
     this.dateEnd = this.getAttribute("data-date-end");
+    this.stop = this.getAttribute("data-stop")
     this.timeUnitsToShow = timeUnitsToShowAttr ? JSON.parse(timeUnitsToShowAttr.replace(/'/g, '"')) : ["days", "hours", "minutes", "seconds"];
 
     this.render();
@@ -1463,6 +1472,24 @@ class CustomCountdown extends HTMLElement {
 
     this.dateEnd = new Date(this.dateEnd).getTime();
 
+    this.calculate()
+
+    if (!this.stop || this.stop === "false") {
+      this.startCountDown()
+    }
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === "data-stop" && oldValue !== newValue) {
+      newValue === "true" ? this.stopCountDown() : this.startCountDown()
+    }
+  }
+
+  stopCountDown() {
+    clearInterval(this.timer)
+  }
+
+  startCountDown() {
     this.timer = setInterval(() => this.calculate(), 1000);
   }
 
@@ -1600,6 +1627,7 @@ class UPTModuleTaskDetails {
   static ATTR_TYPE = "data-task-details-type"
   static ATTR_STATUS = "data-task-details-status"
   static ATTR_CATEGORY = "data-task-details-category"
+  static ATTR_CATEGORY_ICON = "data-task-details-category-icon"
   static ATTR_PRIORITY = "data-task-details-priority"
   static ATTR_SUBTASKS_LIST = "data-task-details-subtasks-list"
   static ATTR_SUBTASKS_WRAPPER = "data-task-details-subtasks-wrapper"
@@ -1607,6 +1635,8 @@ class UPTModuleTaskDetails {
   static ATTR_END_TASK_BTN = "data-task-details-end-btn"
   static ATTR_ARCHIVE_TASK_BTN = "data-task-details-archive-btn"
   static ATTR_EDIT_TASK_BTN = "data-task-details-edit-btn"
+  static ATTR_RESTORE_TASK_BTN = "data-task-details-restore-btn"
+
 
 
   /** @type {UPTModuleTaskDetails} */
@@ -1630,10 +1660,12 @@ class UPTModuleTaskDetails {
     this.typeElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_TYPE)
     this.statusElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_STATUS)
     this.categoryElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_CATEGORY)
+    this.categoryIconElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_CATEGORY_ICON)
     this.subTasksListElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_SUBTASKS_LIST)
     this.subTasksWrapperElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_SUBTASKS_WRAPPER)
     this.endTaskButton = this.getElementByAttr(UPTModuleTaskDetails.ATTR_END_TASK_BTN)
     this.editTaskButton = this.getElementByAttr(UPTModuleTaskDetails.ATTR_EDIT_TASK_BTN)
+    this.restoreTaskButton = this.getElementByAttr(UPTModuleTaskDetails.ATTR_RESTORE_TASK_BTN)
     this.archiveTaskButton = this.getElementByAttr(UPTModuleTaskDetails.ATTR_ARCHIVE_TASK_BTN)
     this.deadlineTimerElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_DEADLINE_TIMER)
     this.subTaskModule = new UPTModuleSubTask(this.subTasksListElement)
@@ -1653,12 +1685,8 @@ class UPTModuleTaskDetails {
       this.editForm.open(UPTTaskForm.MODE_EDIT, this.currentTaskId)
     })
   }
-
-  /** 
-   * @param {UPT_Task} task
-   * @param {UPT_TaskCategory | null} category
-   */
-  displayData(task, category = null) {
+  /**  @param {UPT_Task} task */
+  displayCountDown(task) {
     const taskIsMain = task.type === UPT_TaskType.MAIN
     const timeToEndDayCountdown = document.createElement("custom-countdown");
     const now = new Date();
@@ -1670,50 +1698,110 @@ class UPTModuleTaskDetails {
     this.deadlineTimerElement.querySelector("custom-countdown")?.remove()
     timeToEndDayCountdown.setAttribute("data-date-end", deadlineDate.toISOString());
     timeToEndDayCountdown.setAttribute("data-time-units-to-show", deadlineTimeUnitsToShow);
+
+    if (task.isArchived) {
+      timeToEndDayCountdown.setAttribute("data-stop", "true");
+    }
+
     this.deadlineTimerElement.append(timeToEndDayCountdown);
+  }
 
-    this.nameElement.textContent = task.name
-    this.categoryElement.textContent = category ? category.name : "Brak"
-    this.typeElement.textContent = task.type
-    this.statusElement.textContent = task.status
-    this.statusElement.classList.remove(...UPTModulePanel.getAllTaskStatusSubClasses().values())
-    this.statusElement.classList.add(UPTModulePanel.getTaskStatusSubClass(task))
-    this.priorityElement.textContent = task.priority
-    this.priorityElement.classList.remove(...UPTModulePanel.getAllTaskPrioritySubClasses().values())
-    this.priorityElement.classList.add(UPTModulePanel.getTaskPrioritySubClass(task))
+  /**  @param {UPT_Task} task */
+  displayActionButtons(task) {
+    this.endTaskButton.style.removeProperty("display")
+    this.editTaskButton.style.removeProperty("display")
+    this.restoreTaskButton.style.removeProperty("display")
+    this.archiveTaskButton.style.removeProperty("display")
 
+    if (task.isArchived) {
+      this.endTaskButton.style.display = "none"
+      this.editTaskButton.style.display = "none"
+      this.archiveTaskButton.style.display = "none"
+    } else {
+      this.restoreTaskButton.style.display = "none"
+    }
+  }
+
+  /**  @param {UPT_Task} task */
+  displaySubTasksProgress(task) {
+    const circularProgressBar = document.createElement("custom-circular-progress-bar");
+    const completedSubTasksPercent = UPT_Utils.getPercentOfCompletedSubTasks(task)
+
+    circularProgressBar.setAttribute("data-label", "Procent ukończonych podzadań")
+    circularProgressBar.setAttribute("data-percent", completedSubTasksPercent)
+    circularProgressBar.setAttribute("data-pie", JSON.stringify({
+      lineargradient: ["#14a5ff", "#008be2"],
+      round: true,
+      percent: completedSubTasksPercent,
+      colorCircle: "rgba(63, 98, 74, 0.25)"
+    }))
+
+    this.subTasksWrapperElement.querySelector("custom-circular-progress-bar")?.remove()
+    this.subTasksWrapperElement.append(circularProgressBar)
+
+
+    // setTimeout(() => {
+    //   circularProgressBar.setAttribute("data-percent", "15")
+    // }, 3000)
+    // setTimeout(() => {
+    //   circularProgressBar.setAttribute("data-percent", "65")
+    // }, 5000)
+    // setTimeout(() => {
+    //   circularProgressBar.setAttribute("data-percent", "34")
+    // }, 7000)
+  }
+
+  /**  @param {UPT_Task} task */
+  displayDescription(task) {
     if (task.description !== "") {
       this.descElement.style.removeProperty("display")
       this.descElement.textContent = task.description
     } else {
       this.descElement.style.display = "none"
     }
+  }
+
+  /**  @param {UPT_Task} task */
+  displayStatus(task) {
+    this.statusElement.textContent = task.status
+    this.statusElement.classList.remove(...UPT_Utils.getAllTaskStatusSubClasses().values())
+    this.statusElement.classList.add(UPT_Utils.getTaskStatusSubClass(task))
+  }
+
+  /**  @param {UPT_Task} task */
+  displayPriority(task) {
+    this.priorityElement.textContent = `${task.priority} piorytet`
+    this.priorityElement.classList.remove(...UPT_Utils.getAllTaskPrioritySubClasses().values())
+    this.priorityElement.classList.add(UPT_Utils.getTaskPrioritySubClass(task))
+  }
+
+  /** 
+   * @param {UPT_Task} task
+   * @param {UPT_TaskCategory | null} category
+   */
+  displayData(task, category = null) {
+    this.displayCountDown(task)
+    this.displayActionButtons(task)
+    this.displayDescription(task)
+
+    this.nameElement.textContent = task.name
+
+    this.categoryElement.textContent = category ? category.name : "Brak"
+    this.categoryIconElement.className = category ? UPT_Utils.getCategoryIconClass(category) : "fa-solid fa-layer-group"
+
+    this.typeElement.textContent = task.type
+
+    this.displayStatus(task)
+    this.displayPriority(task)
 
     this.subTaskModule.clearSubTasksList()
-    this.subTasksWrapperElement.querySelector("custom-circular-progress-bar")?.remove()
+    this.subTaskModule.renderSubTasksList(task.subTasks, UPTModuleSubTask.MODE_SHOW)
 
     if (task.subTasks.length === 0) {
       this.subTasksWrapperElement.style.display = "none"
     } else {
-      const circularProgressBar = document.createElement("custom-circular-progress-bar");
-      // const completedSubTasksPercent = TODO:
       this.subTasksWrapperElement.style.removeProperty("display")
-      this.subTaskModule.renderSubTasksList(task.subTasks)
-      
-      
-
-      circularProgressBar.setAttribute("data-label", "Procent ukończonych podzadań")
-      circularProgressBar.setAttribute("data-percent", "41")
-      circularProgressBar.setAttribute("data-pie", JSON.stringify({
-        lineargradient: ["#14a5ff","#008be2"], 
-        round: true, 
-        percent: 41, 
-        colorCircle: "rgba(63, 98, 74, 0.25)" 
-      }))
- 
-      this.subTasksWrapperElement.append(circularProgressBar)
-
-      // circle.animationTo()
+      this.displaySubTasksProgress(task)
     }
   }
 
@@ -1736,8 +1824,6 @@ class UPTModuleTaskDetails {
       this.currentTaskId = task.id
 
       this.displayData(task, category)
-
-      UPTModuleToast.show(UPTModuleToast.INFO, "Pobrano i załadowano informacje o zadaniu")
     } catch (e) {
       hideModal(this.modalId)
       console.error(e)
@@ -1765,12 +1851,15 @@ class UPTModuleSubTask {
   static MODE_SHOW = "show"
 
   /** @param {HTMLElement} container */
-  constructor(container) { 
+  constructor(container) {
     this.container = container
   }
 
-  /** @param {UPT_SubTask[]} subTasks */
-  renderSubTasksList(subTasks) {
+  /** 
+   * @param {UPT_SubTask[]} subTasks 
+   * @param {string} mode
+   */
+  renderSubTasksList(subTasks, mode = UPTModuleSubTask.MODE_SHOW) {
     const subTasksNumber = subTasks.length
     const subTasksListFragment = document.createDocumentFragment()
 
@@ -1778,7 +1867,7 @@ class UPTModuleSubTask {
       const subTask = subTasks[i]
 
       subTasksListFragment.append(
-        this.renderSubTaskCard(subTask, UPTModuleSubTask.MODE_SHOW)
+        this.renderSubTaskCard(subTask, mode)
       )
     }
     this.container.append(subTasksListFragment)
@@ -1811,12 +1900,12 @@ class UPTModuleSubTask {
 
     const subTaskHeaderContent = isEditMode ?
       `<span class="upt-form-field">
-        <input class="floating-label-control upt-form-control" type="text" name="upt-subtast-name-${subTask.id}" id="upt-subtast-input-name-${subTask.id}" placeholder="Nazwa Podzadania" value="${subTask.name}">
+        <input data-subtast-input-name class="floating-label-control upt-form-control" type="text" id="upt-subtast-input-name-${subTask.id}" placeholder="Nazwa Podzadania" value="${subTask.name}">
           <label class="floating-label" for="upt-subtast-input-name-${subTask.id}">Nazwa Podzadania</label> 
           <i class="upt-icon fa-solid fa-pen"></i>
       </span>
       <span class="upt-form-field">
-        <input class="floating-label-control upt-form-control" type="datetime-local" name="upt-subtast-date-${subTask.id}" id="upt-subtast-input-date-${subTask.id}">
+        <input data-subtast-input-date class="floating-label-control upt-form-control" type="datetime-local" id="upt-subtast-input-date-${subTask.id}">
         <label class="floating-label" for="upt-subtast-input-date-${subTask.id}">Od kiedy</label>
       </span>
     ` :
@@ -1825,12 +1914,12 @@ class UPTModuleSubTask {
         <span data-subtask-date class="subtask-date">${subTask.deadline ?? ''}</span>
       `
 
-    li.className = "subtask task modern-card"
+    li.className = `subtask ${subTask.isCompleted ? 'subtask--completed' : ''} task modern-card`
     li.setAttribute("data-subtask-card", "")
     li.setAttribute("data-subtask-id", subTask.id)
     li.innerHTML = `
         <span class="task-checkbox custom-checkbox-group">
-          <input data-mark-subtask-as-done id="mark-subtask-as-done-${subTask.id}" type="checkbox">
+          <input data-mark-subtask-as-done id="mark-subtask-as-done-${subTask.id}" type="checkbox" ${subTask.isCompleted ? 'checked' : ''}>
           <label class="custom-checkbox-label" for="mark-subtask-as-done-${subTask.id}">
             <span class="sr-only">Oznacz jako wykonane</span>
             <span class="custom-checkbox-icon" aria-hidden="true"></span>
@@ -1865,6 +1954,7 @@ class UPTCategoryForm {
     /** @type {HTMLFormElement} */
     this.form = document.querySelector(`#${UPT_CATEGORY_FORM_ID}`)
     this.apiService = UPTApiService.getInstance()
+    this.modalId = UPT_CATEGORY_FORM_MODAL_ID
 
     if (!this.form) {
       console.error("form is null");
@@ -1873,6 +1963,8 @@ class UPTCategoryForm {
     this.nameInput = this.form.querySelector(`input[name="${UPTCategoryForm.FIELD_NAME}"]`)
     this.descTextarea = this.form.querySelector(`textarea[name="${UPTCategoryForm.FIELD_DESC}"]`)
     this.iconSelect = this.form.querySelector(`select[name="${UPTCategoryForm.FIELD_ICON}"]`)
+    this.renderIconsOptions()
+    this.customIconSelect = new CustomSelect(this.iconSelect)
 
     this.init()
   }
@@ -1884,21 +1976,64 @@ class UPTCategoryForm {
     return UPTCategoryForm.instance;
   }
 
+  init() {
+    this.form.addEventListener("submit", (e) => this.handleSubmit(e))
+  }
+
+  handleSubmit(e) {
+    e.preventDefault() 
+    const formData = new FormData(this.form)
+    const formDataObject = {};  
+
+    formData.forEach((value, key) => formDataObject[key] = value);
+    
+    console.log(formDataObject)
+  }
+
   /** @param {string} categoryId */
   async loadFormData(categoryId) {
-    showModalLoading(UPT_CATEGORY_FORM_MODAL_ID)
+    showModalLoading(this.modalId)
+    let category = null
 
-    const category = await this.apiService.getCategoryById(categoryId)
+    try {
+      category = await this.apiService.getCategoryById(categoryId)
 
-    if (!category) {
-      UPTModuleToast.show(UPTModuleToast.ERROR, "Nie istnieje kateogria o id: " + categoryId)
-    } else {
-      UPTModuleToast.show(UPTModuleToast.INFO, "Pobrano informacje o kategorii")
+      if (!category) {
+        throw new Error("Nie istnieje kateogria o id: " + categoryId)
+      }
+
+    } catch (e) {
+      console.error(e)
+      UPTModuleToast.show(UPTModuleToast.ERROR, e.message)
+      hideModalLoading(this.modalId)
+      hideModal(this.modalId)
+    } finally {
+      return category
+    }
+  }
+
+  /**  
+   * @param {string} mode 
+   * @param {string | null} categoryId
+   */
+  async displayData(mode, categoryId = null) {
+    const isEditMode = mode === UPTCategoryForm.MODE_EDIT
+    let currentCategoryIcon = null
+
+    this.form.reset()
+
+    if (isEditMode) {
+      const category = await this.loadFormData(categoryId)
+      currentCategoryIcon = category.icon
+      this.nameInput.value = category.name
+      this.descTextarea.textContent = category.desc ?? ""
     }
 
-    hideModalLoading(UPT_CATEGORY_FORM_MODAL_ID)
+    this.customIconSelect.reRender(() => {
+      this.renderIconsOptions(currentCategoryIcon)
+    })
 
-    return category
+    hideModalLoading(this.modalId)
   }
 
   /**  
@@ -1911,29 +2046,28 @@ class UPTCategoryForm {
 
     submitButton.textContent = isEditMode ? "Zapisz zmiany" : "Dodaj"
 
-    this.form.reset()
+    showModal(this.modalId, isEditMode ? "Edytuj Kategorię" : "Dodaj Kategorię")
 
-    showModal(UPT_CATEGORY_FORM_MODAL_ID, isEditMode ? "Edytuj Kategorię" : "Dodaj Kategorię")
-
-    if (isEditMode) {
-      const category = await this.loadFormData(categoryId)
-
-      this.nameInput.value = category.name
-      this.descTextarea.textContent = category.desc
-
-    } else {
-      this.nameInput.value = ""
-    }
+    this.displayData(mode, categoryId)
   }
 
-  init() {
-    this.form.addEventListener("submit", (e) => {
-      e.preventDefault()
+  /** @param {string | null} currentIcon */
+  renderIconsOptions(currentIcon = null) {
+    const allCategoryIcons = UPT_Utils.getAllCategoryIcons()
+    this.iconSelect.innerHTML = '<option value="hide">Wybierz Ikonę</option> '
 
+    allCategoryIcons.keys().forEach(icon => {
+      const option = document.createElement("option")
+      option.value = icon
+      option.setAttribute('data-icon', icon)
+      option.textContent = allCategoryIcons.get(icon)
 
-      const formData = new FormData(this.form)
-
-      console.log(formData)
+      if (currentIcon && currentIcon === icon) {
+        this.iconSelect.prepend(option)
+        this.iconSelect.value = icon
+      } else {
+        this.iconSelect.append(option)
+      }
     })
   }
 }
@@ -1959,6 +2093,7 @@ class UPTTaskForm {
     /** @type {HTMLFormElement} */
     this.form = document.querySelector(`#${UPT_TASK_FORM_ID}`)
     this.apiService = UPTApiService.getInstance()
+    this.modalId = UPT_TASK_FORM_MODAL_ID
 
     if (!this.form) {
       console.error("form is null");
@@ -1991,66 +2126,86 @@ class UPTTaskForm {
     this.form.addEventListener("submit", (e) => this.handleFormSubmit(e))
   }
 
-
-  /** 
-   * @param {UPT_Task} task 
-   * @param {UPT_TaskCategory[]} categories 
+  /**
+   * @param {UPT_TaskCategory[]} categories
+   * @param {UPT_Task | null} task 
    */
-  displayFormData(task, categories) {
-    this.subTaskModule.renderSubTasksList(task.subTasks ?? [])
-    this.categoryCustomSelect.destroy()
-    //this.priorityCustomSelect.destroy()
-    //this.typeCustomSelect.destroy()
-
-    this.nameInput.value = task.name
-    this.typeSelect.value = task.type
-    this.prioritySelect = task.priority
+  renderCategoryOptions(categories, task = null) {
+    this.categorySelect.innerHTML = '<option value="hide">Wybierz Kategorie</option> '
 
     categories.forEach(category => {
       const option = document.createElement("option")
       option.value = category.id
-      option.textContent = `${category.icon} ${category.name}`
+      option.setAttribute('data-icon', category.icon)
+      option.textContent = category.name
 
-      if (category.id === task.categoryId) {
+      if (task && category.id === task.categoryId) {
         this.categorySelect.prepend(option)
         this.categorySelect.value = category.id
       } else {
         this.categorySelect.append(option)
       }
     })
-
-    this.categoryCustomSelect = new CustomSelect(this.categorySelect)
-    //this.priorityCustomSelect = new CustomSelect(this.prioritySelect)
-    //this.typeCustomSelect = new CustomSelect(this.typeSelect)
   }
 
-  reset() {
+
+  /** 
+   * @param {string} mode 
+   * @param {string | null} taskId
+   */
+  async displayFormData(mode, taskId) {
+    const isEditMode = mode === UPTTaskForm.MODE_EDIT
+
     this.form.reset()
-    this.categorySelect.innerHTML = '<option value="hide">Wybierz Kategorie</option>'
-    this.subTaskModule.clearSubTasksList()
+    this.subTaskModule.clearSubTasksList() 
+
+    if (isEditMode) {
+      const {
+        task,
+        categories
+      } = await this.loadFormData(taskId)
+
+      this.subTaskModule.renderSubTasksList(task.subTasks ?? [], UPTModuleSubTask.MODE_EDIT)  
+      this.nameInput.value = task.name
+      this.typeSelect.value = task.type
+      this.descTextarea.textContent = task.description ?? ''
+      this.prioritySelect = task.priority 
+      this.categoryCustomSelect.reRender(() => this.renderCategoryOptions(categories, task)) 
+      this.priorityCustomSelect.chooseOption(task.priority)
+      this.typeCustomSelect.chooseOption(task.type)
+    } else {
+      this.priorityCustomSelect.chooseOption(null)
+      this.typeCustomSelect.chooseOption(null)
+      this.categoryCustomSelect.chooseOption(null)
+    } 
+
+    hideModalLoading(this.modalId)
   }
 
   /** @param {string} taskId */
   async loadFormData(taskId) {
-    showModalLoading(UPT_TASK_FORM_MODAL_ID)
+    showModalLoading(this.modalId)
+    let task = null,
+      categories = null
 
     try {
-      const task = await this.apiService.getTaskById(taskId)
-      const categories = await this.apiService.getCategories()
+      task = await this.apiService.getTaskById(taskId)
+      categories = await this.apiService.getCategories()
 
       if (!task) {
         throw new Error("Nie istnieje zadanie o id: " + taskId);
       }
 
       this.displayFormData(task, categories)
-
-      UPTModuleToast.show(UPTModuleToast.INFO, "Pobrano i załadowano informacje o zadaniu")
     } catch (e) {
-      hideModal(UPT_TASK_FORM_MODAL_ID)
+      hideModal(this.modalId)
       console.error(e)
       UPTModuleToast.show(UPTModuleToast.ERROR, e.message)
     } finally {
-      hideModalLoading(UPT_TASK_FORM_MODAL_ID)
+      return {
+        task,
+        categories
+      }
     }
   }
 
@@ -2060,25 +2215,19 @@ class UPTTaskForm {
    */
   async open(mode, taskId = null) {
     const isEditMode = mode === UPTTaskForm.MODE_EDIT
+    const submitButton = this.form.querySelector("[data-form-submit-btn]")
 
-    manipulateDOMElement(`#${UPT_TASK_FORM_ID} [data-form-submit-btn]`, (submitButton) => {
-      submitButton.textContent = isEditMode ? "Zapisz zmiany" : "Dodaj"
-    })
+    submitButton.textContent = isEditMode ? "Zapisz zmiany" : "Dodaj"
 
-    this.reset()
+    showModal(this.modalId, isEditMode ? "Edytuj Zadanie" : "Dodaj Zadanie")
 
-    showModal(UPT_TASK_FORM_MODAL_ID, isEditMode ? "Edytuj Zadanie" : "Dodaj Zadanie")
-
-    if (isEditMode) {
-      this.loadFormData(taskId)
-    }
+    this.displayFormData(mode, taskId)
   }
 
   addSubTask(e) {
     e.preventDefault()
 
-    const newSubTask = new UPT_SubTask(generateId(), "")
-
+    const newSubTask = new UPT_SubTask(generateId("subtask-"), "")
     const newSubTaskCard = this.subTaskModule.renderSubTaskCard(newSubTask, UPTModuleSubTask.MODE_EDIT)
 
     this.subTaskModule.container.append(newSubTaskCard)
@@ -2094,18 +2243,22 @@ class UPTTaskForm {
     formDataObject[UPTTaskForm.FIELD_SUBTASKS] = []
 
     subTaskCards.forEach(card => {
-      const subTaskName = card.querySelector("[data-subtask-name]").textContent
       const subTaskId = card.dataset.subtaskId
+      const subTaskName = card.querySelector("[data-subtast-input-name]")
+      const subTaskDate = card.querySelector("[data-subtast-input-date]") 
 
       formDataObject[UPTTaskForm.FIELD_SUBTASKS].push({
         id: subTaskId,
-        name: subTaskName
+        name: subTaskName.value,
+        deadline: subTaskDate.value ?? null
       })
     })
     // console.log(formData)
     console.log(formDataObject)
 
-    UPTModuleToast.show(UPTModuleToast.SUCCESS, "Zadanie zostało zaktualizowane!")
+    // UPTModuleToast.show(UPTModuleToast.SUCCESS, "Zadanie zostało zaktualizowane!")
+    // TODO: dodaj input type hidden do sprawdzenia trybu formularza czy nie jest w trypie "edit"
+    // TODO: dodaj walidacje danych
 
     // const formDataJson = JSON.stringify(formDataObject);
     // console.log(formDataJson)
@@ -2129,7 +2282,7 @@ class UPTModulePanel {
     categories
   }) {
     this.panel = document.querySelector(selector);
-    this.tasks = tasks;
+    this.tasks = UPT_Utils.sortTasksByPriority(tasks);
     this.categories = categories;
     this.apiService = UPTApiService.getInstance();
     this.taskForm = UPTTaskForm.getInstance()
@@ -2144,42 +2297,6 @@ class UPTModulePanel {
     this.setClickEventListeners()
 
     hideLoading(this.panel);
-  }
-
-  static getAllTaskStatusSubClasses() {
-    const statusSubClasses = new Map();
-
-    statusSubClasses.set(UPT_TaskStatus.COMPLETED, "task-status--completed")
-    statusSubClasses.set(UPT_TaskStatus.DELETED, "task-status--deleted")
-    statusSubClasses.set(UPT_TaskStatus.IN_PROGRESS, "task-status--in-progress")
-
-    return statusSubClasses
-  }
-
-  static getAllTaskPrioritySubClasses() {
-    const prioritySubClasses = new Map();
-
-    prioritySubClasses.set(UPT_TaskPriority.VERY_HIGH, "task-priority--very-high")
-    prioritySubClasses.set(UPT_TaskPriority.HIGH, "task-priority--high")
-    prioritySubClasses.set(UPT_TaskPriority.MEDIUM, "task-priority--medium")
-    prioritySubClasses.set(UPT_TaskPriority.LOW, "task-priority--low")
-
-    return prioritySubClasses
-  }
-
-  /** @param {UPT_Task} task */
-  static getTaskStatusSubClass(task) {
-    return UPTModulePanel.getAllTaskStatusSubClasses().get(task.status)
-  }
-
-  /** @param {UPT_Task} task */
-  static getTaskPrioritySubClass(task) {
-    return UPTModulePanel.getAllTaskPrioritySubClasses().get(task.priority)
-  }
-
-  /** @param {UPT_Task} task */
-  getTaskPrioritySubClass(task) {
-    return UPTModulePanel.getTaskPrioritySubClass(task)
   }
 
   /** @param {UPT_Task} task */
@@ -2311,7 +2428,7 @@ class UPTModuleMainPanel extends UPTModulePanel {
 
       li.innerHTML = `
         <a href="#kategorie" class="task-category-link link variant4"> 
-          <i class="task-category-link-icon" aria-hidden="true">${category.icon}</i>
+          <i class="task-category-link-icon ${UPT_Utils.getCategoryIconClass(category)}" aria-hidden="true"></i>
           <span>${category.name}</span>
         </a>
       `;
@@ -2323,7 +2440,6 @@ class UPTModuleMainPanel extends UPTModulePanel {
   }
 
   renderTasksList() {
-    //TODO: const tasks = this.tasks.sort(task => {})
     const dailyTasksList = this.panel.querySelector("[data-daily-tasks-list]");
     const mainTasksList = this.panel.querySelector("[data-main-tasks-list]");
     const tasksNumber = this.tasks.length;
@@ -2346,8 +2462,7 @@ class UPTModuleMainPanel extends UPTModulePanel {
 
       const li = document.createElement("li");
       const category = this.getCategoryByTask(task);
-      const categoryIcon = category ? category.icon : "";
-      const taskPrioritySubClass = this.getTaskPrioritySubClass(task);
+      const taskPrioritySubClass = UPT_Utils.getTaskPrioritySubClass(task);
       const taskRepeatIcon = !taskIsMain ? '<i class="fa-solid fa-rotate"></i>' : "";
       const taskDateInfo = taskIsMain ? `
           <span class="task-date-month"><i class="fa-regular fa-calendar"></i> 23 Paź</span>
@@ -2374,12 +2489,13 @@ class UPTModuleMainPanel extends UPTModulePanel {
         <span class="task-content">
 
           <span class="task-priority ${taskPrioritySubClass}">
-            ${task.priority}
+            ${task.priority} piorytet
           </span>
 
           <span class="task-header">
               <span class="task-name">
-                <i>${categoryIcon}</i> <span data-task-name>${task.name}</span> ${taskRepeatIcon}
+                <i class="${UPT_Utils.getCategoryIconClass(category)}"></i> 
+                <span data-task-name>${task.name}</span> ${taskRepeatIcon}
               </span>
 
               <span class="tooltip">
@@ -2535,7 +2651,7 @@ class UPTModuleCategoryPanel extends UPTModulePanel {
     li.innerHTML = `
       <span class="category-card-header">
         <span class="category-card-name">
-            <i class="category-card-icon">${category.icon}</i>
+            <i class="category-card-icon ${UPT_Utils.getCategoryIconClass(category)}"></i>
             <span data-category-name>${category.name}</span>
         </span>
         <span class="category-card-createAt">Utworzono: ${formatDate(category.createdAt)}</span>
@@ -2613,8 +2729,7 @@ class UPTModuleTasksPanel extends UPTModulePanel {
 
       const card = document.createElement("div");
       const category = this.getCategoryByTask(task);
-      const categoryIcon = category ? category.icon : "";
-      const taskPrioritySubClass = this.getTaskPrioritySubClass(task);
+      const taskPrioritySubClass = UPT_Utils.getTaskPrioritySubClass(task);
       const taskRepeatIcon = !taskIsMain ? '<i class="fa-solid fa-rotate"></i>' : "";
       const taskDescription =
         task.description && task.description !== "" ?
@@ -2638,10 +2753,10 @@ class UPTModuleTasksPanel extends UPTModulePanel {
 
       card.innerHTML = `
         <div class="task-card-header">
-          <span class="task-priority task-card-priority ${taskPrioritySubClass}">${task.priority}</span>
+          <span class="task-priority task-card-priority ${taskPrioritySubClass}">${task.priority} piorytet</span>
 
           <p class="task-name task-card-name">
-            <i class="task-icon">${categoryIcon}</i>
+            <i class="task-icon ${UPT_Utils.getCategoryIconClass(category)}"></i>
             <span data-task-name>${task.name}</span> ${taskRepeatIcon}
           </p>
 
@@ -2713,8 +2828,7 @@ class UPTModuleArchivePanel extends UPTModulePanel {
 
       const li = document.createElement("li");
       const category = this.getCategoryByTask(task);
-      const categoryIcon = category ? category.icon : "";
-      const taskPrioritySubClass = this.getTaskPrioritySubClass(task);
+      const taskPrioritySubClass = UPT_Utils.getTaskPrioritySubClass(task);
       const taskRepeatIcon =
         task.type === UPT_TaskType.DAILY ?
         '<i class="fa-solid fa-rotate"></i>' :
@@ -2727,10 +2841,10 @@ class UPTModuleArchivePanel extends UPTModulePanel {
       li.innerHTML = ` 
          <span class="task-archive-header">
           <span class="task-priority ${taskPrioritySubClass}">
-            ${task.priority}
+            ${task.priority} piorytet
           </span>
           <span class="task-archive-name category-card-name">
-            <i class="category-card-icon">${categoryIcon}</i>
+            <i class="category-card-icon ${UPT_Utils.getCategoryIconClass(category)}"></i>
             <span data-task-name>${task.name}</span>
             ${taskRepeatIcon}
           </span>
@@ -2739,15 +2853,15 @@ class UPTModuleArchivePanel extends UPTModulePanel {
           Zarchiwizowano: ${formatDate(task.archivedAt)}
         </span>
         <span class="task-archive-actions category-card-actions">
-          <button class="category-card-action-btn tooltip">
+          <button data-details-task-btn data-task-id="${task.id}" class="category-card-action-btn tooltip">
             <i class="fa-solid fa-info"></i>
             <span class="tooltip-content">Szczegóły Zadania</span>
           </button>
-          <button class="category-card-action-btn tooltip">
+          <button data-restore-task-btn data-task-id="${task.id}" class="category-card-action-btn tooltip">
             <i class="fa-solid fa-rotate-right"></i>
             <span class="tooltip-content">Przywróć Zadanie</span>
           </button>
-          <button class="category-card-action-btn category-card-delete-btn tooltip">
+          <button data-delete-task-btn data-task-id="${task.id}" class="category-card-action-btn category-card-delete-btn tooltip">
             <span class="tooltip-content">Usuń Zadanie</span>
             <i class="fa-solid fa-trash-can"></i>
           </button>

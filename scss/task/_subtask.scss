@@ -13,6 +13,13 @@
         font-weight: bold; 
       }
 
+      &--completed {
+        .subtask-name {
+          color: var(--gray);
+          text-decoration: line-through;
+        }
+      }
+
       &-header {
         display: flex;
         flex-wrap: wrap;

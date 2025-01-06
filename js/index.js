@@ -37,7 +37,5 @@ document.addEventListener("DOMContentLoaded", async function () {
   // Zakładka Archiwum
   new UPTModuleArchivePanel('#archiwum', applicationStateData)
 
-  hideLoading(mainContent)
-
-  UPTModuleToast.show(UPTModuleToast.INFO, "Zadania zostaly pobrane z bazy danych") 
+  hideLoading(mainContent) 
 });
