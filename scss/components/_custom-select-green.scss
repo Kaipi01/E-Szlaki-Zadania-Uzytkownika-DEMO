@@ -59,6 +59,14 @@
           transform: translateY(-100%) rotate(180deg);
         }
       }
+
+      &.active {
+        background-color: var(--background-green);
+
+        &:after {
+          transform: translateY(-100%) rotate(180deg);
+        }
+      }
     }
 
     &-options {

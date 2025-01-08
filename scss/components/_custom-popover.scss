@@ -1,0 +1,19 @@
+@use "../components/sr-only";
+@use "../functions/toRem" as *;
+
+#user-private-tasks-module {  
+  .custom-popover { 
+    height: 100%;
+    
+    &-content {
+      display: block;
+      padding: 0.75rem 0.9375rem;
+    }
+
+    &-button {
+      width: 100%;
+      color: inherit;
+      font-size: inherit;
+    }
+  }
+}

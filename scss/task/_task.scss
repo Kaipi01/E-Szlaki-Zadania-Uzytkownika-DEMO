@@ -37,6 +37,14 @@
       padding-block: 0.5rem;
       font-size: 1.2rem;
       font-weight: bold;
+     
+      a {
+        transition: all 0.3s ease;
+
+        &:hover, &:focus {
+          color: var(--blue);
+        }
+      }
     }
 
     &-checkbox {

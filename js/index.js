@@ -35,12 +35,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Zakładka Kategorie
     new UPTModuleCategoryPanel('#kategorie', data)
-    
+
     // Zakładka Archiwum
     new UPTModuleArchivePanel('#archiwum', data)
 
-    hideLoading(mainContent) 
-  })
-
-  
-}); 
+    hideLoading(mainContent)
+  }) 
+});

@@ -1,21 +1,23 @@
-@use "./base/base";  
+@use "./base/base";
 @use "./base/colors";
 
 @use "./components/links";
-@use "./components/modern-card"; 
+@use "./components/modern-card";
 @use "./components/sr-only";
 @use "./components/toast";
 @use "./components/loading";
 @use "./components/modal";
-@use "./components/custom-checkbox"; 
-@use "./components/circular-progress-bar"; 
-@use "./components/custom-pie-chart";  
-@use "./components/custom-select-green"; 
-@use "./components/tooltip"; 
+@use "./components/custom-checkbox";
+@use "./components/circular-progress-bar";
+@use "./components/custom-pie-chart";
+@use "./components/custom-select-green";
+@use "./components/tooltip";
 @use "./components/search-form";
-@use "./components/form"; 
+@use "./components/form";
 @use "./components/custom-countdown";
 @use "./components/green-list";
+@use "./components/custom-popover";
+@use "./components/custom-switch";
 
 @use "./layout/main-content-layout";
 

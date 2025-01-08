@@ -25,6 +25,14 @@
       &-name {
         padding-top: 0.5rem;
         padding-bottom: 0.5rem;
+
+        a {
+          transition: all 0.3s ease;
+  
+          &:hover, &:focus {
+            color: var(--blue);
+          }
+        }
       }
 
       &-actions {

@@ -48,13 +48,13 @@ class UPT_SubTask {
   /**
    * @param {string} id
    * @param {string} name
-   * @param {string | null} deadline
+   * @param {string | null} startDate
    * @param {bool} isCompleted
    */
-  constructor(id, name, deadline = null, isCompleted = false) {
+  constructor(id, name, startDate = null, isCompleted = false) {
     this.id = id;
     this.name = name;
-    this.deadline = deadline;
+    this.startDate = startDate;
     this.isCompleted = isCompleted;
   }
 
@@ -62,9 +62,9 @@ class UPT_SubTask {
   setIsCompleted(isCompleted) {
     this.isCompleted = isCompleted;
   }
-  /** @param {string | null} deadline */
-  setDeadline(deadline) {
-    this.deadline = deadline;
+  /** @param {string | null} startDate */
+  setStartDate(startDate) {
+    this.startDate = startDate;
   }
   /** @param {string} name */
   setName(name) {
@@ -75,8 +75,8 @@ class UPT_SubTask {
     return this.isCompleted;
   }
 
-  getDeadline() {
-    return this.deadline;
+  getStartDate() {
+    return this.startDate;
   }
 
   getName() {
@@ -88,8 +88,9 @@ class UPT_SubTask {
  * @typedef {Object} UPT_TaskInterface
  * @property {string} id - ID zadania.
  * @property {string} name - Nazwa zadania.
- * @property {string} createdAt - Data utworzenia.
- * @property {string} deadline - Termin wykonania.
+ * @property {string} createdAt - Data utworzenia. 
+ * @property {string} startDate - data startu.
+ * @property {string} endDate - data końca.
  * @property {string} categoryId - Kategoria zadania.
  * @property {UPT_SubTask[]} subTasks - Lista podzadań.
  * @property {string} status - Status zadania.
@@ -100,6 +101,8 @@ class UPT_SubTask {
  * @property {string | null} archivedAt - Kiedy zostało zarchiwizowane.
  */
 class UPT_Task {
+  static ALL_DAY = "Cały dzień"
+
   /**
    * @param {UPT_TaskInterface} taskProps
    */
@@ -107,14 +110,15 @@ class UPT_Task {
     this.id = String(taskProps.id);
     this.name;
     this.type;
-    this.deadline;
+    this.startDate;
+    this.endDate;
     this.categoryId;
     this.priority;
     this.status;
     this.description;
     this.subTasks;
     this.isArchived;
-    this.createdAt = new Date().toISOString();
+    this.createdAt = (new Date()).toISOString();
     this.updatedAt;
     this.archivedAt
     this.validateTaskProps(taskProps);
@@ -126,7 +130,8 @@ class UPT_Task {
   validateTaskProps(taskProps) {
     this.setName(taskProps.name);
     this.setUpdatedAt(this.createdAt);
-    this.setDeadline(taskProps.deadline);
+    this.setStartDate(taskProps.startDate)
+    this.setEndDate(taskProps.endDate)
     this.setCategoryId(taskProps.categoryId);
     this.setSubTasks(taskProps.subTasks || []);
     this.setStatus(taskProps.status || UPT_TaskStatus.IN_PROGRESS);
@@ -152,19 +157,23 @@ class UPT_Task {
 
   /** @param {string} value */
   setUpdatedAt(value) {
-    this.updatedAt = new Date(value).toISOString();
+    this.updatedAt = (new Date(value)).toISOString();
   }
 
   /** @param {string | null} value */
   setArchivedAt(value) {
     if (value) {
-      this.archivedAt = new Date(value).toISOString();
+      this.archivedAt = value
     }
   }
 
-  /** @param {string} value */
-  setDeadline(value) {
-    this.deadline = new Date(value).toISOString();
+  /** @param {string | null} value */
+  setStartDate(value) {
+    this.startDate = value
+  }
+  /** @param {string | null} value */
+  setEndDate(value) {
+    this.endDate = value
   }
 
   /** @param {string} value */
@@ -233,6 +242,16 @@ class UPT_Utils {
     );
 
     return Math.round((completedSubTasksNumber * 100) / subTasksLength);
+  } 
+
+  static getHoursForDailyTask(task) {  
+    if (task.startDate === UPT_Task.ALL_DAY) {
+      return UPT_Task.ALL_DAY
+    }
+    if (! task.endDate || task.endDate === task.startDate) {  
+      return getHoursAndMinutes(task.startDate)
+    }
+    return getHoursAndMinutes(task.startDate) + " - " + getHoursAndMinutes(task.endDate)
   }
 
   static getCategoryIconClass(category) {
@@ -419,11 +438,19 @@ function formatDate(dateString) {
   return `${day}.${month}.${year}`;
 }
 
+/** @param {string} dateString */
+function getHoursAndMinutes(dateStr) {
+  const date = new Date(dateStr) 
+  const hours = date.getHours().toString().padStart(2, "0")
+  const minutes = date.getMinutes().toString().padStart(2, "0") 
+  return `${hours}:${minutes}`
+} 
+
 /** 
  * @param {string} dateString 
  * @param {object} options 
  */
-function getUserFriendlyDateFormat(dateString, options = null) {
+function getFriendlyDateFormat(dateString, options = null) {
   const date = new Date(dateString);
   const formattedDate = new Intl.DateTimeFormat("pl-PL", options ? options : {
     weekday: "long",

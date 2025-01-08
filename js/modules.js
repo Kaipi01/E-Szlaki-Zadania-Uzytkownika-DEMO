@@ -1224,6 +1224,82 @@ class CustomPieChart {
   }
 }
 
+class CustomPopover extends HTMLElement {
+
+  constructor() {
+    super()
+    this.dataClass
+    this.dataButtonClass
+    this.dataContentClass
+    this.content
+    this.button
+    this.isOpen = false
+  }
+
+  connectedCallback() {
+    const buttonTextTemplate = this.querySelector(`[slot="button-text"]`)
+    const contentTemplate = this.querySelector(`[slot="content"]`)
+
+    this.dataClass = this.getAttribute("data-class") ?? "";
+    this.contentVal = contentTemplate?.innerHTML || "";
+    this.buttonTextVal = buttonTextTemplate?.innerHTML || "";
+    this.dataButtonClass = buttonTextTemplate.getAttribute("data-class") ?? "";
+    this.dataContentClass = contentTemplate.getAttribute("data-class") ?? "";
+    this.render();
+    this.init();
+  }
+
+  init() {
+    this.content = this.querySelector('[data-popover-content]')
+    this.button = this.querySelector('[data-popover-button]')
+
+    this.content.style.display = "none"
+
+    this.button.addEventListener('click', (e) => {
+      if (!this.isOpen) {
+        this.show()
+      } else {
+        this.hide()
+      }
+    })
+
+    document.addEventListener('click', (e) => {
+      const isNotThisContent = !e.target.closest('[data-popover-content]')
+
+      if (this.isOpen && e.target !== this.button && isNotThisContent) {
+        this.hide()
+      }
+    })
+  }
+
+  show() {
+    this.content.style.removeProperty("display")
+    this.button.classList.add('active')
+    this.isOpen = true
+  }
+  hide() {
+    this.content.style.display = "none"
+    this.button.classList.remove('active')
+    this.isOpen = false
+  }
+
+  render() {
+    this.innerHTML = /*html*/ `
+      <div class="custom-popover ${this.dataClass}">
+        <button data-popover-button class="custom-popover-button ${this.dataButtonClass}">
+          ${this.buttonTextVal}
+        </button>
+
+        <div data-popover-content class="custom-popover-content ${this.dataContentClass}" role="dialog">
+          ${this.contentVal}
+        </div>
+      </div>
+    `
+  }
+}
+customElements.define("custom-popover", CustomPopover);
+
+
 class CustomSelect {
   static HIDE_VALUE = "hide"
   static CHANGE_OPTION_EVENT = "upt-custom-select-change-option"
@@ -1656,7 +1732,7 @@ class UPTModuleTaskDetails {
   static ATTR_NAME = "data-task-details-name";
   static ATTR_DESC = "data-task-details-desc";
   // static ATTR_DATE_START = "data-task-details-date-start";
-  // static ATTR_DATE_END = "data-task-details-date-end";
+  static ATTR_DATE_END = "data-task-details-date-end";
   static ATTR_TYPE = "data-task-details-type"
   static ATTR_STATUS = "data-task-details-status"
   static ATTR_CATEGORY = "data-task-details-category"
@@ -1685,6 +1761,7 @@ class UPTModuleTaskDetails {
       return;
     }
     this.currentTaskId = null
+    this.currentTask = null
     this.editForm = UPTTaskForm.getInstance()
     this.nameElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_NAME)
     this.descElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_DESC)
@@ -1693,6 +1770,7 @@ class UPTModuleTaskDetails {
     this.statusElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_STATUS)
     this.createdAtElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_CREATED_AT)
     this.categoryElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_CATEGORY)
+    this.dateEndElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_DATE_END)
     this.categoryIconElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_CATEGORY_ICON)
     this.subTasksListElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_SUBTASKS_LIST)
     this.subTasksWrapperElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_SUBTASKS_WRAPPER)
@@ -1702,6 +1780,7 @@ class UPTModuleTaskDetails {
     this.archiveTaskButton = this.getElementByAttr(UPTModuleTaskDetails.ATTR_ARCHIVE_TASK_BTN)
     this.deadlineTimerElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_DEADLINE_TIMER)
     this.subTaskModule = new UPTModuleSubTask(this.subTasksListElement)
+    this.circularProgressBar = null
     this.init()
   }
 
@@ -1717,7 +1796,125 @@ class UPTModuleTaskDetails {
       hideModal(this.modalId)
       this.editForm.open(UPTTaskForm.MODE_EDIT, this.currentTaskId)
     })
+
+    this.subTaskModule.container.addEventListener(UPTModuleSubTask.SUBTASK_STATE_CHANGE_EVENT, (e) => this.updateSubTasksList(e))
   }
+
+  updateSubTasksList(e) {
+    const task = this.currentTask 
+    const {
+      id,
+      isCompleted
+    } = e.detail
+    const updatedSubTask = task.subTasks.find(subTask => subTask.id === id)
+
+    updatedSubTask.isCompleted = isCompleted
+
+    this.apiService.updateTask(task.id, task)
+
+    const completedSubTasksPercent = UPT_Utils.getPercentOfCompletedSubTasks(task)
+    const everySubTaskIsCompleted = task.subTasks.every(subtask => subtask.isCompleted)
+
+    this.circularProgressBar.setAttribute("data-percent", completedSubTasksPercent)
+
+    if (isCompleted) {
+      UPTModuleToast.show(UPTModuleToast.SUCCESS, "Podzadanie zostało oznaczone jako wykonane!")
+    }
+
+    if (everySubTaskIsCompleted) {
+      UPTModuleToast.show(UPTModuleToast.SUCCESS, "Wszystkie podzadania zostały wykonane!")
+    }
+
+    console.log(this.subTaskModule.container)
+  }
+
+  /** 
+   * @param {UPT_Task} task
+   * @param {UPT_TaskCategory | null} category
+   */
+  displayData(task, category = null) {
+    const isTaskMain = task.type === UPT_TaskType.MAIN
+ 
+    this.displayCountDown(task)
+    this.displayActionButtons(task)
+    this.displayDescription(task)
+
+    this.nameElement.textContent = `Zadanie: "${task.name}"`
+
+    this.categoryElement.textContent = category ? category.name : "Brak"
+    this.categoryIconElement.className = category ? UPT_Utils.getCategoryIconClass(category) : "fa-solid fa-layer-group"
+
+    this.typeElement.textContent = task.type
+    this.createdAtElement.textContent = getFriendlyDateFormat(task.createdAt, {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    })
+
+    this.displayStatus(task)
+    this.displayPriority(task)
+
+    this.subTaskModule.clearSubTasksList()
+    this.subTaskModule.renderSubTasksList(task.subTasks, UPTModuleSubTask.MODE_SHOW)
+
+    if (isTaskMain) {
+      this.dateEndElement.classList.add("tooltip")
+    } else {
+      this.dateEndElement.classList.remove("tooltip")
+    }
+
+    this.dateEndElement.innerHTML = isTaskMain ?
+      `
+      <i class="fa-regular fa-calendar"></i> ${getFriendlyDateFormat(task.endDate, { day: "numeric", month: "short" })} 
+      <i class="fa-regular fa-clock"></i> ${getHoursAndMinutes(task.endDate)}
+      <span class="tooltip-content">
+        ${getFriendlyDateFormat(task.endDate, { weekday: "long" })} <br>
+        ${getFriendlyDateFormat(task.endDate, { day: "numeric", month: "long", year: "numeric" })} rok
+        <hr class="upt-hr">
+        Godzina: ${getHoursAndMinutes(task.endDate)}
+      </span>
+    ` :
+      `
+      <i class="fa-regular fa-clock"></i> ${UPT_Utils.getHoursForDailyTask(task)}
+    `
+
+    if (task.subTasks.length === 0) {
+      this.subTasksWrapperElement.style.display = "none"
+    } else {
+      this.subTasksWrapperElement.style.removeProperty("display")
+      this.displaySubTasksProgress(task)
+    }
+  }
+
+  /** @param {string} taskId */
+  async show(taskId) {
+    showModalLoading(this.modalId)
+    showModal(this.modalId)
+
+    try {
+      const task = await this.apiService.getTaskById(taskId)
+
+      if (!task) {
+        throw new Error("Nie istnieje zadanie o id: " + taskId);
+      }
+
+      const category = task.categoryId ?
+        await this.apiService.getCategoryById(task.categoryId) :
+        null
+
+      this.currentTask = task
+      this.currentTaskId = task.id
+
+      this.displayData(task, category)
+    } catch (e) {
+      hideModal(this.modalId)
+      console.error(e)
+      UPTModuleToast.show(UPTModuleToast.ERROR, e.message)
+    } finally {
+      hideModalLoading(this.modalId)
+    }
+  }
+
   /**  @param {UPT_Task} task */
   displayCountDown(task) {
     const taskIsMain = task.type === UPT_TaskType.MAIN
@@ -1725,7 +1922,7 @@ class UPTModuleTaskDetails {
     const now = new Date();
     const deadlineTimeUnitsToShow = taskIsMain ? "['days', 'hours', 'minutes', 'seconds']" : "['hours', 'minutes', 'seconds']"
     const deadlineDate = taskIsMain ?
-      new Date(task.deadline) :
+      new Date(task.endDate) :
       new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
 
     this.deadlineTimerElement.querySelector("custom-countdown")?.remove()
@@ -1771,17 +1968,7 @@ class UPTModuleTaskDetails {
 
     this.subTasksWrapperElement.querySelector("custom-circular-progress-bar")?.remove()
     this.subTasksWrapperElement.append(circularProgressBar)
-
-
-    // setTimeout(() => {
-    //   circularProgressBar.setAttribute("data-percent", "15")
-    // }, 3000)
-    // setTimeout(() => {
-    //   circularProgressBar.setAttribute("data-percent", "65")
-    // }, 5000)
-    // setTimeout(() => {
-    //   circularProgressBar.setAttribute("data-percent", "34")
-    // }, 7000)
+    this.circularProgressBar = circularProgressBar
   }
 
   /**  @param {UPT_Task} task */
@@ -1806,70 +1993,7 @@ class UPTModuleTaskDetails {
     this.priorityElement.textContent = `${task.priority} piorytet`
     this.priorityElement.classList.remove(...UPT_Utils.getAllTaskPrioritySubClasses().values())
     this.priorityElement.classList.add(UPT_Utils.getTaskPrioritySubClass(task))
-  }
-
-  /** 
-   * @param {UPT_Task} task
-   * @param {UPT_TaskCategory | null} category
-   */
-  displayData(task, category = null) {
-    this.displayCountDown(task)
-    this.displayActionButtons(task)
-    this.displayDescription(task)
-
-    this.nameElement.textContent = task.name
-
-    this.categoryElement.textContent = category ? category.name : "Brak"
-    this.categoryIconElement.className = category ? UPT_Utils.getCategoryIconClass(category) : "fa-solid fa-layer-group"
-
-    this.typeElement.textContent = task.type
-    this.createdAtElement.textContent = getUserFriendlyDateFormat(task.createdAt, {
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    })
-
-    this.displayStatus(task)
-    this.displayPriority(task)
-
-    this.subTaskModule.clearSubTasksList()
-    this.subTaskModule.renderSubTasksList(task.subTasks, UPTModuleSubTask.MODE_SHOW)
-
-    if (task.subTasks.length === 0) {
-      this.subTasksWrapperElement.style.display = "none"
-    } else {
-      this.subTasksWrapperElement.style.removeProperty("display")
-      this.displaySubTasksProgress(task)
-    }
-  }
-
-  /** @param {string} taskId */
-  async show(taskId) {
-    showModalLoading(this.modalId)
-    showModal(this.modalId, `Edytuj Zadanie`)
-
-    try {
-      const task = await this.apiService.getTaskById(taskId)
-
-      if (!task) {
-        throw new Error("Nie istnieje zadanie o id: " + taskId);
-      }
-
-      const category = task.categoryId ?
-        await this.apiService.getCategoryById(task.categoryId) :
-        null
-
-      this.currentTaskId = task.id
-
-      this.displayData(task, category)
-    } catch (e) {
-      hideModal(this.modalId)
-      console.error(e)
-      UPTModuleToast.show(UPTModuleToast.ERROR, e.message)
-    } finally {
-      hideModalLoading(this.modalId)
-    }
-  }
+  } 
 
   /** @param {string} attributeName */
   getElementByAttr(attributeName) {
@@ -1885,6 +2009,7 @@ class UPTModuleTaskDetails {
 
 
 class UPTModuleSubTask {
+  static SUBTASK_STATE_CHANGE_EVENT = "upt-subtask-state-change"
   static MODE_EDIT = "edit"
   static MODE_SHOW = "show"
 
@@ -1910,6 +2035,21 @@ class UPTModuleSubTask {
       )
     }
     this.container.append(subTasksListFragment)
+
+    this.container.addEventListener('change', (event) => {
+      const subTaskCheckbox = event.target
+      const subTaskCard = subTaskCheckbox.closest('[data-subtask-card]')
+      const subTaskData = {
+        id: subTaskCheckbox.getAttribute('data-subtask-id'),
+        isCompleted: subTaskCheckbox.checked
+      }
+
+      subTaskCard.classList.toggle('subtask--completed')
+
+      this.container.dispatchEvent(new CustomEvent(UPTModuleSubTask.SUBTASK_STATE_CHANGE_EVENT, {
+        detail: subTaskData
+      }))
+    })
   }
 
   clearSubTasksList() {
@@ -1936,6 +2076,15 @@ class UPTModuleSubTask {
 
     const isEditMode = mode === UPTModuleSubTask.MODE_EDIT
     const li = document.createElement("li")
+    const subTaskCompleteInput = !isEditMode ? `
+      <span class="task-checkbox custom-checkbox-group">
+        <input data-mark-subtask-as-done id="mark-subtask-as-done-${subTask.id}" data-subtask-id="${subTask.id}" type="checkbox" ${subTask.isCompleted ? 'checked' : ''}>
+        <label class="custom-checkbox-label" for="mark-subtask-as-done-${subTask.id}">
+          <span class="sr-only">Oznacz jako wykonane</span>
+          <span class="custom-checkbox-icon" aria-hidden="true"></span>
+        </label>
+      </span>
+    ` : '' 
     const deleteSubTaskButton = isEditMode ? `
       <span class="category-card-actions subtask-actions">
           <button data-delete-subtask-btn data-subtask-id="${subTask.id}" class="category-card-action-btn category-card-delete-btn subtask-action-btn tooltip">
@@ -1958,20 +2107,14 @@ class UPTModuleSubTask {
     ` :
       `
         <span data-subtask-name class="subtask-name">${subTask.name}</span>
-        <span data-subtask-date class="subtask-date">${subTask.deadline ?? ''}</span>
+        <span data-subtask-date class="subtask-date">${subTask.endDate ?? ''}</span>
       `
 
     li.className = `subtask ${subTask.isCompleted ? 'subtask--completed' : ''} task modern-card`
     li.setAttribute("data-subtask-card", "")
     li.setAttribute("data-subtask-id", subTask.id)
     li.innerHTML = `
-        <span class="task-checkbox custom-checkbox-group">
-          <input data-mark-subtask-as-done id="mark-subtask-as-done-${subTask.id}" type="checkbox" ${subTask.isCompleted ? 'checked' : ''}>
-          <label class="custom-checkbox-label" for="mark-subtask-as-done-${subTask.id}">
-            <span class="sr-only">Oznacz jako wykonane</span>
-            <span class="custom-checkbox-icon" aria-hidden="true"></span>
-          </label>
-        </span>
+        ${subTaskCompleteInput}
         <span class="task-content">
           <span class="task-header subtask-header">${subTaskHeaderContent}</span>
         </span>
@@ -2377,7 +2520,7 @@ class UPTTaskForm {
       formDataObject[UPTTaskForm.FIELD_SUBTASKS].push({
         id: subTaskId,
         name: subTaskName.value,
-        deadline: subTaskDate.value ?? null
+        startDate: subTaskDate.value ?? null
       })
     })
 
@@ -2428,20 +2571,23 @@ class UPTModulePanel {
 
   setClickEventListeners() {
 
-    const actionMap = {
+    const actionsMap = {
       "data-add-task-button": () => this.taskForm.open(UPTTaskForm.MODE_CREATE),
       "data-add-category-button": () => this.categoryForm.open(UPTCategoryForm.MODE_CREATE),
       "data-edit-task-btn": (target) => this.taskForm.open(UPTTaskForm.MODE_EDIT, target.dataset.taskId),
       "data-details-task-btn": (target) => this.taskDetails.show(target.dataset.taskId),
+      "data-details-task-link": (target) => this.taskDetails.show(target.getAttribute("href").substring(1)),
       "data-delete-task-btn": (target) => this.handleDeleteTaskButton(target),
       "data-edit-category-btn": (target) => this.categoryForm.open(UPTCategoryForm.MODE_EDIT, target.dataset.categoryId),
       "data-delete-category-btn": (target) => this.handleDeleteCategoryButton(target),
     };
 
     this.panel.addEventListener("click", (e) => {
+      e.preventDefault()
+
       const target = e.target;
 
-      for (const [attr, action] of Object.entries(actionMap)) {
+      for (const [attr, action] of Object.entries(actionsMap)) {
         if (target.hasAttribute(attr)) {
           action(target);
           break;
@@ -2582,24 +2728,49 @@ class UPTModuleMainPanel extends UPTModulePanel {
         continue;
       }
 
-      const li = document.createElement("li");
-      const category = this.getCategoryByTask(task);
-      const taskPrioritySubClass = UPT_Utils.getTaskPrioritySubClass(task);
-      const taskRepeatIcon = !taskIsMain ? '<i class="fa-solid fa-rotate"></i>' : "";
-      const taskDateInfo = taskIsMain ? `
-          <span class="task-date-month"><i class="fa-regular fa-calendar"></i> 23 Paź</span>
-          <span class="task-date-hours"><i class="fa-regular fa-clock"></i> 10:00 - 12:30</span>
-        ` : `
-        <span class="task-date-hours"><i class="fa-regular fa-clock"></i> 10:00 - 12:30</span>
-      `
+      const li = this.renderTask(task)
 
-      li.className = "task modern-card modern-card--opacity";
-      li.setAttribute("data-task-id", task.id);
-      li.setAttribute("data-task-card", "");
+      if (taskIsMain) {
+        mainTasksDisplayedNumber++;
+        mainTasksFragment.append(li);
+      } else {
+        dailyTasksDisplayedNumber++;
+        dailyTasksFragment.append(li);
+      }
+    }
 
-      //<i class="fa-solid fa-briefcase"></i>
+    mainTasksList.append(mainTasksFragment);
+    dailyTasksList.append(dailyTasksFragment);
+  }
 
-      li.innerHTML = `
+  renderTask(task) {
+    const taskIsMain = task.type === UPT_TaskType.MAIN;
+    const li = document.createElement("li");
+    const category = this.getCategoryByTask(task);
+    const taskPrioritySubClass = UPT_Utils.getTaskPrioritySubClass(task);
+    const taskRepeatIcon = !taskIsMain ? '<i class="fa-solid fa-rotate"></i>' : "";
+    const taskDateInfo = taskIsMain ? `
+      <span class="task-date tooltip">
+        <i class="fa-regular fa-calendar"></i> ${getFriendlyDateFormat(task.endDate, { day: "numeric", month: "short" })} 
+        <i class="fa-regular fa-clock"></i> ${getHoursAndMinutes(task.endDate)}
+        <span class="tooltip-content">
+          ${getFriendlyDateFormat(task.endDate, { weekday: "long" })} <br>
+          ${getFriendlyDateFormat(task.endDate, { day: "numeric", month: "long", year: "numeric" })} rok
+          <hr class="upt-hr">
+          Godzina: ${getHoursAndMinutes(task.endDate)}
+        </span>                                                                                                                             
+      </span>
+    ` : `
+      <span class="task-date">
+        <span class="task-date-hours"><i class="fa-regular fa-clock"></i> ${UPT_Utils.getHoursForDailyTask(task)}</span>                                                                                                                                           
+      </span>
+    `
+
+    li.className = "task modern-card modern-card--opacity";
+    li.setAttribute("data-task-id", task.id);
+    li.setAttribute("data-task-card", "");
+
+    li.innerHTML = `
         <span class="task-checkbox tooltip custom-checkbox-group custom-checkbox-group--big">
           <input data-mark-task-as-done id="mark-as-done-task-${task.id}" type="checkbox">
           <label class="custom-checkbox-label" for="mark-as-done-task-${task.id}">
@@ -2617,17 +2788,9 @@ class UPTModuleMainPanel extends UPTModulePanel {
           <span class="task-header">
               <span class="task-name">
                 <i class="${UPT_Utils.getCategoryIconClass(category)}"></i> 
-                <span data-task-name>${task.name}</span> ${taskRepeatIcon}
-              </span>
-
-              <span class="tooltip">
-                ${taskDateInfo}
-                <span class="tooltip-content">
-                  ${getUserFriendlyDateFormat(task.deadline)}
-                  <hr class="upt-hr">
-                  Od 10:00 do 12:30
-                </span>                                                                                                                                            
-              </span>
+                <a href="#${task.id}" data-details-task-link data-task-name>${task.name}</a> ${taskRepeatIcon}
+              </span> 
+              ${taskDateInfo}
           </span>
         </span>
 
@@ -2643,17 +2806,7 @@ class UPTModuleMainPanel extends UPTModulePanel {
         </span>
       `;
 
-      if (taskIsMain) {
-        mainTasksDisplayedNumber++;
-        mainTasksFragment.append(li);
-      } else {
-        dailyTasksDisplayedNumber++;
-        dailyTasksFragment.append(li);
-      }
-    }
-
-    mainTasksList.append(mainTasksFragment);
-    dailyTasksList.append(dailyTasksFragment);
+    return li
   }
 
   initTimeToEndDayCountdown() {
@@ -2858,11 +3011,21 @@ class UPTModuleTasksPanel extends UPTModulePanel {
         `<p class="task-card-short-desc">${task.description}</p>` :
         "";
       const taskDateInfo = taskIsMain ? `
-          <span class="task-date-month"><i class="fa-regular fa-calendar"></i> 23 Paź</span>
-          <span class="task-date-hours"><i class="fa-regular fa-clock"></i> 10:00 - 12:30</span>
-        ` : `
-        <span class="task-date-hours"><i class="fa-regular fa-clock"></i> 10:00 - 12:30</span>
-      `
+        <span class="task-date tooltip">
+          <i class="fa-regular fa-calendar"></i> ${getFriendlyDateFormat(task.endDate, { day: "numeric", month: "short" })} 
+          <i class="fa-regular fa-clock"></i> ${getHoursAndMinutes(task.endDate)}
+          <span class="tooltip-content">
+            ${getFriendlyDateFormat(task.endDate, { weekday: "long" })} <br>
+            ${getFriendlyDateFormat(task.endDate, { day: "numeric", month: "long", year: "numeric" })} rok
+            <hr class="upt-hr">
+            Godzina: ${getHoursAndMinutes(task.endDate)}
+          </span>                                                                                                                                          
+       </span>
+     ` : `
+       <span class="task-date">
+         <span class="task-date-hours"><i class="fa-regular fa-clock"></i> ${UPT_Utils.getHoursForDailyTask(task)}</span>                                                                                                                                           
+       </span>
+     `
 
       card.setAttribute("data-task-id", task.id);
       card.setAttribute("data-task-type", task.type);
@@ -2879,7 +3042,7 @@ class UPTModuleTasksPanel extends UPTModulePanel {
 
           <p class="task-name task-card-name">
             <i class="task-icon ${UPT_Utils.getCategoryIconClass(category)}"></i>
-            <span data-task-name>${task.name}</span> ${taskRepeatIcon}
+            <a href="#${task.id}" data-details-task-link data-task-name>${task.name}</a> ${taskRepeatIcon}
           </p>
 
           <div class="category-card-actions task-card-actions-top">
@@ -2896,19 +3059,9 @@ class UPTModuleTasksPanel extends UPTModulePanel {
               <i class="fa-solid fa-trash-can"></i>
             </button>
           </div>                                                          
-        </div>
-
-        <div class="tooltip">
-          ${taskDateInfo}
-          <span class="tooltip-content"> 
-            ${getUserFriendlyDateFormat(task.deadline)}
-            <hr class="upt-hr">
-            Od 10:00 do 12:30
-          </span>
-        </div>
- 
-        ${taskDescription}
-
+        </div> 
+        ${taskDateInfo} 
+        ${taskDescription} 
         <div class="task-card-actions-bottom">
           <button data-details-task-btn data-task-id="${task.id}" class="task-card-action-btn link small variant3" aria-controls="user-private-tasks-module-task-details-modal">
             <i class="fa-solid fa-info"></i> Pokaż Szczegóły
@@ -2944,17 +3097,13 @@ class UPTModuleArchivePanel extends UPTModulePanel {
     for (let i = 0; i < tasksNumber; i++) {
       const task = this.tasks[i];
 
-      if (!task.isArchived) {
+      if (!task.isArchived || task.type === UPT_TaskType.DAILY) {
         continue;
       }
 
       const li = document.createElement("li");
       const category = this.getCategoryByTask(task);
-      const taskPrioritySubClass = UPT_Utils.getTaskPrioritySubClass(task);
-      const taskRepeatIcon =
-        task.type === UPT_TaskType.DAILY ?
-        '<i class="fa-solid fa-rotate"></i>' :
-        "";
+      const taskPrioritySubClass = UPT_Utils.getTaskPrioritySubClass(task); 
 
       li.setAttribute("data-task-id", task.id);
       li.setAttribute("data-task-card", "");
@@ -2967,8 +3116,7 @@ class UPTModuleArchivePanel extends UPTModulePanel {
           </span>
           <span class="task-archive-name category-card-name">
             <i class="category-card-icon ${UPT_Utils.getCategoryIconClass(category)}"></i>
-            <span data-task-name>${task.name}</span>
-            ${taskRepeatIcon}
+            <a href="#${task.id}" data-details-task-link data-task-name>${task.name}</a> 
           </span>
         </span>                                                 
         <span class="category-card-createAt">
