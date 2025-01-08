@@ -167,7 +167,7 @@
                             <div class="actions-card-content-top">
 
                                 <div class="actions-card-header">
-                                    <p data-current-type-title class="actions-card-title upt-header">Zadania Codzienne</p>
+                                    <p data-current-type-title class="actions-card-title upt-header">Zadania Dzienne</p>
                                     <button data-tasks-type-toggle-btn data-current-type="Dzienne" class="actions-card-toggle-btn link link-100 small variant2">
                                         Pokaż zadania główne
                                     </button>
@@ -296,6 +296,7 @@
 
                 <template slot="modal-content">
                     <form id="user-private-tasks-module-task-form" class="upt-tast-form">
+                        <input type="hidden" name="upt-tast-form-mode">
 
                         <div class="upt-form-field">
                             <input class="floating-label-control upt-form-control" type="text" name="upt-tast-name"
@@ -305,33 +306,58 @@
                             <i class="upt-icon fa-solid fa-pen"></i>
                         </div>
 
-                        <div>
+                        <div class="upt-form-select-field">
                             <select id="upt-tast-input-type" name="upt-tast-type" data-custom-select data-class-name="custom-select-green">
                                 <option value="hide">Typ Zadania</option>
-                                <option value="Dzienne">Codzienne</option>
+                                <option value="Dzienne">Dzienne</option>
                                 <option value="Główne">Główne</option>
                             </select>
-                            <label class="sr-only" for="upt-tast-input-type">Typ Zadania</label>
+                            <label class="floating-label floating-label--for-select" for="upt-tast-input-type">Typ Zadania</label>
                         </div>
 
-                        <div>
+                        <div class="upt-form-select-field">
                             <select id="upt-tast-input-category" name="upt-tast-category" data-custom-select
                                 data-class-name="custom-select-green">
                                 <option value="hide">Wybierz Kategorie</option> 
                             </select>
-                            <label class="sr-only" for="upt-tast-input-category">Kategoria</label>
+                            <label class="floating-label floating-label--for-select" for="upt-tast-input-category">Kategoria</label>
                         </div>
 
-                        <div class="upt-form-field mb-1">
-                            <input class="floating-label-control upt-form-control" type="time"
-                                name="upt-tast-time-start" id="upt-tast-input-time-start">
-                            <label class="floating-label" for="upt-tast-input-time-start">Od kiedy</label>
-                        </div>
-
-
-                        <div>
+                        <div data-form-date-for-main style="display: none;">
                             <div class="upt-form-field mb-1">
                                 <input class="floating-label-control upt-form-control" type="datetime-local"
+                                    name="upt-tast-date-start" id="upt-tast-input-time-start">
+                                <label class="floating-label" for="upt-tast-input-time-start">Od kiedy</label>
+                            </div>
+    
+                            <div class="custom-checkbox-group">
+                                <input id="upt-task-input-all-day" name="upt-task-all-day" type="checkbox">
+                                <label class="custom-checkbox-label" for="upt-task-input-all-day">
+                                    <span class="custom-checkbox-icon" aria-hidden="true"></span>
+                                </label>
+                                <label class="custom-checkbox-label" for="upt-task-input-all-day">Cały dzień</label>
+                            </div>
+                        </div> 
+
+                        <div data-form-date-for-main style="display: none;">
+                            <div class="upt-form-field mb-1">
+                                <input class="floating-label-control upt-form-control" type="datetime-local"
+                                    name="upt-tast-date-end" id="upt-tast-input-date-end">
+                                <label class="floating-label" for="upt-tast-input-date-end">Do kiedy</label>
+                            </div>
+    
+                            <div class="custom-checkbox-group">
+                                <input id="upt-task-input-all-day" name="upt-task-all-day" type="checkbox">
+                                <label class="custom-checkbox-label" for="upt-task-input-all-day">
+                                    <span class="custom-checkbox-icon" aria-hidden="true"></span>
+                                </label>
+                                <label class="custom-checkbox-label" for="upt-task-input-all-day">Cały dzień</label>
+                            </div>
+                        </div>
+
+                        <div data-form-date-for-daily>
+                            <div class="upt-form-field mb-1">
+                                <input class="floating-label-control upt-form-control" type="time"
                                     name="upt-tast-date-start" id="upt-tast-input-date-start">
                                 <label class="floating-label" for="upt-tast-input-date-start">Od kiedy</label>
                             </div>
@@ -345,15 +371,14 @@
                             </div>
                         </div>
 
-
-                        <div class="upt-form-field">
-                            <input class="floating-label-control upt-form-control" type="date"
+                        <div class="upt-form-field mb-1" data-form-date-for-daily>
+                            <input class="floating-label-control upt-form-control" type="time"
                                 name="upt-tast-date-end" id="upt-tast-input-date-end">
                             <label class="floating-label" for="upt-tast-input-date-end">Do kiedy</label>
-                        </div>
+                        </div> 
 
 
-                        <div>
+                        <div class="upt-form-select-field">
                             <select id="upt-tast-input-priority" name="upt-tast-priority" data-custom-select
                                 data-class-name="custom-select-green">
                                 <option value="hide">Wybierz Piorytet</option>
@@ -362,7 +387,7 @@
                                 <option value="Średni">Średni</option>
                                 <option value="Niski">Niski</option>
                             </select>
-                            <label class="sr-only" for="upt-tast-input-priority">Piorytet</label>
+                            <label class="floating-label floating-label--for-select" for="upt-tast-input-priority">Piorytet</label>
                         </div>
 
 
@@ -439,18 +464,9 @@
                             <span class="text">
                                 <span class="li-title">Dodano:</span>
                                 <span class="tooltip">
-                                    <span class="task-date-month">
-                                        <i class="fa-regular fa-calendar"></i> 23 Paź
-                                    </span>
-                                    <span class="task-date-hours">
-                                        <i class="fa-regular fa-clock"></i> 11:34
-                                    </span>
-                                    <span class="tooltip-content">
-                                        23 Pażdziernika 2024 rok
-                                        Poniedziałek
-                                        <hr class="upt-hr">
-                                        Od 10:00 do 12:30
-                                    </span>
+                                    <span class="task-date-full">
+                                        <i class="fa-regular fa-calendar"></i> <span data-task-details-created-at>23 Paź 2024</span>
+                                    </span>  
                                 </span>
                             </span>
                             <span class="li-icon" aria-hidden="true">
@@ -487,7 +503,7 @@
                         <li class="upt-task-details-stats-type">
                             <span class="text">
                                 <span class="li-title">Typ Zadania:</span> 
-                                <span data-task-details-type>Codzienne</span>
+                                <span data-task-details-type>Dzienne</span>
                             </span>
                             <span class="li-icon" aria-hidden="true">
                                 <i class="fa-solid fa-list-check"></i>
@@ -591,6 +607,8 @@
                 <template slot="modal-title">Dodaj nową kategorię</template>
                 <template slot="modal-content">
                     <form id="user-private-tasks-module-category-form" class="upt-category-form">
+                        <input type="hidden" name="upt-category-form-mode">
+
                         <div class="upt-form-field">
                             <input class="floating-label-control upt-form-control" type="text"
                                 name="upt-category-name" id="upt-category-input-name"
@@ -600,12 +618,12 @@
                             <i class="upt-icon fa-solid fa-pen"></i>
                         </div>
 
-                        <div>
+                        <div class="upt-form-select-field">
                             <select id="upt-category-input-icon" name="upt-category-icon" data-custom-select
                                 data-class-name="custom-select-green">
                                 <option value="hide">Wybierz Ikonę</option> 
                             </select>
-                            <label class="sr-only" for="upt-category-input-icon">Wybierz Ikonę</label>
+                            <label class="floating-label floating-label--for-select" for="upt-category-input-icon">Wybierz Ikonę</label>
                         </div>
 
                         <div class="upt-category-desc upt-form-field">
@@ -644,6 +662,9 @@
             </user-private-tasks-module-modal>
             <!-- CONFIRM MODAL END -->  
 
+            <!-- TOASTS CONTAINER START -->
+             <div id="user-private-tasks-module-toasts-container" class="upt-toast-container"></div>
+            <!-- TOASTS CONTAINER END -->  
         </section>
         <!-- USER PRIVATE TASKS MODULE END -->
     </main>

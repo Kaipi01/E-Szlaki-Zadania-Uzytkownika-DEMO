@@ -236,7 +236,7 @@ class UPT_Utils {
   }
 
   static getCategoryIconClass(category) {
-    if (!category) return '' 
+    if (!category) return ''
 
     return `fa-solid ${category.icon }`
   }
@@ -361,21 +361,21 @@ function hideLoading(element) {
 
 /**  @param {string} modalId */
 function showModalLoading(modalId) {
-  dispatchEvent(UPTModuleModal.START_LOADING_EVENT_NAME, {
+  dispatchCustomEvent(UPTModuleModal.START_LOADING_EVENT_NAME, {
     modalId: modalId,
   });
 }
 
 /**  @param {string} modalId */
 function hideModalLoading(modalId) {
-  dispatchEvent(UPTModuleModal.STOP_LOADING_EVENT_NAME, {
+  dispatchCustomEvent(UPTModuleModal.STOP_LOADING_EVENT_NAME, {
     modalId: modalId
   });
 }
 
 /**  @param {string} modalId */
 function hideModal(modalId) {
-  dispatchEvent(UPTModuleModal.HIDE_EVENT_NAME, {
+  dispatchCustomEvent(UPTModuleModal.HIDE_EVENT_NAME, {
     modalId: modalId,
   });
 }
@@ -392,7 +392,7 @@ function showModal(modalId, title = null) {
     modalTitleAttr.textContent = title;
   }
 
-  dispatchEvent(UPTModuleModal.SHOW_EVENT_NAME, {
+  dispatchCustomEvent(UPTModuleModal.SHOW_EVENT_NAME, {
     modalId
   });
 }
@@ -401,7 +401,7 @@ function showModal(modalId, title = null) {
  * @param {string} eventName
  * @param {object} eventData
  */
-function dispatchEvent(eventName, eventData = {}) {
+function dispatchCustomEvent(eventName, eventData = {}) {
   document.dispatchEvent(
     new CustomEvent(eventName, {
       detail: eventData,
@@ -419,10 +419,13 @@ function formatDate(dateString) {
   return `${day}.${month}.${year}`;
 }
 
-/** @param {string} dateString */
-function getUserFriendlyDateFormat(dateString) {
+/** 
+ * @param {string} dateString 
+ * @param {object} options 
+ */
+function getUserFriendlyDateFormat(dateString, options = null) {
   const date = new Date(dateString);
-  const formattedDate = new Intl.DateTimeFormat("pl-PL", {
+  const formattedDate = new Intl.DateTimeFormat("pl-PL", options ? options : {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -454,16 +457,22 @@ function capitalizeWords(text) {
 
 /**
  * @param {() => void} callback
- * @param {HTMLElement} elementToAnimate
+ * @param {HTMLElement | NodeListOf<HTMLElement>} elementsToAnimate
  * @param {number} durationInMiliseconds
  */
-function fadeAnimation(callback, elementToAnimate, durationInMiliseconds) {
-  elementToAnimate.style.transition = `all ${durationInMiliseconds / 1000.0}s ease`
-  elementToAnimate.style.opacity = "0"
+function fadeAnimation(callback, elementsToAnimate, durationInMiliseconds) {
+  const elements = elementsToAnimate instanceof HTMLElement ? [elementsToAnimate] : [...elementsToAnimate];
+
+  elements.forEach(el => {
+    el.style.transition = `all ${durationInMiliseconds / 1000.0}s ease`
+    el.style.opacity = "0"
+  })
 
   setTimeout(() => {
     callback()
-    elementToAnimate.style.opacity = "1"
+    elements.forEach(el => {
+      el.style.opacity = "1"
+    })
   }, durationInMiliseconds)
 }
 

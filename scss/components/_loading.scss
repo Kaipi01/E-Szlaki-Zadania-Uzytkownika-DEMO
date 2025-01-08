@@ -5,6 +5,7 @@
     
   .loading {
     position: relative;
+    border-radius: inherit; 
 
     &::before {
       content: "";

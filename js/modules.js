@@ -250,7 +250,7 @@ class UPTModuleToast {
    * @param {string} message
    */
   static show(type, message = "") {
-    new UPTModuleToast(window.UPT_MODULE_ID_SELECTOR).open(type, message);
+    new UPTModuleToast(`#${UPT_TOASTS_CONTAINER_ID}`).open(type, message);
   }
 
   /**
@@ -361,17 +361,17 @@ class UPTModuleToast {
     this.toastTitle.textContent = toastTitle;
     this.toastMessage.textContent = message;
     this.toastIcon.classList.add(toastIcon);
+    this.toast.classList.add(type);
+    this.toast.style.animation = "open 0.3s cubic-bezier(.47,.02,.44,2) forwards";
+    this.toastTimer.classList.add("timer-animation");
 
-    setTimeout(() => {
-      this.toast.classList.add(type);
-      this.toast.style.animation =
-        "open 0.3s cubic-bezier(.47,.02,.44,2) forwards";
-      this.toastTimer.classList.add("timer-animation");
-      clearTimeout(this.countdown);
-      this.countdown = setTimeout(() => {
-        this.close();
-      }, 5000);
-    }, 0);
+    clearTimeout(this.countdown);
+
+    this.countdown = setTimeout(() => {
+      this.close();
+    }, 5000);
+
+
   }
 }
 
@@ -1225,17 +1225,23 @@ class CustomPieChart {
 }
 
 class CustomSelect {
+  static HIDE_VALUE = "hide"
+  static CHANGE_OPTION_EVENT = "upt-custom-select-change-option"
+
   /**
    * @param {HTMLSelectElement} selectElement
    */
   constructor(selectElement) {
     this.selectElement = selectElement;
+    this.wrapper = null
+    this.isInitialized = true
     this.numberOfOptions = selectElement.children.length;
     this.className = selectElement.dataset.className ?
       selectElement.dataset.className :
       "custom-select";
     this.createCustomElements();
     this.attachEventListeners();
+    this.isInitialized = false
   }
 
   /** @param {() => void} callback */
@@ -1294,23 +1300,50 @@ class CustomSelect {
     this.listItems = this.optionList.querySelectorAll("li");
   }
 
+  getOptionsListElement() {
+    return this.optionList
+  }
+
+  getCurrentValue() {
+    const currentSelectedOption = this.optionList.querySelector("li.is-selected")
+
+    return currentSelectedOption.getAttribute("rel")
+  }
+
   /** @param {string | null} value */
   chooseOption(value) {
+    const prevSelected = this.optionList.querySelector("li.is-selected")
     let listItem = this.optionList.querySelector(`[rel="${value}"]`)
 
     if (!listItem) {
-      listItem = this.optionList.querySelector(`[rel="hide"]`)
+      listItem = this.optionList.querySelector(`[rel="${CustomSelect.HIDE_VALUE}"]`)
     }
 
     this.styledSelect.innerHTML = listItem.innerHTML;
     this.styledSelect.classList.remove("active");
     this.selectElement.value = listItem.getAttribute("rel");
-    this.optionList
-      .querySelector("li.is-selected")
-      .classList.remove("is-selected");
+
+    prevSelected.classList.remove("is-selected");
     listItem.classList.add("is-selected");
     this.optionList.style.display = "none";
+
+    if (!this.isInitialized) {
+
+      this.wrapper.dispatchEvent(new CustomEvent(CustomSelect.CHANGE_OPTION_EVENT, {
+        detail: {
+          value: value,
+          prevValue: prevSelected.getAttribute("rel")
+        }
+      }))
+    }
+
+
   };
+
+  /** @param {(e: CustomEvent)=> {}} callback */
+  onChangeSelect(callback) {
+    this.wrapper.addEventListener(CustomSelect.CHANGE_OPTION_EVENT, e => callback(e))
+  }
 
   openSelect(e) {
     e.stopPropagation()
@@ -1629,6 +1662,7 @@ class UPTModuleTaskDetails {
   static ATTR_CATEGORY = "data-task-details-category"
   static ATTR_CATEGORY_ICON = "data-task-details-category-icon"
   static ATTR_PRIORITY = "data-task-details-priority"
+  static ATTR_CREATED_AT = "data-task-details-created-at"
   static ATTR_SUBTASKS_LIST = "data-task-details-subtasks-list"
   static ATTR_SUBTASKS_WRAPPER = "data-task-details-subtasks-wrapper"
   static ATTR_DEADLINE_TIMER = "data-task-details-deadline-timer"
@@ -1636,8 +1670,6 @@ class UPTModuleTaskDetails {
   static ATTR_ARCHIVE_TASK_BTN = "data-task-details-archive-btn"
   static ATTR_EDIT_TASK_BTN = "data-task-details-edit-btn"
   static ATTR_RESTORE_TASK_BTN = "data-task-details-restore-btn"
-
-
 
   /** @type {UPTModuleTaskDetails} */
   static instance;
@@ -1659,6 +1691,7 @@ class UPTModuleTaskDetails {
     this.priorityElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_PRIORITY)
     this.typeElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_TYPE)
     this.statusElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_STATUS)
+    this.createdAtElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_CREATED_AT)
     this.categoryElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_CATEGORY)
     this.categoryIconElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_CATEGORY_ICON)
     this.subTasksListElement = this.getElementByAttr(UPTModuleTaskDetails.ATTR_SUBTASKS_LIST)
@@ -1790,6 +1823,11 @@ class UPTModuleTaskDetails {
     this.categoryIconElement.className = category ? UPT_Utils.getCategoryIconClass(category) : "fa-solid fa-layer-group"
 
     this.typeElement.textContent = task.type
+    this.createdAtElement.textContent = getUserFriendlyDateFormat(task.createdAt, {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    })
 
     this.displayStatus(task)
     this.displayPriority(task)
@@ -1853,6 +1891,7 @@ class UPTModuleSubTask {
   /** @param {HTMLElement} container */
   constructor(container) {
     this.container = container
+    this.subTasksArray = []
   }
 
   /** 
@@ -1875,6 +1914,7 @@ class UPTModuleSubTask {
 
   clearSubTasksList() {
     this.container.innerHTML = ""
+    this.subTasksArray = []
   }
 
   /** @param {string} subTaskId */
@@ -1882,11 +1922,18 @@ class UPTModuleSubTask {
     return this.container.querySelector(`[data-subtask-id="${subTaskId}"]`)
   }
 
+  getAllSubTasks() {
+    return this.subTasksArray
+  }
+
   /** 
    * @param {UPT_SubTask} subTask 
    * @param {string} mode
    */
   renderSubTaskCard(subTask, mode = UPTModuleSubTask.MODE_SHOW) {
+
+    this.subTasksArray.push(subTask)
+
     const isEditMode = mode === UPTModuleSubTask.MODE_EDIT
     const li = document.createElement("li")
     const deleteSubTaskButton = isEditMode ? `
@@ -1946,6 +1993,7 @@ class UPTCategoryForm {
   static FIELD_NAME = "upt-category-name";
   static FIELD_DESC = "upt-category-desc"
   static FIELD_ICON = "upt-category-icon"
+  static FIELD_MODE = "upt-category-form-mode"
 
   /** @type {UPTCategoryForm} */
   static instance;
@@ -1963,6 +2011,7 @@ class UPTCategoryForm {
     this.nameInput = this.form.querySelector(`input[name="${UPTCategoryForm.FIELD_NAME}"]`)
     this.descTextarea = this.form.querySelector(`textarea[name="${UPTCategoryForm.FIELD_DESC}"]`)
     this.iconSelect = this.form.querySelector(`select[name="${UPTCategoryForm.FIELD_ICON}"]`)
+    this.modeInput = this.form.querySelector(`[name="${UPTCategoryForm.FIELD_MODE}"]`)
     this.renderIconsOptions()
     this.customIconSelect = new CustomSelect(this.iconSelect)
 
@@ -1980,14 +2029,35 @@ class UPTCategoryForm {
     this.form.addEventListener("submit", (e) => this.handleSubmit(e))
   }
 
+  /** @param {object} data */
+  validate(data) {
+    let isValid = true
+
+    if (data[UPTCategoryForm.FIELD_NAME] === "") {
+      UPTModuleToast.show(UPTModuleToast.WARNING, "Nazwa nie może być pusta")
+      isValid = false
+    }
+    if (data[UPTCategoryForm.FIELD_ICON] === CustomSelect.HIDE_VALUE) {
+      UPTModuleToast.show(UPTModuleToast.WARNING, "Nie wybrano żadnej ikony")
+      isValid = false
+    }
+
+    return isValid
+  }
+
+  /** @param {SubmitEvent} e */
   handleSubmit(e) {
-    e.preventDefault() 
+    e.preventDefault()
     const formData = new FormData(this.form)
-    const formDataObject = {};  
+    const formDataObject = {};
 
     formData.forEach((value, key) => formDataObject[key] = value);
-    
-    console.log(formDataObject)
+
+    if (this.validate(formDataObject)) {
+      const isEditMode = formDataObject[UPTCategoryForm.FIELD_MODE] === UPTCategoryForm.MODE_EDIT
+      UPTModuleToast.show(UPTModuleToast.SUCCESS, `Kategoria została ${isEditMode ? 'zaktualizowana' : 'dodana'} pomyślnie!`)
+      console.log(formDataObject)
+    }
   }
 
   /** @param {string} categoryId */
@@ -2021,12 +2091,13 @@ class UPTCategoryForm {
     let currentCategoryIcon = null
 
     this.form.reset()
+    this.modeInput.value = mode
 
     if (isEditMode) {
       const category = await this.loadFormData(categoryId)
       currentCategoryIcon = category.icon
       this.nameInput.value = category.name
-      this.descTextarea.textContent = category.desc ?? ""
+      this.descTextarea.value = category.desc ?? ""
     }
 
     this.customIconSelect.reRender(() => {
@@ -2054,9 +2125,10 @@ class UPTCategoryForm {
   /** @param {string | null} currentIcon */
   renderIconsOptions(currentIcon = null) {
     const allCategoryIcons = UPT_Utils.getAllCategoryIcons()
-    this.iconSelect.innerHTML = '<option value="hide">Wybierz Ikonę</option> '
+    const icons = [...allCategoryIcons.keys()]
+    this.iconSelect.innerHTML = `<option value="${CustomSelect.HIDE_VALUE}">Wybierz Ikonę</option>`
 
-    allCategoryIcons.keys().forEach(icon => {
+    icons.forEach(icon => {
       const option = document.createElement("option")
       option.value = icon
       option.setAttribute('data-icon', icon)
@@ -2075,7 +2147,6 @@ class UPTCategoryForm {
 class UPTTaskForm {
   static MODE_EDIT = "edit"
   static MODE_CREATE = "create"
-
   static FIELD_NAME = "upt-tast-name";
   static FIELD_DESC = "upt-tast-desc";
   static FIELD_DATE_START = "upt-tast-date-start";
@@ -2085,6 +2156,7 @@ class UPTTaskForm {
   static FIELD_ALL_DAY = "upt-task-all-day"
   static FIELD_PRIORITY = "upt-tast-priority"
   static FIELD_SUBTASKS = "upt-tast-subtasks"
+  static FIELD_MODE = "upt-tast-form-mode"
 
   /** @type {UPTTaskForm} */
   static instance;
@@ -2106,7 +2178,9 @@ class UPTTaskForm {
     this.prioritySelect = this.form.querySelector(`select[name="${UPTTaskForm.FIELD_PRIORITY}"]`)
     this.typeSelect = this.form.querySelector(`select[name="${UPTTaskForm.FIELD_TYPE}"]`)
     this.categorySelect = this.form.querySelector(`select[name="${UPTTaskForm.FIELD_CATEGORY}"]`)
-
+    this.modeInput = this.form.querySelector(`[name="${UPTTaskForm.FIELD_MODE}"]`)
+    this.dateInputsWrappersForMain = this.form.querySelectorAll("[data-form-date-for-main")
+    this.dateInputsWrappersForDaily = this.form.querySelectorAll("[data-form-date-for-daily")
     this.categoryCustomSelect = new CustomSelect(this.categorySelect)
     this.priorityCustomSelect = new CustomSelect(this.prioritySelect)
     this.typeCustomSelect = new CustomSelect(this.typeSelect)
@@ -2121,9 +2195,32 @@ class UPTTaskForm {
     return UPTTaskForm.instance;
   }
 
+  /** @param {CustomEvent} e */
+  changeDateTypeInputs(e) {
+    const {
+      value,
+      prevValue
+    } = e.detail
+
+    if (value && value !== prevValue) {
+      const dateInputsWrappers = [...this.dateInputsWrappersForMain, ...this.dateInputsWrappersForDaily]
+
+      fadeAnimation(() => {
+        if (value === UPT_TaskType.MAIN) {
+          this.dateInputsWrappersForDaily.forEach(wrapper => wrapper.style.display = "none")
+          this.dateInputsWrappersForMain.forEach(wrapper => wrapper.style.removeProperty("display"))
+        } else {
+          this.dateInputsWrappersForMain.forEach(wrapper => wrapper.style.display = "none")
+          this.dateInputsWrappersForDaily.forEach(wrapper => wrapper.style.removeProperty("display"))
+        }
+      }, dateInputsWrappers, 200)
+    }
+  }
+
   init() {
     this.addSubTaskButton.addEventListener('click', (e) => this.addSubTask(e))
     this.form.addEventListener("submit", (e) => this.handleFormSubmit(e))
+    this.typeCustomSelect.onChangeSelect(e => this.changeDateTypeInputs(e))
   }
 
   /**
@@ -2131,7 +2228,7 @@ class UPTTaskForm {
    * @param {UPT_Task | null} task 
    */
   renderCategoryOptions(categories, task = null) {
-    this.categorySelect.innerHTML = '<option value="hide">Wybierz Kategorie</option> '
+    this.categorySelect.innerHTML = `<option value="${CustomSelect.HIDE_VALUE}">Wybierz Kategorie</option>`
 
     categories.forEach(category => {
       const option = document.createElement("option")
@@ -2148,6 +2245,15 @@ class UPTTaskForm {
     })
   }
 
+  /** @param {string} mode */
+  resetForm(mode) {
+    this.form.reset()
+    this.subTaskModule.clearSubTasksList()
+    this.modeInput.value = mode
+    this.priorityCustomSelect.chooseOption(null)
+    this.typeCustomSelect.chooseOption(UPT_TaskType.DAILY)
+    this.categoryCustomSelect.chooseOption(null)
+  }
 
   /** 
    * @param {string} mode 
@@ -2156,47 +2262,44 @@ class UPTTaskForm {
   async displayFormData(mode, taskId) {
     const isEditMode = mode === UPTTaskForm.MODE_EDIT
 
-    this.form.reset()
-    this.subTaskModule.clearSubTasksList() 
+    if (isEditMode) showModalLoading(this.modalId)
+
+    this.resetForm(mode)
+
+    const {
+      task,
+      categories
+    } = await this.loadFormData(taskId)
 
     if (isEditMode) {
-      const {
-        task,
-        categories
-      } = await this.loadFormData(taskId)
-
-      this.subTaskModule.renderSubTasksList(task.subTasks ?? [], UPTModuleSubTask.MODE_EDIT)  
+      this.subTaskModule.renderSubTasksList(task.subTasks ?? [], UPTModuleSubTask.MODE_EDIT)
       this.nameInput.value = task.name
       this.typeSelect.value = task.type
-      this.descTextarea.textContent = task.description ?? ''
-      this.prioritySelect = task.priority 
-      this.categoryCustomSelect.reRender(() => this.renderCategoryOptions(categories, task)) 
+      this.descTextarea.value = task.description ?? ''
+      this.prioritySelect = task.priority
       this.priorityCustomSelect.chooseOption(task.priority)
       this.typeCustomSelect.chooseOption(task.type)
-    } else {
-      this.priorityCustomSelect.chooseOption(null)
-      this.typeCustomSelect.chooseOption(null)
-      this.categoryCustomSelect.chooseOption(null)
-    } 
+      this.categoryCustomSelect.chooseOption(task.categoryId)
+    }
+    this.categoryCustomSelect.reRender(() => this.renderCategoryOptions(categories, task))
 
-    hideModalLoading(this.modalId)
+    if (isEditMode) hideModalLoading(this.modalId)
   }
 
   /** @param {string} taskId */
   async loadFormData(taskId) {
-    showModalLoading(this.modalId)
     let task = null,
       categories = null
 
     try {
-      task = await this.apiService.getTaskById(taskId)
+      if (taskId) {
+        task = await this.apiService.getTaskById(taskId)
+      }
       categories = await this.apiService.getCategories()
 
-      if (!task) {
+      if (!task && taskId) {
         throw new Error("Nie istnieje zadanie o id: " + taskId);
       }
-
-      this.displayFormData(task, categories)
     } catch (e) {
       hideModal(this.modalId)
       console.error(e)
@@ -2233,6 +2336,30 @@ class UPTTaskForm {
     this.subTaskModule.container.append(newSubTaskCard)
   }
 
+  /** @param {object} data */
+  validateForm(data) {
+    let isValid = true
+
+    const formSubTasks = this.subTaskModule.getAllSubTasks()
+
+    const checkInputField = (value, message) => {
+      if (value.trim() === "" || value === CustomSelect.HIDE_VALUE) {
+        UPTModuleToast.show(UPTModuleToast.WARNING, message)
+        isValid = false
+      }
+    }
+    checkInputField(data[UPTTaskForm.FIELD_NAME], "Nazwa nie może być pusta")
+    checkInputField(data[UPTTaskForm.FIELD_TYPE], "Nie wybrano typu zadania")
+    checkInputField(data[UPTTaskForm.FIELD_PRIORITY], "Nie wybrano piorytetu zadania")
+    checkInputField(data[UPTTaskForm.FIELD_CATEGORY], "Nie wybrano kategorii")
+
+    formSubTasks.forEach((subTask, index) => {
+      checkInputField(subTask.name, `Nazwa podzadania #${index + 1} nie może być pusta`)
+    })
+
+    return isValid
+  }
+
   handleFormSubmit(e) {
     e.preventDefault()
     const formData = new FormData(this.form)
@@ -2245,7 +2372,7 @@ class UPTTaskForm {
     subTaskCards.forEach(card => {
       const subTaskId = card.dataset.subtaskId
       const subTaskName = card.querySelector("[data-subtast-input-name]")
-      const subTaskDate = card.querySelector("[data-subtast-input-date]") 
+      const subTaskDate = card.querySelector("[data-subtast-input-date]")
 
       formDataObject[UPTTaskForm.FIELD_SUBTASKS].push({
         id: subTaskId,
@@ -2253,18 +2380,13 @@ class UPTTaskForm {
         deadline: subTaskDate.value ?? null
       })
     })
-    // console.log(formData)
-    console.log(formDataObject)
 
-    // UPTModuleToast.show(UPTModuleToast.SUCCESS, "Zadanie zostało zaktualizowane!")
-    // TODO: dodaj input type hidden do sprawdzenia trybu formularza czy nie jest w trypie "edit"
-    // TODO: dodaj walidacje danych
-
-    // const formDataJson = JSON.stringify(formDataObject);
-    // console.log(formDataJson)
+    if (this.validateForm(formDataObject)) {
+      const isEditMode = formDataObject[UPTTaskForm.FIELD_MODE] === UPTTaskForm.MODE_EDIT
+      UPTModuleToast.show(UPTModuleToast.SUCCESS, `Zadanie zostało ${isEditMode ? 'zaktualizowane' : 'dodane'}!`)
+      console.log(formDataObject)
+    }
   }
-
-
 }
 
 
@@ -2694,7 +2816,7 @@ class UPTModuleTasksPanel extends UPTModulePanel {
     const taskCards = this.panel.querySelectorAll(`[data-task-card]`)
 
     toggleButton.setAttribute("data-current-type", isCurrentTypeDaily ? UPT_TaskType.MAIN : UPT_TaskType.DAILY)
-    toggleButton.textContent = isCurrentTypeDaily ? "Pokaż zadania codzienne" : "Pokaż zadania główne"
+    toggleButton.textContent = isCurrentTypeDaily ? "Pokaż zadania dzienne" : "Pokaż zadania główne"
 
     fadeAnimation(() => {
       taskCards.forEach(taskCard => {
@@ -2710,7 +2832,7 @@ class UPTModuleTasksPanel extends UPTModulePanel {
     }, this.tasksList, UPTModuleCategoryPanel.TOGGLE_ANIMATION_DURATION)
 
     fadeAnimation(() => {
-      this.currentTypeTitleEl.textContent = isCurrentTypeDaily ? "Zadania Główne" : "Zadania Codzienne"
+      this.currentTypeTitleEl.textContent = isCurrentTypeDaily ? "Zadania Główne" : "Zadania Dzienne"
 
     }, this.currentTypeTitleEl, UPTModuleCategoryPanel.TOGGLE_ANIMATION_DURATION)
   }
