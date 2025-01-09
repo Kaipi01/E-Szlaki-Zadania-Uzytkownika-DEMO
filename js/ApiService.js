@@ -208,14 +208,16 @@ class UPTApiService {
   /** @param {UPT_Task} task */
   async createTask_LocalStorage(task) {
     const data = await this.getAllData_LocalStorage();
+    const taskId = generateId("task")
     const newTask = {
       ...task,
-      id: generateId("task"),
+      id: taskId,
       createdAt: new Date().toISOString(),
     };
     data.tasks.push(newTask);
     this.saveAllData_LocalStorage(data);
-    return newTask;
+    
+    return taskId;
   }
 
   /**

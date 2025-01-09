@@ -1652,6 +1652,7 @@ customElements.define(CustomModal.NAME, CustomModal);
 class UPTTaskDetails {
   static ATTR_NAME = "data-task-details-name";
   static ATTR_DESC = "data-task-details-desc";
+  static ATTR_DESC_CONTAINER = "data-task-details-desc-container";
   // static ATTR_DATE_START = "data-task-details-date-start";
   static ATTR_DATE_END = "data-task-details-date-end";
   static ATTR_TYPE = "data-task-details-type"
@@ -1687,6 +1688,7 @@ class UPTTaskDetails {
     this.editForm = UPTTaskForm.getInstance()
     this.nameElement = getElementByAttr(UPTTaskDetails.ATTR_NAME, this.modal)
     this.descElement = getElementByAttr(UPTTaskDetails.ATTR_DESC, this.modal)
+    this.descContainerElement = getElementByAttr(UPTTaskDetails.ATTR_DESC_CONTAINER, this.modal)
     this.priorityElement = getElementByAttr(UPTTaskDetails.ATTR_PRIORITY, this.modal)
     this.typeElement = getElementByAttr(UPTTaskDetails.ATTR_TYPE, this.modal)
     this.statusElement = getElementByAttr(UPTTaskDetails.ATTR_STATUS, this.modal)
@@ -1888,12 +1890,13 @@ class UPTTaskDetails {
   }
 
   /**  @param {UPT_Task} task */
-  displayDescription(task) {
-    if (task.description !== "") {
-      this.descElement.style.removeProperty("display")
-      this.descElement.textContent = task.description
+  displayDescription(task) { 
+
+    if (!task.description || task.description.trim() === "") {
+      this.descContainerElement.style.display = "none" 
     } else {
-      this.descElement.style.display = "none"
+      this.descContainerElement.style.removeProperty("display")
+      this.descElement.textContent = task.description 
     }
   }
 
@@ -2071,12 +2074,15 @@ class UPTForm {
   }
 
   /** 
-   * @param {string} inputName 
+   * @param {string | null} inputName 
    * @param {string} message 
    */
   displayInputError(inputName, message) {
-    const inputWrapper = this.form.querySelector(`[name="${inputName}"]`).closest('[data-form-field]')
-    inputWrapper.classList.add('error')
+
+    if (inputName) {
+      const inputWrapper = this.form.querySelector(`[name="${inputName}"]`).closest('[data-form-field]')
+      inputWrapper.classList.add('error')
+    }
 
     UPTToast.show(UPTToast.WARNING, message)
   }
@@ -2239,6 +2245,7 @@ class UPTTaskForm extends UPTForm {
   static FIELD_PRIORITY = "upt-task-priority"
   static FIELD_SUBTASKS = "upt-task-subtasks"
   static FIELD_MODE = "upt-task-form-mode"
+  static FIELD_ID = "upt-task-form-id"
 
   /** @type {UPTTaskForm} */
   static instance;
@@ -2253,6 +2260,7 @@ class UPTTaskForm extends UPTForm {
     this.typeSelect = this.form.querySelector(`select[name="${UPTTaskForm.FIELD_TYPE}"]`)
     this.categorySelect = this.form.querySelector(`select[name="${UPTTaskForm.FIELD_CATEGORY}"]`)
     this.modeInput = this.form.querySelector(`[name="${UPTTaskForm.FIELD_MODE}"]`)
+    this.idInput = this.form.querySelector(`[name="${UPTTaskForm.FIELD_ID}"]`)
     this.dateInputsWrappersForMain = this.form.querySelectorAll("[data-form-date-for-main")
     this.dateInputsWrappersForDaily = this.form.querySelectorAll("[data-form-date-for-daily")
     this.categoryCustomSelect = new CustomSelect(this.categorySelect)
@@ -2315,7 +2323,7 @@ class UPTTaskForm extends UPTForm {
   renderCategoryOptions(categories, task = null) {
     this.categorySelect.innerHTML = `
       <option value="${CustomSelect.HIDE_VALUE}">Wybierz Kategorie</option>
-      <option value="null">Brak Kategorii</option>
+      <option value="brak">Brak Kategorii</option>
     `
 
     categories.forEach(category => {
@@ -2373,6 +2381,7 @@ class UPTTaskForm extends UPTForm {
 
       this.subTaskModule.renderSubTasksList(task.subTasks ?? [], UPTSubTask.MODE_EDIT)
       this.nameInput.value = task.name
+      this.idInput.value = task.id
       this.typeSelect.value = task.type
       this.descTextarea.value = task.description ?? ''
       this.prioritySelect = task.priority
@@ -2385,12 +2394,18 @@ class UPTTaskForm extends UPTForm {
     this.modeInput.value = mode
     this.categoryCustomSelect.reRender(() => this.renderCategoryOptions(categories, task))
 
-    if (isEditMode) hideModalLoading(this.modalId)
+    if (task && !task.categoryId) {
+      this.categoryCustomSelect.chooseOption("brak")
+    } 
+
+    if (isEditMode) { 
+      hideModalLoading(this.modalId)
+    }
   }
 
   /** @param {string} taskId */
   async loadFormData(taskId) {
-    let task = null 
+    let task = null
     let categories = null
 
     try {
@@ -2443,8 +2458,7 @@ class UPTTaskForm extends UPTForm {
 
   /** @param {object} data */
   validateForm(data) {
-    let isValid = true 
-    const formSubTasks = this.subTaskModule.getAllSubTasks() 
+    let isValid = true
     const checkInputField = (inputName, message) => {
       const value = data[inputName]
 
@@ -2456,27 +2470,64 @@ class UPTTaskForm extends UPTForm {
     checkInputField(UPTTaskForm.FIELD_NAME, "Nazwa nie może być pusta")
     checkInputField(UPTTaskForm.FIELD_TYPE, "Nie wybrano typu zadania")
     checkInputField(UPTTaskForm.FIELD_PRIORITY, "Nie wybrano piorytetu zadania")
-    // checkInputField(UPTTaskForm.FIELD_CATEGORY, "Nie wybrano kategorii")
+    checkInputField(UPTTaskForm.FIELD_CATEGORY, "Nie wybrano kategorii")
     checkInputField(UPTTaskForm.FIELD_DATE_START, "Nie podano daty rozpoczęcia")
-    checkInputField(UPTTaskForm.FIELD_DATE_END, "Nie podano daty zakończenia")
+
+    if (data[UPTTaskForm.FIELD_TYPE] === UPT_TaskType.MAIN) {
+      checkInputField(UPTTaskForm.FIELD_DATE_END, "Nie podano daty zakończenia")
+      isValid = false
+    }
 
     if (data[UPTTaskForm.FIELD_DESC].length > 500) {
       this.displayInputError(UPTTaskForm.FIELD_DESC, "Opis zadania nie może mieć więcej niz 500 znaków")
       isValid = false
     }
 
-    formSubTasks.forEach((subTask, index) => {
-      checkInputField(subTask.name, `Nazwa podzadania #${index + 1} nie może być pusta`)
+    data[UPTTaskForm.FIELD_SUBTASKS].forEach((subTask, index) => {
+      if (subTask.name.trim() === '') {
+        this.displayInputError(UPTTaskForm.FIELD_DESC, `Nazwa podzadania #${index + 1} nie może być pusta`)
+        isValid = false
+      }
     })
 
     return isValid
   }
 
-  handleFormSubmit(e) {
-    e.preventDefault()
+  getTaskFromFormData(formData) {
+    const createDateFromTimeStr = (timeStr) => { 
+      if (! timeStr) return null
+
+      let dateFromTimeStr = new Date(); 
+
+      if (formData[UPTTaskForm.FIELD_TYPE] === UPT_TaskType.DAILY) {
+        const [hours, minutes] = timeStr.split(":").map(Number);  
+        dateFromTimeStr.setHours(hours, minutes, 0, 0); 
+      } else {
+        dateFromTimeStr = new Date(timeStr); 
+      } 
+      return dateFromTimeStr
+    } 
+    const dateEnd = createDateFromTimeStr(formData[UPTTaskForm.FIELD_DATE_END])
+    const dateStart = createDateFromTimeStr(formData[UPTTaskForm.FIELD_DATE_START]) 
+
+    const task = {
+      name: formData[UPTTaskForm.FIELD_NAME],
+      categoryId: formData[UPTTaskForm.FIELD_CATEGORY] === "brak" ? null : formData[UPTTaskForm.FIELD_CATEGORY],
+      dateStart: dateStart.toISOString(),
+      dateEnd: dateEnd ? dateEnd.toISOString() : dateStart.toISOString(),
+      description: formData[UPTTaskForm.FIELD_DESC].trim(),
+      priority: formData[UPTTaskForm.FIELD_PRIORITY],
+      status: UPT_TaskStatus.IN_PROGRESS,
+      subTasks: formData[UPTTaskForm.FIELD_SUBTASKS],
+      type: formData[UPTTaskForm.FIELD_TYPE]
+    }
+
+    return task
+  }
+
+  collectFormData() {
     const formData = this.getFormData()
     const subTaskCards = this.subTaskModule.container.querySelectorAll("[data-subtask-card]")
-    const isEditMode = this.modeInput.value === UPTTaskForm.MODE_EDIT
 
     formData[UPTTaskForm.FIELD_SUBTASKS] = []
 
@@ -2492,9 +2543,36 @@ class UPTTaskForm extends UPTForm {
       })
     })
 
-    if (this.validateForm(formData)) {
+    return formData
+  }
 
-      UPTToast.show(UPTToast.SUCCESS, `Zadanie zostało ${isEditMode ? 'zaktualizowane' : 'dodane'}!`)
+  async handleFormSubmit(e) {
+    e.preventDefault()
+    const formData = this.collectFormData()
+    const isEditMode = this.modeInput.value === UPTTaskForm.MODE_EDIT
+
+    if (this.validateForm(formData)) {
+      const taskData = this.getTaskFromFormData(formData)
+      let taskEvent
+      let taskId = formData[UPTTaskForm.FIELD_ID]  
+
+      try {
+        if (isEditMode) {
+          await this.apiService.updateTask(taskId, taskData) 
+          taskEvent = UPTPanel.TASK_UPDATED_EVENT
+        } else {
+          taskId = await this.apiService.createTask(taskData) 
+          taskEvent = UPTPanel.TASK_CREATED_EVENT
+        }
+        dispatchCustomEvent(taskEvent, {
+          ...taskData,
+          id: taskId
+        })
+
+        UPTToast.show(UPTToast.SUCCESS, `Zadanie zostało ${isEditMode ? 'zaktualizowane' : 'dodane'}!`)
+      } catch (e) {
+        UPTToast.show(UPTToast.ERROR, e.message)
+      }
     }
 
     console.log(formData)
@@ -2506,6 +2584,12 @@ class UPTTaskForm extends UPTForm {
 
 
 class UPTPanel {
+  static TASK_CREATED_EVENT = "upt-task-created-event"
+  static TASK_UPDATED_EVENT = "upt-task-updated-event"
+  static TASK_DELETED_EVENT = "upt-task-deleted-event"
+  static CATEGORY_CREATED_EVENT = "upt-category-created-event"
+  static CATEGORY_UPDATED_EVENT = "upt-category-updated-event"
+  static CATEGORY_DELETED_EVENT = "upt-category-deleted-event"
 
   /**
    * @param {string} selector
@@ -2536,7 +2620,7 @@ class UPTPanel {
   /** @param {UPT_Task} task */
   getCategoryByTask = (task) => this.categories.find((cat) => cat.id === task.categoryId)
 
-  setClickEventListeners() { 
+  setClickEventListeners() {
     const actionsMap = {
       "data-add-task-button": () => this.taskForm.open(UPTTaskForm.MODE_CREATE),
       "data-add-category-button": () => this.categoryForm.open(UPTCategoryForm.MODE_CREATE),
@@ -2621,10 +2705,12 @@ class UPTPanel {
 
 class UPTMainPanel extends UPTPanel {
   static TASKS_DISPLAY_NUMBER = 5;
-  static CATEGORIES_DISPLAY_NUMBER = 5;
+  static CATEGORIES_DISPLAY_NUMBER = 5; 
 
   constructor(selector, data) {
     super(selector, data);
+    this.dailyTasksList = this.panel.querySelector("[data-daily-tasks-list]");
+    this.mainTasksList = this.panel.querySelector("[data-main-tasks-list]");
     this.init();
   }
 
@@ -2646,6 +2732,19 @@ class UPTMainPanel extends UPTPanel {
 
     // Statystyki związane z datą i godziną na głównym panelu
     this.initDateTimeStatisics();
+
+
+    document.addEventListener(UPTPanel.TASK_CREATED_EVENT, (e) => {
+      const task = e.detail
+      const taskElement = this.renderTask(task)
+
+      // TODO: jeśli jest więcej niż 5 to zablokuj
+      if (task.type === UPT_TaskType.DAILY) {
+        this.dailyTasksList.append(taskElement);
+      } else {
+        this.mainTasksList.append(taskElement);
+      } 
+    })
   }
 
   renderCategoriesList() {
@@ -2658,7 +2757,7 @@ class UPTMainPanel extends UPTPanel {
 
       if (i >= UPTMainPanel.CATEGORIES_DISPLAY_NUMBER - 1) break;
 
-      const li = document.createElement("li"); 
+      const li = document.createElement("li");
 
       li.innerHTML = `
         <a href="#kategorie" class="task-category-link link variant4"> 
@@ -2673,9 +2772,7 @@ class UPTMainPanel extends UPTPanel {
     categoriesList.append(categoriesListFragment);
   }
 
-  renderTasksList() {
-    const dailyTasksList = this.panel.querySelector("[data-daily-tasks-list]");
-    const mainTasksList = this.panel.querySelector("[data-main-tasks-list]");
+  renderTasksList() { 
     const tasksNumber = this.tasks.length;
     const dailyTasksFragment = document.createDocumentFragment();
     const mainTasksFragment = document.createDocumentFragment();
@@ -2705,8 +2802,8 @@ class UPTMainPanel extends UPTPanel {
       }
     }
 
-    mainTasksList.append(mainTasksFragment);
-    dailyTasksList.append(dailyTasksFragment);
+    this.mainTasksList.append(mainTasksFragment);
+    this.dailyTasksList.append(dailyTasksFragment);
   }
 
   renderTask(task) {
@@ -2887,7 +2984,7 @@ class UPTCategoryPanel extends UPTPanel {
 
     li.setAttribute("data-category-id", category.id);
     li.setAttribute("data-category-card", "");
-    li.className = "category-card modern-card";  
+    li.className = "category-card modern-card";
     li.innerHTML = `
       <span class="category-card-header">
         <span class="category-card-name">
@@ -2913,7 +3010,7 @@ class UPTCategoryPanel extends UPTPanel {
 }
 
 class UPTTasksPanel extends UPTPanel {
-  
+
   constructor(selector, data) {
     super(selector, data);
     this.tasksList = this.panel.querySelector("[data-tasks-list]");
@@ -2925,6 +3022,12 @@ class UPTTasksPanel extends UPTPanel {
   init() {
     this.renderTasksList();
     this.typeToggleButton.addEventListener('click', (e) => this.toggleTasks(e))
+
+    document.addEventListener(UPTPanel.TASK_CREATED_EVENT, (e) => {
+      const taskCard = this.renderTask(e.detail)
+
+      this.tasksList.append(taskCard);
+    })
   }
 
   toggleTasks(e) {
@@ -2956,89 +3059,94 @@ class UPTTasksPanel extends UPTPanel {
     }, this.currentTypeTitleEl, UPTCategoryPanel.TOGGLE_ANIMATION_DURATION)
   }
 
+  /** @param {UPT_Task} task */
+  renderTask(task) {
+    const taskIsMain = task.type === UPT_TaskType.MAIN
+    const card = document.createElement("div");
+    const category = this.getCategoryByTask(task);
+    const taskPrioritySubClass = UPT_Utils.getTaskPrioritySubClass(task);
+    const taskRepeatIcon = !taskIsMain ? '<i class="fa-solid fa-rotate"></i>' : "";
+    const taskDescription =
+      task.description && task.description !== "" ?
+      `<p class="task-card-short-desc">${task.description}</p>` :
+      "";
+    const taskDateInfo = taskIsMain ? `
+      <span class="task-date tooltip">
+        <i class="fa-regular fa-calendar"></i> ${getFriendlyDateFormat(task.endDate, { day: "numeric", month: "short" })} 
+        <i class="fa-regular fa-clock"></i> ${getHoursAndMinutes(task.endDate)}
+        <span class="tooltip-content">
+          ${getFriendlyDateFormat(task.endDate, { weekday: "long" })} <br>
+          ${getFriendlyDateFormat(task.endDate, { day: "numeric", month: "long", year: "numeric" })} rok
+          <hr class="upt-hr">
+          Godzina: ${getHoursAndMinutes(task.endDate)}
+        </span>                                                                                                                                          
+     </span>
+   ` : `
+     <span class="task-date">
+       <span class="task-date-hours"><i class="fa-regular fa-clock"></i> ${UPT_Utils.getHoursForDailyTask(task)}</span>                                                                                                                                           
+     </span>
+   `
+
+    card.setAttribute("data-task-id", task.id);
+    card.setAttribute("data-task-type", task.type);
+    card.setAttribute("data-task-card", "");
+    card.className = "task-card modern-card";
+
+    if (taskIsMain) {
+      card.style.display = "none";
+    }
+
+    card.innerHTML = `
+      <div class="task-card-header">
+        <span class="task-priority task-card-priority ${taskPrioritySubClass}">${task.priority} piorytet</span>
+
+        <p class="task-name task-card-name">
+          <i class="task-icon ${UPT_Utils.getCategoryIconClass(category)}"></i>
+          <a href="#${task.id}" data-details-task-link data-task-name>${task.name}</a> ${taskRepeatIcon}
+        </p>
+
+        <div class="category-card-actions task-card-actions-top">
+          <button data-edit-task-btn data-task-id="${task.id}" class="category-card-action-btn task-card-action-btn tooltip">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <span class="tooltip-content">Edytuj Zadanie</span>
+          </button>
+          <button data-archive-task-btn data-task-id="${task.id}" class="category-card-action-btn task-card-action-btn tooltip">
+            <span class="tooltip-content">Archiwizuj Zadanie</span>
+            <i class="fa-regular fa-folder"></i>
+          </button>
+          <button data-delete-task-btn data-task-id="${task.id}"  class="category-card-action-btn category-card-delete-btn task-card-action-btn tooltip">
+            <span class="tooltip-content">Usuń Zadanie</span>
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>                                                          
+      </div> 
+      ${taskDateInfo} 
+      ${taskDescription} 
+      <div class="task-card-actions-bottom">
+        <button data-details-task-btn data-task-id="${task.id}" class="task-card-action-btn link small variant3" aria-controls="user-private-tasks-module-task-details-modal">
+          <i class="fa-solid fa-info"></i> Pokaż Szczegóły
+        </button>
+        <button data-end-task-btn data-task-id="${task.id}" class="task-card-action-btn link small variant2">
+          <i class="fa-solid fa-check"></i> Zakończ Zadanie
+        </button>
+      </div>                     
+    `;
+
+    return card
+  }
+
   renderTasksList() {
     const tasksListFragment = document.createDocumentFragment();
     const tasksNumber = this.tasks.length;
 
     for (let i = 0; i < tasksNumber; i++) {
       const task = this.tasks[i];
-      const taskIsMain = task.type === UPT_TaskType.MAIN
 
       if (task.isArchived) {
         continue;
       }
 
-      const card = document.createElement("div");
-      const category = this.getCategoryByTask(task);
-      const taskPrioritySubClass = UPT_Utils.getTaskPrioritySubClass(task);
-      const taskRepeatIcon = !taskIsMain ? '<i class="fa-solid fa-rotate"></i>' : "";
-      const taskDescription =
-        task.description && task.description !== "" ?
-        `<p class="task-card-short-desc">${task.description}</p>` :
-        "";
-      const taskDateInfo = taskIsMain ? `
-        <span class="task-date tooltip">
-          <i class="fa-regular fa-calendar"></i> ${getFriendlyDateFormat(task.endDate, { day: "numeric", month: "short" })} 
-          <i class="fa-regular fa-clock"></i> ${getHoursAndMinutes(task.endDate)}
-          <span class="tooltip-content">
-            ${getFriendlyDateFormat(task.endDate, { weekday: "long" })} <br>
-            ${getFriendlyDateFormat(task.endDate, { day: "numeric", month: "long", year: "numeric" })} rok
-            <hr class="upt-hr">
-            Godzina: ${getHoursAndMinutes(task.endDate)}
-          </span>                                                                                                                                          
-       </span>
-     ` : `
-       <span class="task-date">
-         <span class="task-date-hours"><i class="fa-regular fa-clock"></i> ${UPT_Utils.getHoursForDailyTask(task)}</span>                                                                                                                                           
-       </span>
-     `
-
-      card.setAttribute("data-task-id", task.id);
-      card.setAttribute("data-task-type", task.type);
-      card.setAttribute("data-task-card", "");
-      card.className = "task-card modern-card";
-
-      if (taskIsMain) {
-        card.style.display = "none";
-      }
-
-      card.innerHTML = `
-        <div class="task-card-header">
-          <span class="task-priority task-card-priority ${taskPrioritySubClass}">${task.priority} piorytet</span>
-
-          <p class="task-name task-card-name">
-            <i class="task-icon ${UPT_Utils.getCategoryIconClass(category)}"></i>
-            <a href="#${task.id}" data-details-task-link data-task-name>${task.name}</a> ${taskRepeatIcon}
-          </p>
-
-          <div class="category-card-actions task-card-actions-top">
-            <button data-edit-task-btn data-task-id="${task.id}" class="category-card-action-btn task-card-action-btn tooltip">
-              <i class="fa-solid fa-pen-to-square"></i>
-              <span class="tooltip-content">Edytuj Zadanie</span>
-            </button>
-            <button data-archive-task-btn data-task-id="${task.id}" class="category-card-action-btn task-card-action-btn tooltip">
-              <span class="tooltip-content">Archiwizuj Zadanie</span>
-              <i class="fa-regular fa-folder"></i>
-            </button>
-            <button data-delete-task-btn data-task-id="${task.id}"  class="category-card-action-btn category-card-delete-btn task-card-action-btn tooltip">
-              <span class="tooltip-content">Usuń Zadanie</span>
-              <i class="fa-solid fa-trash-can"></i>
-            </button>
-          </div>                                                          
-        </div> 
-        ${taskDateInfo} 
-        ${taskDescription} 
-        <div class="task-card-actions-bottom">
-          <button data-details-task-btn data-task-id="${task.id}" class="task-card-action-btn link small variant3" aria-controls="user-private-tasks-module-task-details-modal">
-            <i class="fa-solid fa-info"></i> Pokaż Szczegóły
-          </button>
-          <button data-end-task-btn data-task-id="${task.id}" class="task-card-action-btn link small variant2">
-            <i class="fa-solid fa-check"></i> Zakończ Zadanie
-          </button>
-        </div>                     
-      `;
-
-      tasksListFragment.append(card);
+      tasksListFragment.append(this.renderTask(task));
     }
 
     this.tasksList.append(tasksListFragment);

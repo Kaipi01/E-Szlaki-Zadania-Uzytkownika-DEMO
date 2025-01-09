@@ -348,6 +348,7 @@
                 <template slot="modal-content">
                     <form id="user-private-tasks-module-task-form" class="upt-task-form">
                         <input type="hidden" name="upt-task-form-mode">
+                        <input type="hidden" name="upt-task-form-id">
 
                         <div data-form-field class="upt-form-field">
                             <input class="floating-label-control upt-form-control" type="text" name="upt-task-name"
@@ -365,7 +366,7 @@
                                 <option value="Główne">Główne</option>
                             </select>
                             <label class="floating-label floating-label--for-select" for="upt-task-input-type">
-                                Typ  Zadania
+                                Typ Zadania
                             </label>
                         </div>
 
@@ -373,6 +374,7 @@
                             <select id="upt-task-input-category" name="upt-task-category" data-custom-select
                                 data-class-name="custom-select-green">
                                 <option value="hide">Wybierz Kategorie</option>
+                                <option value="brak">Brak Kategorii</option>
                             </select>
                             <label class="floating-label floating-label--for-select"
                                 for="upt-task-input-category">Kategoria</label>
@@ -383,7 +385,7 @@
                                 <input class="floating-label-control upt-form-control" type="datetime-local"
                                     name="upt-task-date-start" id="upt-task-input-time-start" disabled>
                                 <label class="floating-label" for="upt-task-input-time-start">Od kiedy</label>
-                            </div> 
+                            </div>
                         </div>
 
                         <div data-form-date-for-main style="display: none;">
@@ -391,7 +393,7 @@
                                 <input class="floating-label-control upt-form-control" type="datetime-local"
                                     name="upt-task-date-end" id="upt-task-input-date-end" disabled>
                                 <label class="floating-label" for="upt-task-input-date-end">Do kiedy</label>
-                            </div> 
+                            </div>
                         </div>
 
                         <div data-form-date-for-daily>
@@ -416,7 +418,7 @@
                             <input class="floating-label-control upt-form-control" type="time" name="upt-task-date-end"
                                 id="upt-task-input-date-end">
                             <label class="floating-label" for="upt-task-input-date-end">Do Której</label>
-                        </div> 
+                        </div>
 
                         <div data-form-field class="upt-form-select-field">
                             <select id="upt-task-input-priority" name="upt-task-priority" data-custom-select
@@ -430,7 +432,7 @@
                             <label class="floating-label floating-label--for-select" for="upt-task-input-priority">
                                 Piorytet
                             </label>
-                        </div> 
+                        </div>
 
                         <div data-form-field class="upt-task-desc upt-form-field">
                             <label class="floating-label" for="upt-task-input-desc">Opis</label>
@@ -559,7 +561,7 @@
                                 <span class="li-title">Do ukończenia zostało:</span>
                             </span>
                         </li>
-                        <li class="upt-task-details-stats-desc">
+                        <li data-task-details-desc-container class="upt-task-details-stats-desc">
                             <span class="text">
                                 <span class="li-title">Opis:</span>
                                 <span data-task-details-desc>
