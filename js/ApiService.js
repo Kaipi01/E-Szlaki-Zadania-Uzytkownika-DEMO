@@ -231,7 +231,8 @@ class UPTApiService {
         ...updatedTask,
         updatedAt: new Date().toISOString(),
       };
-      this.saveAllData_LocalStorage(data);
+      this.saveAllData_LocalStorage(data); 
+
       return data.tasks[index];
     }
     return null;

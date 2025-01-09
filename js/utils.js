@@ -242,13 +242,13 @@ class UPT_Utils {
     );
 
     return Math.round((completedSubTasksNumber * 100) / subTasksLength);
-  } 
+  }
 
-  static getHoursForDailyTask(task) {  
+  static getHoursForDailyTask(task) {
     if (task.startDate === UPT_Task.ALL_DAY) {
       return UPT_Task.ALL_DAY
     }
-    if (! task.endDate || task.endDate === task.startDate) {  
+    if (!task.endDate || task.endDate === task.startDate) {
       return getHoursAndMinutes(task.startDate)
     }
     return getHoursAndMinutes(task.startDate) + " - " + getHoursAndMinutes(task.endDate)
@@ -358,6 +358,23 @@ function manipulateDOMElement(element, callback) {
   }
 }
 
+/** 
+ * @param {string} attributeName 
+ * @param {HTMLElement | null} context
+ */
+function getElementByAttr(attributeName, context = null) {
+  if (!context || !(context instanceof HTMLElement)) {
+    context = document
+  }
+  const element = context.querySelector(`[${attributeName}]`)
+
+  if (!element) {
+    console.error(`element[${attributeName}] is null`);
+    return null;
+  }
+  return element
+}
+
 /** @param {HTMLElement | string} card */
 function removeDataCard(card) {
   manipulateDOMElement(card, (card) => {
@@ -380,21 +397,21 @@ function hideLoading(element) {
 
 /**  @param {string} modalId */
 function showModalLoading(modalId) {
-  dispatchCustomEvent(UPTModuleModal.START_LOADING_EVENT_NAME, {
+  dispatchCustomEvent(UPTModal.START_LOADING_EVENT_NAME, {
     modalId: modalId,
   });
 }
 
 /**  @param {string} modalId */
 function hideModalLoading(modalId) {
-  dispatchCustomEvent(UPTModuleModal.STOP_LOADING_EVENT_NAME, {
+  dispatchCustomEvent(UPTModal.STOP_LOADING_EVENT_NAME, {
     modalId: modalId
   });
 }
 
 /**  @param {string} modalId */
 function hideModal(modalId) {
-  dispatchCustomEvent(UPTModuleModal.HIDE_EVENT_NAME, {
+  dispatchCustomEvent(UPTModal.HIDE_EVENT_NAME, {
     modalId: modalId,
   });
 }
@@ -405,13 +422,13 @@ function hideModal(modalId) {
  */
 function showModal(modalId, title = null) {
   const modal = document.querySelector(`#${modalId}`);
-  const modalTitleAttr = modal?.querySelector(`[${UserPrivateTasksModuleModal.ATTR_TITLE}]`);
+  const modalTitleAttr = modal?.querySelector(`[${CustomModal.ATTR_TITLE}]`);
 
   if (modalTitleAttr && title) {
     modalTitleAttr.textContent = title;
   }
 
-  dispatchCustomEvent(UPTModuleModal.SHOW_EVENT_NAME, {
+  dispatchCustomEvent(UPTModal.SHOW_EVENT_NAME, {
     modalId
   });
 }
@@ -440,11 +457,11 @@ function formatDate(dateString) {
 
 /** @param {string} dateString */
 function getHoursAndMinutes(dateStr) {
-  const date = new Date(dateStr) 
+  const date = new Date(dateStr)
   const hours = date.getHours().toString().padStart(2, "0")
-  const minutes = date.getMinutes().toString().padStart(2, "0") 
+  const minutes = date.getMinutes().toString().padStart(2, "0")
   return `${hours}:${minutes}`
-} 
+}
 
 /** 
  * @param {string} dateString 
@@ -523,6 +540,17 @@ function throttle(callback, delay) {
     }, delay);
   };
 };
+
+/**
+ * @returns {number}
+ * @param {number} rem
+ */
+function remToPx(rem) {
+  const htmlElement = document.documentElement;
+  const fontSize = window.getComputedStyle(htmlElement).fontSize;
+  const baseFontSize = parseFloat(fontSize);
+  return baseFontSize * rem;
+}
 
 /**
  * Ładuje dane z pliku example-data.json do pamięcie LocalStorage przeglądarki

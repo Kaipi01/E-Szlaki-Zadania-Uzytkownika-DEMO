@@ -2,7 +2,8 @@
 @use "../base/variables" as *;
 
 #user-private-tasks-module {
-  .subtasks-list {
+  .subtasks-list { 
+
     .subtask {
       margin-bottom: 0.5rem;
       padding: 0.2rem 0.85rem;
@@ -18,8 +19,8 @@
           color: var(--gray);
           text-decoration: line-through;
         }
-      }
-
+      } 
+      
       &-header {
         display: flex;
         flex-wrap: wrap;

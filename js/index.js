@@ -8,9 +8,7 @@ const UPT_LOCAL_STORAGE_ITEM_NAME = "user-private-tasks-data",
   UPT_TASK_FORM_MODAL_ID = "user-private-tasks-module-task-form-modal",
   UPT_DETAILS_TASK_MODAL_ID = "user-private-tasks-module-task-details-modal",
   UPT_CATEGORY_FORM_MODAL_ID = "user-private-tasks-module-category-form-modal",
-  UPT_TOASTS_CONTAINER_ID = "user-private-tasks-module-toasts-container";
-
-// window.UPT_MODULE_ID_SELECTOR = UPT_MODULE_ID_SELECTOR;
+  UPT_TOASTS_CONTAINER_ID = "user-private-tasks-module-toasts-container"; 
 
 document.addEventListener("DOMContentLoaded", async function () {
   const mainContent = document.querySelector(`${UPT_MODULE_ID_SELECTOR} [data-main-content]`)
@@ -18,7 +16,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   showLoading(mainContent)
 
   // Główna nawigacja
-  new UPTModuleMainNavigation(UPT_MODULE_ID_SELECTOR);
+  new UPTMainNavigation(UPT_MODULE_ID_SELECTOR);
 
   // Załaduj przykładowe dane
   await loadTasksDataFromJSONFile();
@@ -28,16 +26,16 @@ document.addEventListener("DOMContentLoaded", async function () {
   apiService.getAllData().then(data => {
 
     // Zakładka Główny Panel
-    new UPTModuleMainPanel('#panel-glowny', data);
+    new UPTMainPanel('#panel-glowny', data);
 
     // Zakładka Zadania
-    new UPTModuleTasksPanel('#zadania', data)
+    new UPTTasksPanel('#zadania', data)
 
     // Zakładka Kategorie
-    new UPTModuleCategoryPanel('#kategorie', data)
+    new UPTCategoryPanel('#kategorie', data)
 
     // Zakładka Archiwum
-    new UPTModuleArchivePanel('#archiwum', data)
+    new UPTArchivePanel('#archiwum', data)
 
     hideLoading(mainContent)
   }) 
