@@ -1476,6 +1476,7 @@ class CustomCountdown extends HTMLElement {
   elements = {};
   defaultTimeUnits = ["days", "hours", "minutes", "seconds"]
   stop
+  dataDisabled
 
   static get observedAttributes() {
     return ["data-stop"];
@@ -1489,6 +1490,7 @@ class CustomCountdown extends HTMLElement {
     const timeUnitsToShowAttr = this.getAttribute("data-time-units-to-show");
     this.dateEnd = this.getAttribute("data-date-end");
     this.stop = this.getAttribute("data-stop")
+    this.dataDisabled = this.getAttribute("data-disabled") 
     this.timeUnitsToShow = timeUnitsToShowAttr ? JSON.parse(timeUnitsToShowAttr.replace(/'/g, '"')) : this.defaultTimeUnits;
     this.render();
     this.init();
@@ -1526,6 +1528,10 @@ class CustomCountdown extends HTMLElement {
   render() {
     const wrapper = document.createElement("span");
     wrapper.className = "custom-countdown";
+
+    if (this.dataDisabled) {
+      wrapper.setAttribute("data-disabled", this.dataDisabled)
+    }
 
     const timer = document.createElement("p");
     timer.className = "timer";
@@ -1772,7 +1778,8 @@ class UPTTaskDetails {
     this.displayPriority(task)
 
     this.subTaskModule.clearSubTasksList()
-    this.subTaskModule.renderSubTasksList(task.subTasks, UPTSubTask.MODE_SHOW)
+    this.subTaskModule.renderSubTasksList(task.subTasks, UPTSubTask.MODE_SHOW_DISABLED)
+    // this.subTaskModule.renderSubTasksList(task.subTasks, UPTSubTask.MODE_SHOW)
     this.subTaskModule.list.addEventListener(UPTSubTask.SUBTASK_STATE_CHANGE_EVENT, (e) => this.updateSubTasksList(e))
 
     if (isTaskMain) {
@@ -1849,6 +1856,7 @@ class UPTTaskDetails {
 
     if (task.isArchived) {
       timeToEndDayCountdown.setAttribute("data-stop", "true");
+      timeToEndDayCountdown.setAttribute("data-disabled", "true")
     }
 
     this.deadlineTimerElement.append(timeToEndDayCountdown);
@@ -1890,13 +1898,13 @@ class UPTTaskDetails {
   }
 
   /**  @param {UPT_Task} task */
-  displayDescription(task) { 
+  displayDescription(task) {
 
     if (!task.description || task.description.trim() === "") {
-      this.descContainerElement.style.display = "none" 
+      this.descContainerElement.style.display = "none"
     } else {
       this.descContainerElement.style.removeProperty("display")
-      this.descElement.textContent = task.description 
+      this.descElement.textContent = task.description
     }
   }
 
@@ -1920,6 +1928,7 @@ class UPTSubTask {
   static SUBTASK_STATE_CHANGE_EVENT = "upt-subtask-state-change"
   static MODE_EDIT = "edit"
   static MODE_SHOW = "show"
+  static MODE_SHOW_DISABLED = "show-disabled"
 
   subTasksArray = []
   list = null
@@ -1987,10 +1996,11 @@ class UPTSubTask {
     this.subTasksArray.push(subTask)
 
     const isEditMode = mode === UPTSubTask.MODE_EDIT
+    const isDisabledMode = mode === UPTSubTask.MODE_SHOW_DISABLED
     const li = document.createElement("li")
     const subTaskCompleteInput = !isEditMode ? `
-      <span class="task-checkbox custom-checkbox-group">
-        <input data-mark-subtask-as-done id="mark-subtask-as-done-${subTask.id}" data-subtask-id="${subTask.id}" type="checkbox" ${subTask.isCompleted ? 'checked' : ''}>
+      <span class="task-checkbox custom-checkbox-group" ${isDisabledMode ? 'data-disabled' : ''}>
+        <input ${isDisabledMode ? 'disabled' : ''} data-mark-subtask-as-done id="mark-subtask-as-done-${subTask.id}" data-subtask-id="${subTask.id}" type="checkbox" ${subTask.isCompleted ? 'checked' : ''}>
         <label class="custom-checkbox-label" for="mark-subtask-as-done-${subTask.id}">
           <span class="sr-only">Oznacz jako wykonane</span>
           <span class="custom-checkbox-icon" aria-hidden="true"></span>
@@ -2054,6 +2064,7 @@ class UPTForm {
       console.error("form is null");
       return;
     }
+    this.submitButton = this.form.querySelector("[data-form-submit-btn]")
 
     this.form.addEventListener('focusout', (e) => {
       const inputWrapper = e.target.closest('[data-form-field]')
@@ -2093,6 +2104,7 @@ class UPTCategoryForm extends UPTForm {
   static FIELD_DESC = "upt-category-desc"
   static FIELD_ICON = "upt-category-icon"
   static FIELD_MODE = "upt-category-form-mode"
+  static FIELD_ID = "upt-category-id"
 
   /** @type {UPTCategoryForm} */
   static instance;
@@ -2103,6 +2115,7 @@ class UPTCategoryForm extends UPTForm {
     this.descTextarea = this.form.querySelector(`textarea[name="${UPTCategoryForm.FIELD_DESC}"]`)
     this.iconSelect = this.form.querySelector(`select[name="${UPTCategoryForm.FIELD_ICON}"]`)
     this.modeInput = this.form.querySelector(`[name="${UPTCategoryForm.FIELD_MODE}"]`)
+    this.idInput = this.form.querySelector(`[name="${UPTCategoryForm.FIELD_ID}"]`)
     this.renderIconsOptions()
     this.customIconSelect = new CustomSelect(this.iconSelect)
 
@@ -2117,7 +2130,7 @@ class UPTCategoryForm extends UPTForm {
   }
 
   init() {
-    this.form.addEventListener("submit", (e) => this.handleSubmit(e))
+    this.submitButton.addEventListener("click", (e) => this.handleSubmit(e))
   }
 
   /** @param {object} data */
@@ -2141,15 +2154,46 @@ class UPTCategoryForm extends UPTForm {
   }
 
   /** @param {SubmitEvent} e */
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault()
     const formData = this.getFormData()
+    const formIsValid = this.validate(formData)
+    const isEditMode = formData[UPTCategoryForm.FIELD_MODE] === UPTCategoryForm.MODE_EDIT
+    let categoryId = formData[UPTCategoryForm.FIELD_ID]
+    let eventName
 
-    if (this.validate(formData)) {
-      const isEditMode = formData[UPTCategoryForm.FIELD_MODE] === UPTCategoryForm.MODE_EDIT
-      UPTToast.show(UPTToast.SUCCESS, `Kategoria została ${isEditMode ? 'zaktualizowana' : 'dodana'} pomyślnie!`)
-      console.log(formData)
+    if (formIsValid) {
+      showLoading(e.target)
+
+      const category = new UPT_TaskCategory(
+        '',
+        formData[UPTCategoryForm.FIELD_NAME],
+        formData[UPTCategoryForm.FIELD_DESC],
+        formData[UPTCategoryForm.FIELD_ICON]
+      )
+
+      try {
+        if (isEditMode) {
+          await this.apiService.updateCategory(categoryId, category)
+          eventName = UPTPanel.CATEGORY_UPDATED_EVENT
+        } else {
+          categoryId = await this.apiService.createCategory(category)
+          eventName = UPTPanel.CATEGORY_CREATED_EVENT
+        }
+        dispatchCustomEvent(eventName, {
+          ...category,
+          id: categoryId
+        })
+
+        UPTToast.show(UPTToast.SUCCESS, `Kategoria została ${isEditMode ? 'zaktualizowana' : 'dodana'} pomyślnie!`)
+      } catch (e) {
+        UPTToast.show(UPTToast.ERROR, e.message)
+      } finally {
+        hideLoading(e.target)
+      }
     }
+
+    console.log(formData)
   }
 
   /** @param {string} categoryId */
@@ -2188,6 +2232,7 @@ class UPTCategoryForm extends UPTForm {
     if (isEditMode) {
       const category = await this.loadFormData(categoryId)
       currentCategoryIcon = category.icon
+      this.idInput.value = category.id
       this.nameInput.value = category.name
       this.descTextarea.value = category.desc ?? ""
     }
@@ -2203,9 +2248,8 @@ class UPTCategoryForm extends UPTForm {
    */
   open(mode, categoryId = null) {
     const isEditMode = mode === UPTCategoryForm.MODE_EDIT
-    const submitButton = this.form.querySelector("[data-form-submit-btn]")
 
-    submitButton.textContent = isEditMode ? "Zapisz zmiany" : "Dodaj"
+    this.submitButton.textContent = isEditMode ? "Zapisz zmiany" : "Dodaj"
 
     showModal(this.modalId, isEditMode ? "Edytuj Kategorię" : "Dodaj Kategorię")
 
@@ -2312,7 +2356,7 @@ class UPTTaskForm extends UPTForm {
 
   init() {
     this.addSubTaskButton.addEventListener('click', (e) => this.addSubTask(e))
-    this.form.addEventListener("submit", (e) => this.handleFormSubmit(e))
+    this.submitButton.addEventListener("click", (e) => this.handleFormSubmit(e))
     this.typeCustomSelect.onChangeSelect(e => this.changeDateTypeInputs(e))
   }
 
@@ -2396,9 +2440,9 @@ class UPTTaskForm extends UPTForm {
 
     if (task && !task.categoryId) {
       this.categoryCustomSelect.chooseOption("brak")
-    } 
+    }
 
-    if (isEditMode) { 
+    if (isEditMode) {
       hideModalLoading(this.modalId)
     }
   }
@@ -2435,9 +2479,8 @@ class UPTTaskForm extends UPTForm {
    */
   async open(mode, taskId = null) {
     const isEditMode = mode === UPTTaskForm.MODE_EDIT
-    const submitButton = this.form.querySelector("[data-form-submit-btn]")
 
-    submitButton.textContent = isEditMode ? "Zapisz zmiany" : "Dodaj"
+    this.submitButton.textContent = isEditMode ? "Zapisz zmiany" : "Dodaj"
 
     showModal(this.modalId, isEditMode ? "Edytuj Zadanie" : "Dodaj Zadanie")
 
@@ -2475,7 +2518,6 @@ class UPTTaskForm extends UPTForm {
 
     if (data[UPTTaskForm.FIELD_TYPE] === UPT_TaskType.MAIN) {
       checkInputField(UPTTaskForm.FIELD_DATE_END, "Nie podano daty zakończenia")
-      isValid = false
     }
 
     if (data[UPTTaskForm.FIELD_DESC].length > 500) {
@@ -2494,33 +2536,33 @@ class UPTTaskForm extends UPTForm {
   }
 
   getTaskFromFormData(formData) {
-    const createDateFromTimeStr = (timeStr) => { 
-      if (! timeStr) return null
+    const createDateFromTimeStr = (timeStr) => {
+      if (!timeStr) return null
 
-      let dateFromTimeStr = new Date(); 
+      let dateFromTimeStr = new Date();
 
       if (formData[UPTTaskForm.FIELD_TYPE] === UPT_TaskType.DAILY) {
-        const [hours, minutes] = timeStr.split(":").map(Number);  
-        dateFromTimeStr.setHours(hours, minutes, 0, 0); 
+        const [hours, minutes] = timeStr.split(":").map(Number);
+        dateFromTimeStr.setHours(hours, minutes, 0, 0);
       } else {
-        dateFromTimeStr = new Date(timeStr); 
-      } 
+        dateFromTimeStr = new Date(timeStr);
+      }
       return dateFromTimeStr
-    } 
-    const dateEnd = createDateFromTimeStr(formData[UPTTaskForm.FIELD_DATE_END])
-    const dateStart = createDateFromTimeStr(formData[UPTTaskForm.FIELD_DATE_START]) 
+    }
+    const endDate = createDateFromTimeStr(formData[UPTTaskForm.FIELD_DATE_END])
+    const startDate = createDateFromTimeStr(formData[UPTTaskForm.FIELD_DATE_START])
 
-    const task = {
+    const task = new UPT_Task({
       name: formData[UPTTaskForm.FIELD_NAME],
       categoryId: formData[UPTTaskForm.FIELD_CATEGORY] === "brak" ? null : formData[UPTTaskForm.FIELD_CATEGORY],
-      dateStart: dateStart.toISOString(),
-      dateEnd: dateEnd ? dateEnd.toISOString() : dateStart.toISOString(),
+      startDate: startDate.toISOString(),
+      endDate: endDate ? endDate.toISOString() : startDate.toISOString(),
       description: formData[UPTTaskForm.FIELD_DESC].trim(),
       priority: formData[UPTTaskForm.FIELD_PRIORITY],
       status: UPT_TaskStatus.IN_PROGRESS,
       subTasks: formData[UPTTaskForm.FIELD_SUBTASKS],
       type: formData[UPTTaskForm.FIELD_TYPE]
-    }
+    })
 
     return task
   }
@@ -2550,28 +2592,33 @@ class UPTTaskForm extends UPTForm {
     e.preventDefault()
     const formData = this.collectFormData()
     const isEditMode = this.modeInput.value === UPTTaskForm.MODE_EDIT
+    const isFormValid = this.validateForm(formData)
 
-    if (this.validateForm(formData)) {
-      const taskData = this.getTaskFromFormData(formData)
+    if (isFormValid) {
+      showLoading(e.target)
+
+      const task = this.getTaskFromFormData(formData)
       let taskEvent
-      let taskId = formData[UPTTaskForm.FIELD_ID]  
+      let taskId = formData[UPTTaskForm.FIELD_ID]
 
       try {
         if (isEditMode) {
-          await this.apiService.updateTask(taskId, taskData) 
+          await this.apiService.updateTask(taskId, task)
           taskEvent = UPTPanel.TASK_UPDATED_EVENT
         } else {
-          taskId = await this.apiService.createTask(taskData) 
+          taskId = await this.apiService.createTask(task)
           taskEvent = UPTPanel.TASK_CREATED_EVENT
         }
         dispatchCustomEvent(taskEvent, {
-          ...taskData,
+          ...task,
           id: taskId
         })
 
         UPTToast.show(UPTToast.SUCCESS, `Zadanie zostało ${isEditMode ? 'zaktualizowane' : 'dodane'}!`)
       } catch (e) {
         UPTToast.show(UPTToast.ERROR, e.message)
+      } finally {
+        hideLoading(e.target)
       }
     }
 
@@ -2633,12 +2680,11 @@ class UPTPanel {
     };
 
     this.panel.addEventListener("click", (e) => {
-      e.preventDefault()
-
       const target = e.target;
 
       for (const [attr, action] of Object.entries(actionsMap)) {
         if (target.hasAttribute(attr)) {
+          e.preventDefault()
           action(target);
           break;
         }
@@ -2654,22 +2700,18 @@ class UPTPanel {
 
     showModal(UPT_CONFIRM_MODAL_ID, `Czy napewno chcesz usunąć zadanie "${taskName}"?`);
 
-    confirmButton.onclick = (e) => {
+    confirmButton.onclick = async (e) => {
       showLoading(e.target);
 
-      setTimeout(() => {
-        const taskCards = document.querySelectorAll(`[data-task-card][data-task-id="${taskId}"]`);
+      const deletedTask = await this.apiService.deleteTask(taskId) 
+      const taskCards = document.querySelectorAll(`[data-task-card][data-task-id="${taskId}"]`);
 
-        taskCards.forEach(card => removeDataCard(card))
-        //TODO: odkomentuj
-        // this.apiService.deleteTask(taskId)
-        hideModal(UPT_CONFIRM_MODAL_ID);
+      taskCards.forEach(card => removeDataCard(card))
 
-        UPTToast.show(UPTToast.SUCCESS, "Pomyślnie usunięto zadanie");
-
-        hideLoading(e.target);
-
-      }, 2000);
+      UPTToast.show(UPTToast.SUCCESS, "Pomyślnie usunięto zadanie"); 
+      dispatchCustomEvent(UPTPanel.TASK_DELETED_EVENT, deletedTask)
+      hideLoading(e.target);
+      hideModal(UPT_CONFIRM_MODAL_ID);
     };
   }
 
@@ -2693,9 +2735,14 @@ class UPTPanel {
       // })
 
       setTimeout(() => {
-        removeDataCard(categoryCard);
+        const categoryCards = document.querySelectorAll(`[data-category-card][data-category-id="${categoryId}"]`);
+        categoryCards.forEach(card => removeDataCard(card))
+
         hideModal(UPT_CONFIRM_MODAL_ID);
-        UPTToast.show(UPTToast.SUCCESS, "Pomyślnie usunięto zadanie");
+        UPTToast.show(UPTToast.SUCCESS, "Pomyślnie usunięto kategorię");
+        dispatchCustomEvent(UPTPanel.CATEGORY_DELETED_EVENT, {
+          categoryId
+        })
         hideLoading(e.target);
 
       }, 2000);
@@ -2705,79 +2752,132 @@ class UPTPanel {
 
 class UPTMainPanel extends UPTPanel {
   static TASKS_DISPLAY_NUMBER = 5;
-  static CATEGORIES_DISPLAY_NUMBER = 5; 
+  static CATEGORIES_DISPLAY_NUMBER = 5;
+
+  currentNumberOfCategories = 0
+  currentNumberOfTasksDaily = 0
+  currentNumberOfTasksMain = 0
 
   constructor(selector, data) {
     super(selector, data);
     this.dailyTasksList = this.panel.querySelector("[data-daily-tasks-list]");
     this.mainTasksList = this.panel.querySelector("[data-main-tasks-list]");
+    this.categoriesList = this.panel.querySelector("[data-category-list]");
     this.init();
   }
 
   init() {
-    // Wykres kołowy na głównym panelu
     this.initPieChart();
-
-    // Liczba zadań
     this.initStatisticTasks();
-
-    // Wyświetl liste zadań
     this.renderTasksList();
-
-    // Wyświetl Kategorie
     this.renderCategoriesList();
-
-    // timer odliczający do końca dnia
     this.initTimeToEndDayCountdown();
-
-    // Statystyki związane z datą i godziną na głównym panelu
     this.initDateTimeStatisics();
+    this.setEventListeners(); 
+  }
 
+  setEventListeners() {
+    this.panel.addEventListener(UPTPanel.TASK_CREATED_EVENT, (e) => this.createTaskEventHandler(e))
+    this.panel.addEventListener(UPTPanel.TASK_DELETED_EVENT, (e) => this.deleteTaskEventHandler(e))
+    this.panel.addEventListener(UPTPanel.TASK_UPDATED_EVENT, (e) => this.updateTaskEventHandler(e))
 
-    document.addEventListener(UPTPanel.TASK_CREATED_EVENT, (e) => {
-      const task = e.detail
-      const taskElement = this.renderTask(task)
+    this.panel.addEventListener(UPTPanel.CATEGORY_CREATED_EVENT, (e) => this.createCategoryEventHandler(e))
+    this.panel.addEventListener(UPTPanel.CATEGORY_DELETED_EVENT, (e) => this.deleteCategoryEventHandler(e))
+    this.panel.addEventListener(UPTPanel.CATEGORY_UPDATED_EVENT, (e) => this.updateCategoryEventHandler(e))
+  }
 
-      // TODO: jeśli jest więcej niż 5 to zablokuj
-      if (task.type === UPT_TaskType.DAILY) {
-        this.dailyTasksList.append(taskElement);
-      } else {
-        this.mainTasksList.append(taskElement);
-      } 
-    })
+  /** @param {CustomEvent} e */
+  updateTaskEventHandler(e) {
+    const task = e.detail
+    const taskCard = this.panel.querySelector(`[data-task-card][data-task-id="${task.id}"]`)
+
+    if (taskCard) {
+      // TODO:
+    }
+  }
+
+  /** @param {CustomEvent} e */
+  updateCategoryEventHandler(e) {
+
+  }
+
+  /** @param {CustomEvent} e */
+  deleteTaskEventHandler(e) {
+    const taskType = e.detail.type
+
+    if (taskType === UPT_TaskType.DAILY) {
+      this.currentNumberOfTasksDaily--
+    } else {
+      this.currentNumberOfTasksMain--
+    }
+  }
+
+  /** @param {CustomEvent} e */
+  deleteCategoryEventHandler(e) {
+    this.currentNumberOfCategories--
+  }
+
+  /** @param {CustomEvent} e */
+  createCategoryEventHandler(e) {
+    const category = e.detail
+
+    if (this.currentNumberOfCategories < UPTMainPanel.CATEGORIES_DISPLAY_NUMBER) {
+      const categoryElement = this.renderCategoryCard(category)
+
+      this.categoriesList.append(categoryElement);
+      this.currentNumberOfCategories++
+    }
+  }
+
+  /** @param {CustomEvent} e */
+  createTaskEventHandler(e) {
+    const task = e.detail
+    const taskElement = this.renderTask(task)
+ 
+    if (task.type === UPT_TaskType.DAILY && this.currentNumberOfTasksDaily < UPTMainPanel.TASKS_DISPLAY_NUMBER) {
+      this.dailyTasksList.append(taskElement);
+    } else if (this.currentNumberOfTasksMain < UPTMainPanel.TASKS_DISPLAY_NUMBER) {
+      this.mainTasksList.append(taskElement);
+    }
+  }
+
+  /** @param {UPT_TaskCategory} category */
+  renderCategoryCard(category) {
+    const li = document.createElement("li");
+
+    li.setAttribute("data-category-id", category.id);
+    li.setAttribute("data-category-card", "");
+    li.innerHTML = `
+      <a data-edit-category-btn data-category-id="${category.id}" href="#${category.name}" class="task-category-link link variant4"> 
+        <i class="task-category-link-icon ${UPT_Utils.getCategoryIconClass(category)}" aria-hidden="true"></i>
+        <span>${category.name}</span>
+      </a>
+    `;
+
+    return li
   }
 
   renderCategoriesList() {
-    const categoriesList = this.panel.querySelector("[data-category-list]");
     const categoriesNumber = this.categories.length;
     const categoriesListFragment = document.createDocumentFragment();
 
     for (let i = 0; i < categoriesNumber; i++) {
       const category = this.categories[i];
 
-      if (i >= UPTMainPanel.CATEGORIES_DISPLAY_NUMBER - 1) break;
+      if (this.currentNumberOfCategories >= UPTMainPanel.CATEGORIES_DISPLAY_NUMBER) break;
 
-      const li = document.createElement("li");
+      categoriesListFragment.append(this.renderCategoryCard(category));
 
-      li.innerHTML = `
-        <a href="#kategorie" class="task-category-link link variant4"> 
-          <i class="task-category-link-icon ${UPT_Utils.getCategoryIconClass(category)}" aria-hidden="true"></i>
-          <span>${category.name}</span>
-        </a>
-      `;
-
-      categoriesListFragment.append(li);
+      this.currentNumberOfCategories++
     }
 
-    categoriesList.append(categoriesListFragment);
+    this.categoriesList.append(categoriesListFragment);
   }
 
-  renderTasksList() { 
+  renderTasksList() {
     const tasksNumber = this.tasks.length;
     const dailyTasksFragment = document.createDocumentFragment();
-    const mainTasksFragment = document.createDocumentFragment();
-    let mainTasksDisplayedNumber = 0,
-      dailyTasksDisplayedNumber = 0;
+    const mainTasksFragment = document.createDocumentFragment(); 
 
     for (let i = 0; i < tasksNumber; i++) {
       const task = this.tasks[i];
@@ -2785,8 +2885,8 @@ class UPTMainPanel extends UPTPanel {
 
       if (
         task.isArchived ||
-        (taskIsMain && mainTasksDisplayedNumber >= UPTMainPanel.TASKS_DISPLAY_NUMBER) ||
-        (!taskIsMain && dailyTasksDisplayedNumber >= UPTMainPanel.TASKS_DISPLAY_NUMBER)
+        (taskIsMain && this.currentNumberOfTasksMain >= UPTMainPanel.TASKS_DISPLAY_NUMBER) ||
+        (!taskIsMain && this.currentNumberOfTasksDaily >= UPTMainPanel.TASKS_DISPLAY_NUMBER)
       ) {
         continue;
       }
@@ -2794,10 +2894,10 @@ class UPTMainPanel extends UPTPanel {
       const li = this.renderTask(task)
 
       if (taskIsMain) {
-        mainTasksDisplayedNumber++;
-        mainTasksFragment.append(li);
+        this.currentNumberOfTasksMain++;
+        mainTasksFragment.append(li); 
       } else {
-        dailyTasksDisplayedNumber++;
+        this.currentNumberOfTasksDaily++;
         dailyTasksFragment.append(li);
       }
     }
@@ -2812,6 +2912,7 @@ class UPTMainPanel extends UPTPanel {
     const category = this.getCategoryByTask(task);
     const taskPrioritySubClass = UPT_Utils.getTaskPrioritySubClass(task);
     const taskRepeatIcon = !taskIsMain ? '<i class="fa-solid fa-rotate"></i>' : "";
+
     const taskDateInfo = taskIsMain ? `
       <span class="task-date tooltip">
         <i class="fa-regular fa-calendar"></i> ${getFriendlyDateFormat(task.endDate, { day: "numeric", month: "short" })} 
@@ -3092,10 +3193,6 @@ class UPTTasksPanel extends UPTPanel {
     card.setAttribute("data-task-card", "");
     card.className = "task-card modern-card";
 
-    if (taskIsMain) {
-      card.style.display = "none";
-    }
-
     card.innerHTML = `
       <div class="task-card-header">
         <span class="task-priority task-card-priority ${taskPrioritySubClass}">${task.priority} piorytet</span>
@@ -3145,8 +3242,13 @@ class UPTTasksPanel extends UPTPanel {
       if (task.isArchived) {
         continue;
       }
+      const taskCard = this.renderTask(task)
 
-      tasksListFragment.append(this.renderTask(task));
+      if (task.type === UPT_TaskType.MAIN) {
+        taskCard.style.display = "none";
+      }
+
+      tasksListFragment.append(taskCard);
     }
 
     this.tasksList.append(tasksListFragment);

@@ -24,9 +24,10 @@ class UPT_TaskCategory {
    * @param {string} name
    * @param {string} icon
    */
-  constructor(name, icon) {
+  constructor(id, name, desc, icon) {
     this.id = id;
     this.name = name;
+    this.desc = desc;
     this.icon = icon;
     this.createdAt = (new Date()).toISOString();
   }
@@ -84,49 +85,47 @@ class UPT_SubTask {
   }
 }
 
-/**
- * @typedef {Object} UPT_TaskInterface
- * @property {string} id - ID zadania.
- * @property {string} name - Nazwa zadania.
- * @property {string} createdAt - Data utworzenia. 
- * @property {string} startDate - data startu.
- * @property {string} endDate - data końca.
- * @property {string} categoryId - Kategoria zadania.
- * @property {UPT_SubTask[]} subTasks - Lista podzadań.
- * @property {string} status - Status zadania.
- * @property {string} priority - Priorytet zadania.
- * @property {string} description - Opis zadania.
- * @property {number} type - typ zadania.
- * @property {boolean} isArchived - Czy zadanie zostało zarchiwizowane.
- * @property {string | null} archivedAt - Kiedy zostało zarchiwizowane.
- */
-class UPT_Task {
-  static ALL_DAY = "Cały dzień"
 
-  /**
-   * @param {UPT_TaskInterface} taskProps
-   */
+class UPT_Task {
+  static ALL_DAY = "Cały dzień" 
+
+  /** @type {string} id - ID zadania. */
+  id
+  /** @type {string} name - Nazwa zadania. */
+  name;
+  /** @type {number} type - typ zadania. */
+  type;
+  /** @type {string} startDate - data startu. */
+  startDate;
+  /** @type {string} endDate - data końca. */
+  endDate;
+  /** @type {string} categoryId - Kategoria zadania. */
+  categoryId;
+  /** @type {string} priority - Priorytet zadania. */
+  priority;
+  /** @type {string} status - Status zadania. */
+  status;
+  /** @type {string} description - Opis zadania. */
+  description;
+  /** @type {UPT_SubTask[]} subTasks - Lista podzadań. */
+  subTasks;
+  /** @type {boolean} isArchived - Czy zadanie zostało zarchiwizowane. */
+  isArchived;
+  /** @type {string} createdAt - Data utworzenia.  */
+  createdAt
+  /** @type {string} createdAt */
+  updatedAt;
+  /** @type {string | null} archivedAt - Kiedy zostało zarchiwizowane. */
+  archivedAt
+
+  /** @param {UPT_TaskInterface} taskProps */
   constructor(taskProps) {
-    this.id = String(taskProps.id);
-    this.name;
-    this.type;
-    this.startDate;
-    this.endDate;
-    this.categoryId;
-    this.priority;
-    this.status;
-    this.description;
-    this.subTasks;
-    this.isArchived;
-    this.createdAt = (new Date()).toISOString();
-    this.updatedAt;
-    this.archivedAt
+    this.id = String(taskProps.id); 
+    this.createdAt = (new Date()).toISOString(); 
     this.validateTaskProps(taskProps);
   }
 
-  /**
-   * @param {UPT_TaskInterface} taskProps
-   */
+  /** @param {UPT_TaskInterface} taskProps */
   validateTaskProps(taskProps) {
     this.setName(taskProps.name);
     this.setUpdatedAt(this.createdAt);
@@ -381,7 +380,7 @@ function removeDataCard(card) {
     card.style.transition = "all 0.3s ease";
     card.style.backgroundColor = "red";
 
-    setTimeout(() => card.remove(), 500);
+    setTimeout(() => card.remove(), 400);
   });
 }
 
@@ -575,4 +574,4 @@ async function loadTasksDataFromJSONFile() {
   } catch (error) {
     return console.error("Unable to fetch data:", error);
   }
-}
+} 

@@ -166,7 +166,8 @@ class UPTApiService {
     const newCategory = { ...category, id: generateId("category") };
     data.categories.push(newCategory);
     this.saveAllData_LocalStorage(data);
-    return newCategory;
+
+    return newCategory.id;
   }
 
   /**
@@ -243,7 +244,10 @@ class UPTApiService {
   /** @param {string} id */
   async deleteTask_LocalStorage(id) {
     const data = await this.getAllData_LocalStorage();
+    const deletedTask = data.tasks.find((task) => task.id === id)
     data.tasks = data.tasks.filter((task) => task.id !== id);
     this.saveAllData_LocalStorage(data);
+
+    return deletedTask
   } 
 }

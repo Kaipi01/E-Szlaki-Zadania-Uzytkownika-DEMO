@@ -34,11 +34,8 @@
         gap: 0.5rem;
 
         @media (min-width: $content-breakpoint-desktop-small) {
-          grid-template-columns: repeat(3, 1fr);
-        }
-        @media (min-width: $content-breakpoint-desktop) {
-          grid-template-columns: 0.325fr 0.325fr 0.35fr;
-        }
+          grid-template-columns: repeat(2, 1fr);
+        } 
       }
     }
   }

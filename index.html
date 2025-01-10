@@ -219,10 +219,14 @@
                                     </template>
                                 </custom-popover>
 
-                                <select id="select-tasks" data-custom-select data-class-name="custom-select-green">
-                                    <option selected value="hide">Sortuj</option>
-                                    <option value="magni">Magni</option>
-                                    <option value="doloremque">Doloremque</option>
+                                <select data-sort-tasks data-custom-select data-class-name="custom-select-green">
+                                    <option value="hide">Sortuj</option>
+                                    <option value="deadline-asc">Termin wykonania rosnąco</option>
+                                    <option value="deadline-desc">Termin wykonania malejąco</option>
+                                    <option value="priority-asc">Priorytet rosnąco</option>
+                                    <option value="priority-desc">Priorytet malejąco</option>
+                                    <option value="name-asc">Nazwa A-Z</option>
+                                    <option value="name-desc">Nazwa Z-A</option>
                                 </select>
 
                             </div>
@@ -240,32 +244,14 @@
                                 <i class="link-icon fa-solid fa-plus"></i> Dodaj Nową Kategorię
                             </button>
                             <div class="actions-card-right-content">
-                                <custom-popover data-class="custom-select-green">
-                                    <template data-class="custom-select-green-styled"
-                                        slot="button-text">Filtruj</template>
-                                    <template data-class="custom-select-green-options" slot="content">
-
-                                        <label class="custom-switch">
-                                            <input type="checkbox" name="vehicle3" value="Car">
-                                            <span class="toggle"><span class="toggle--handler"></span></span>
-                                            <span class="label-text">Coś tam ważnego</span>
-                                        </label>
-
-                                        <hr>
-
-                                        <label class="custom-switch">
-                                            <input type="checkbox" name="vehicle4" value="Car">
-                                            <span class="toggle"><span class="toggle--handler"></span></span>
-                                            <span class="label-text">Coś tam ważnego</span>
-                                        </label>
-
-                                    </template>
-                                </custom-popover>
-                                <select id="select-category" data-custom-select data-class-name="custom-select-green">
-                                    <option value="hide">Sortuj</option>
-                                    <option value="magni">Magni</option>
-                                    <option value="doloremque">Doloremque</option>
+                                <select data-sort-category data-custom-select data-class-name="custom-select-green">
+                                    <option value="hide">Sortuj</option> 
+                                    <option value="created-date-asc">Data utworzenia rosnąco</option>
+                                    <option value="created-date-desc">Data utworzenia malejąco</option>
+                                    <option value="name-asc">Nazwa A-Z</option>
+                                    <option value="name-desc">Nazwa Z-A</option> 
                                 </select>
+
                                 <form class="upt-search-form">
                                     <button class="upt-search-btn link variant2" type="submit">
                                         <i class="upt-icon fa-solid fa-magnifying-glass"></i>
@@ -297,7 +283,7 @@
                                     <label class="custom-switch">
                                         <input type="checkbox" name="vehicle5" value="Car">
                                         <span class="toggle"><span class="toggle--handler"></span></span>
-                                        <span class="label-text">Coś tam ważnego</span>
+                                        <span class="label-text">Tylko Ważne</span>
                                     </label>
 
                                     <hr>
@@ -311,10 +297,14 @@
                                 </template>
                             </custom-popover>
 
-                            <select id="select-tasks" data-custom-select data-class-name="custom-select-green">
+                            <select data-sort-tasks data-custom-select data-class-name="custom-select-green">
                                 <option value="hide">Sortuj</option>
-                                <option value="magni">Magni</option>
-                                <option value="doloremque">Doloremque</option>
+                                <option value="deadline-asc">Termin wykonania rosnąco</option>
+                                <option value="deadline-desc">Termin wykonania malejąco</option>
+                                <option value="priority-asc">Priorytet rosnąco</option>
+                                <option value="priority-desc">Priorytet malejąco</option>
+                                <option value="name-asc">Nazwa A-Z</option>
+                                <option value="name-desc">Nazwa Z-A</option>
                             </select>
 
                             <form class="upt-search-form">
@@ -436,8 +426,7 @@
 
                         <div data-form-field class="upt-task-desc upt-form-field">
                             <label class="floating-label" for="upt-task-input-desc">Opis</label>
-                            <textarea rows="5" class="floating-label-control upt-form-control" name="upt-task-desc"
-                                id="upt-task-input-desc" placeholder="Maksymalnie 500 znaków"></textarea>
+                            <textarea rows="5" class="floating-label-control upt-form-control" name="upt-task-desc"  id="upt-task-input-desc" placeholder="Maksymalnie 500 znaków"></textarea>
                         </div>
 
                         <div class="upt-subtasks-list-container" data-subtasks-list>
@@ -655,6 +644,7 @@
                 <template slot="modal-content">
                     <form id="user-private-tasks-module-category-form" class="upt-category-form">
                         <input type="hidden" name="upt-category-form-mode">
+                        <input type="hidden" name="upt-category-id">
 
                         <div data-form-field class="upt-form-field">
                             <input class="floating-label-control upt-form-control" type="text" name="upt-category-name"
