@@ -1,4 +1,3 @@
-"use strict";
 
 class UPT_TaskType {
   static DAILY = "Dzienne";
@@ -8,7 +7,7 @@ class UPT_TaskType {
 class UPT_TaskStatus {
   static COMPLETED = "Zrealizowano";
   static IN_PROGRESS = "W trakcie";
-  static DELETED = "Usunięto";
+  static ABANDONED = "Porzucone";
 }
 
 class UPT_TaskPriority {
@@ -87,13 +86,13 @@ class UPT_SubTask {
 
 
 class UPT_Task {
-  static ALL_DAY = "Cały dzień" 
+  static ALL_DAY = "Cały dzień"
 
   /** @type {string} id - ID zadania. */
   id
   /** @type {string} name - Nazwa zadania. */
   name;
-  /** @type {number} type - typ zadania. */
+  /** @type {string} type - typ zadania. */
   type;
   /** @type {string} startDate - data startu. */
   startDate;
@@ -120,8 +119,8 @@ class UPT_Task {
 
   /** @param {UPT_TaskInterface} taskProps */
   constructor(taskProps) {
-    this.id = String(taskProps.id); 
-    this.createdAt = (new Date()).toISOString(); 
+    this.id = String(taskProps.id);
+    this.createdAt = (new Date()).toISOString();
     this.validateTaskProps(taskProps);
   }
 
@@ -199,7 +198,7 @@ class UPT_Task {
   setStatus(value) {
     if (
       value !== UPT_TaskStatus.COMPLETED &&
-      value !== UPT_TaskStatus.DELETED &&
+      value !== UPT_TaskStatus.ABANDONED &&
       value !== UPT_TaskStatus.IN_PROGRESS
     ) {
       console.error("status must be a UPT_TaskStatus");
@@ -241,6 +240,43 @@ class UPT_Utils {
     );
 
     return Math.round((completedSubTasksNumber * 100) / subTasksLength);
+  }
+
+  /** 
+   * @param {string | null} timeStr 
+   * @param {string} taskType 
+   * @returns {Date | null}
+   */
+  static createTaskDateFromStr(timeStr, taskType) {
+    if (!timeStr) return null
+
+    let dateFromTimeStr = new Date();
+
+    if (taskType === UPT_TaskType.DAILY) {
+      const [hours, minutes] = timeStr.split(":").map(Number);
+      dateFromTimeStr.setHours(hours, minutes, 0, 0);
+    } else {
+      dateFromTimeStr = new Date(timeStr);
+    }
+    return dateFromTimeStr
+  }
+
+  /** 
+   * @param {string | null} dateStr 
+   * @param {string} dateInputType
+   */
+  static getDateFormatForInput(dateStr, dateInputType) {
+    if (!dateStr || dateStr === UPT_Task.ALL_DAY) return ''
+    let dateFormatForInput 
+
+    if (dateInputType === "time") { 
+      dateFormatForInput = dateStr
+    } else {
+      const date = new Date(dateStr);
+      dateFormatForInput = date.toISOString().slice(0, 16) 
+    } 
+
+    return dateFormatForInput
   }
 
   static getHoursForDailyTask(task) {
@@ -309,7 +345,7 @@ class UPT_Utils {
     const statusSubClasses = new Map();
 
     statusSubClasses.set(UPT_TaskStatus.COMPLETED, "task-status--completed")
-    statusSubClasses.set(UPT_TaskStatus.DELETED, "task-status--deleted")
+    statusSubClasses.set(UPT_TaskStatus.ABANDONED, "task-status--deleted")
     statusSubClasses.set(UPT_TaskStatus.IN_PROGRESS, "task-status--in-progress")
 
     return statusSubClasses
@@ -454,8 +490,10 @@ function formatDate(dateString) {
   return `${day}.${month}.${year}`;
 }
 
-/** @param {string} dateString */
+/** @param {string | null} dateString */
 function getHoursAndMinutes(dateStr) {
+  if (!dateStr || dateStr === '' || dateStr === UPT_Task.ALL_DAY) return ''
+
   const date = new Date(dateStr)
   const hours = date.getHours().toString().padStart(2, "0")
   const minutes = date.getMinutes().toString().padStart(2, "0")
@@ -541,17 +579,6 @@ function throttle(callback, delay) {
 };
 
 /**
- * @returns {number}
- * @param {number} rem
- */
-function remToPx(rem) {
-  const htmlElement = document.documentElement;
-  const fontSize = window.getComputedStyle(htmlElement).fontSize;
-  const baseFontSize = parseFloat(fontSize);
-  return baseFontSize * rem;
-}
-
-/**
  * Ładuje dane z pliku example-data.json do pamięcie LocalStorage przeglądarki
  */
 async function loadTasksDataFromJSONFile() {
@@ -574,4 +601,4 @@ async function loadTasksDataFromJSONFile() {
   } catch (error) {
     return console.error("Unable to fetch data:", error);
   }
-} 
+}

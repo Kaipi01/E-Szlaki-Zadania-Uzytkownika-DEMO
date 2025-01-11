@@ -4,8 +4,12 @@
 #user-private-tasks-module {
   .tasks-archive-list {
     .task-archive {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       justify-content: flex-start;
       margin-bottom: 0.5rem;
+      font-weight: bold;
       gap: 2rem;
 
       @media (min-width: $content-breakpoint-desktop) {

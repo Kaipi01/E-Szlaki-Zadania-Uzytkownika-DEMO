@@ -13,8 +13,7 @@
 
 <body>
 
-    <main class="container">
-        <!-- container -->
+    <main class="container"> 
 
         <!-- USER PRIVATE TASKS MODULE START -->
         <section class="modern-card" id="user-private-tasks-module">
@@ -90,10 +89,9 @@
                                 </ul>
                             </div>
 
-                            <figure data-pie-chart class="custom-pie-chart statistics-card-right-content"
+                            <figure data-pie-chart data-title="Statystyki Zadań Głównych" class="custom-pie-chart statistics-card-right-content"
                                 aria-labelledby="pie-chart-desc">
-                                <div data-pie-chart-appearance class="pie-chart donut" aria-live="polite">
-                                </div>
+                                <div data-pie-chart-appearance class="pie-chart donut" aria-live="polite"></div>
                                 <figcaption id="pie-chart-desc" class="sr-only">
                                     <span>Wykres przedstawia procentowy podział statusów zadań</span>
                                 </figcaption>
@@ -124,31 +122,31 @@
                         <div class="daily-tasks-card">
                             <div class="upt-header modern-card">
                                 <p class="upt-small-header">Zadania dzienne</p>
-                                <a href="#zadania" class="link variant2 small">Pokaż więcej</a>
+                                <a data-show-daily-tasks href="#zadania" class="link variant2 small">Pokaż więcej</a>
                             </div>
                             <ul data-daily-tasks-list class="preview-tasks-list">
-                                <!-- <li class="modern-card no-tasks-card">
+                                <li data-no-daily-tasks-card class="modern-card no-tasks-card">
                                     <p class="no-tasks-card-info">Obecnie nie masz żadnych zadań dziennych</p>
                                     <button data-add-task-button class="link small link-100 variant3">
                                         <i class="link-icon fa-solid fa-plus"></i> 
                                         Dodaj Nowe Zadanie
                                     </button>
-                                </li> -->
+                                </li>
                             </ul>
                         </div>
                         <div class="main-tasks-card">
                             <div class="upt-header modern-card">
                                 <p class="upt-small-header">Zadania główne</p>
-                                <a href="#zadania" class="link variant2 small">Pokaż więcej</a>
+                                <a data-show-main-tasks href="#zadania" class="link variant2 small">Pokaż więcej</a>
                             </div>
                             <ul data-main-tasks-list class="preview-tasks-list">
-                                <!-- <li class="modern-card no-tasks-card">
+                                <li data-no-main-tasks-card class="modern-card no-tasks-card">
                                     <p class="no-tasks-card-info">Obecnie nie masz żadnych zadań głównych</p>
                                     <button data-add-task-button class="link small link-100 variant3">
                                         <i class="link-icon fa-solid fa-plus"></i> 
                                         Dodaj Nowe Zadanie
                                     </button>
-                                </li> -->
+                                </li>
                             </ul>
                         </div>
                         <div class="categories-card modern-card">
@@ -319,6 +317,10 @@
                                 </div>
                             </form>
 
+                        </div>
+
+                        <div data-no-tasks-archive class="modern-card">
+                            <p>Tutaj będą sie wyświetlały zadania zarchiwizowane i porzucone, czyli takie, które nie zostały wykonane na czas</p>
                         </div>
 
                         <ul data-tasks-archive-list class="tasks-archive-list">
@@ -623,7 +625,7 @@
                     </div>
 
                     <div class="upt-task-details-actions">
-                        <button class="upt-task-details-actions-delete link medium variant2">
+                        <button data-task-details-remove-btn class="upt-task-details-actions-delete link medium variant2">
                             <i class="fa-solid fa-trash"></i>
                             Usuń Zadanie
                         </button>

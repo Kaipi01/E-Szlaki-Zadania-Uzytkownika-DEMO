@@ -1,5 +1,3 @@
-"use strict";
-
 const UPT_LOCAL_STORAGE_ITEM_NAME = "user-private-tasks-data",
   UPT_MODULE_ID_SELECTOR = "#user-private-tasks-module",
   UPT_CONFIRM_MODAL_ID = "user-private-tasks-module-confirm-modal",

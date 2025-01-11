@@ -3,12 +3,23 @@
 
 #user-private-tasks-module {
   .category-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     margin-top: 0.75rem;
     padding: 0.85rem 1rem;
-    font-weight: bold;
+    list-style: none;
+
+    &-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: bold;
+    }
+
+    &-desc {
+      display: block;
+      max-width: max-content;
+      padding-block: 0.75rem;
+      border-top: 2px solid var(--green);
+    }
 
     @media (min-width: $content-breakpoint-tablet) {
       padding: 0.85rem 1.5rem;
@@ -23,11 +34,12 @@
 
     &-name {
       display: inline-flex;
-      align-items: center; 
+      align-items: center;
       gap: 0.5rem;
     }
 
     &-icon {
+      color: var(--green);
       font-size: 1.75rem;
     }
 

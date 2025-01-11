@@ -1,4 +1,3 @@
-"use strict";
 
 class UPTApiService {
   // Zmień bazowy adres API np. https://https://e-szlaki.com/api/user-private-tasks
@@ -66,9 +65,14 @@ class UPTApiService {
     return this.getCategoryById_LocalStorage(id);
   }
 
-  /** @param {UPT_TaskCategory} category */
+  /** 
+   * Musi zwrócić id kategorii wygenerowane przez baze danych
+   * @param {UPT_TaskCategory} category
+   * @returns {string} id
+   */
   async createCategory(category) {
-    // return this.fetchAPI("/categories", "POST", category);
+    // const { id } = this.fetchAPI("/categories", "POST", category);
+    // return id
     return this.createCategory_LocalStorage(category);
   }
 
@@ -98,9 +102,14 @@ class UPTApiService {
     return this.getTaskById_LocalStorage(id);
   }
 
-  /** @param {UPT_Task} task */
+  /** 
+   * Musi zwrócić id zadania wygenerowane przez baze danych
+   * @param {UPT_Task} task 
+   * @returns {string} id
+   */
   async createTask(task) {
-    // return this.fetchAPI("/tasks", "POST", task);
+    // const {id} = this.fetchAPI("/tasks", "POST", task);
+    // return id
     return this.createTask_LocalStorage(task);
   }
 
@@ -228,10 +237,12 @@ class UPTApiService {
   async updateTask_LocalStorage(id, updatedTask) {
     const data = await this.getAllData_LocalStorage();
     const index = data.tasks.findIndex((task) => task.id === id);
+
     if (index !== -1) {
       data.tasks[index] = {
         ...data.tasks[index],
         ...updatedTask,
+        id,
         updatedAt: new Date().toISOString(),
       };
       this.saveAllData_LocalStorage(data); 

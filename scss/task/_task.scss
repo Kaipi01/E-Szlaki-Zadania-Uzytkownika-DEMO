@@ -24,6 +24,7 @@
     --border-radius: 20px;
     display: flex;
     padding: 0;
+    transition: 0.3s;
     padding-left: 1rem;
     border-radius: var(--border-radius);
     gap: 0.75rem;
@@ -44,6 +45,14 @@
         &:hover, &:focus {
           color: var(--blue);
         }
+      }
+    }
+
+    &--completed {
+      background-color: var(--very-light-green-opacity);
+
+      .task-name {
+        text-decoration: line-through;
       }
     }
 
