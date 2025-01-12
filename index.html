@@ -89,6 +89,8 @@
                                 </ul>
                             </div>
 
+                            <!-- <custom-pie-chart data-title="Statystyki Zadań Głównych" data-class="custom-pie-chart statistics-card-right-content"></custom-pie-chart> -->
+
                             <figure data-pie-chart data-title="Statystyki Zadań Głównych" class="custom-pie-chart statistics-card-right-content"
                                 aria-labelledby="pie-chart-desc">
                                 <div data-pie-chart-appearance class="pie-chart donut" aria-live="polite"></div>
@@ -126,11 +128,7 @@
                             </div>
                             <ul data-daily-tasks-list class="preview-tasks-list">
                                 <li data-no-daily-tasks-card class="modern-card no-tasks-card">
-                                    <p class="no-tasks-card-info">Obecnie nie masz żadnych zadań dziennych</p>
-                                    <button data-add-task-button class="link small link-100 variant3">
-                                        <i class="link-icon fa-solid fa-plus"></i> 
-                                        Dodaj Nowe Zadanie
-                                    </button>
+                                    <p class="no-tasks-card-info">Obecnie nie masz żadnych zadań dziennych</p> 
                                 </li>
                             </ul>
                         </div>
@@ -141,11 +139,7 @@
                             </div>
                             <ul data-main-tasks-list class="preview-tasks-list">
                                 <li data-no-main-tasks-card class="modern-card no-tasks-card">
-                                    <p class="no-tasks-card-info">Obecnie nie masz żadnych zadań głównych</p>
-                                    <button data-add-task-button class="link small link-100 variant3">
-                                        <i class="link-icon fa-solid fa-plus"></i> 
-                                        Dodaj Nowe Zadanie
-                                    </button>
+                                    <p class="no-tasks-card-info">Obecnie nie masz żadnych zadań głównych</p> 
                                 </li>
                             </ul>
                         </div>
@@ -231,6 +225,12 @@
 
                         </div>
                         <div data-tasks-list class="tasks-cards-list">
+                            <div data-no-daily-tasks-message data-task-card class="modern-card tasks-cards-list-message">
+                                <p>Nie posiadasz obecnie żadnych zadań dziennych. Utwórz je za pomocą przycisku: "Dodaj Nowe Zadanie"</p>
+                            </div>
+                            <div data-no-main-tasks-message data-task-card class="modern-card tasks-cards-list-message">
+                                <p>Nie posiadasz obecnie żadnych zadań głównych. Utwórz je za pomocą przycisku: "Dodaj Nowe Zadanie"</p>
+                            </div>
                         </div>
                     </section>
                     <!-- TASKS PAGE END -->
@@ -263,9 +263,10 @@
                                 </form>
                             </div>
                         </div>
-                        <ul data-category-list class="categories-list">
-
-                        </ul>
+                        <div data-no-categories class="modern-card">
+                            <p>Nie posiadasz obecnie żadnych kategorii zadań. Utwórz je za pomocą przycisku: "Dodaj Nową Kategorię"</p>
+                        </div>
+                        <ul data-category-list class="categories-list"></ul>
                     </section>
                     <!-- CATEGORIES PAGE END -->
 
@@ -311,7 +312,7 @@
                                     <span class="sr-only">Szukaj</span>
                                 </button>
                                 <div class="upt-search-box">
-                                    <input class="floating-label-control upt-form-control " type="search"
+                                    <input class="floating-label-control upt-form-control" type="search"
                                         name="input-search" id="input-search-task" placeholder="Search">
                                     <label class="floating-label" for="input-search-task">Search</label>
                                 </div>

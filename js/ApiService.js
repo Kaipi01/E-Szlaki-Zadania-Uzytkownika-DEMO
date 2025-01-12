@@ -145,6 +145,7 @@ class UPTApiService {
     // const data = localStorage.getItem(this.storageKey);
     // return data ? JSON.parse(data) : { categories: [], tasks: [] };
 
+    // zasymulowanie ładowania danych z bazy
     return new Promise((resolve) => {
       setTimeout(() => {
         const data = localStorage.getItem(this.storageKey);

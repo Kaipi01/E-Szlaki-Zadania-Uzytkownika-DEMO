@@ -1013,6 +1013,7 @@ class CircularProgressBar {
 }
 
 class CustomPieChart {
+  static ID = "user-private-tasks-module-custom-pie-chart"
 
   /** @param {string}pieChartContainerSelector */
   constructor(pieChartContainerSelector) {
@@ -1022,26 +1023,47 @@ class CustomPieChart {
     if (!this.container) {
       console.warn(`${pieChartContainerSelector} element not found!`);
     } else {
-      this.pieChart = this.container.querySelector(".pie-chart");
+      this.pieChart = this.container.querySelector("[data-pie-chart-appearance]");
       this.pieData = JSON.parse(this.pieChart.getAttribute("data-pie"));
       this.pieChartTitle = this.container.getAttribute("data-title")
-
+      this.legendFigcaption = null
       this.init();
     }
   }
 
-  init() {
-    const stylesPieChart = document.createElement("style");
+  getAppearance() {
+    return this.pieChart
+  }
 
-    stylesPieChart.textContent = this.generateCSSForPieChart();
+  reRender(callback = () => {}) {
+    const stylesPieChart = document.head.querySelector(`style#${CustomPieChart.ID}`)
 
-    document.head.append(stylesPieChart);
+    callback()
+    stylesPieChart?.remove()
+    this.legendFigcaption?.remove()
+    this.pieData = JSON.parse(this.pieChart.getAttribute("data-pie"));
+
+    this.renderStylesForPieChart()
     this.generateLegendForPieChart();
   }
 
+  init() {
+    this.renderStylesForPieChart()
+    this.generateLegendForPieChart();
+  }
+
+  renderStylesForPieChart() {
+    const stylesPieChart = document.createElement("style");
+
+    stylesPieChart.id = CustomPieChart.ID
+    stylesPieChart.textContent = this.generateCSSForPieChart();
+
+    document.head.append(stylesPieChart);
+  }
+
   generateLegendForPieChart() {
-    const legendFigcaption = document.createElement("figcaption");
-    legendFigcaption.className = "legends";
+    this.legendFigcaption = document.createElement("figcaption");
+    this.legendFigcaption.className = "legends";
 
     this.pieData.data.forEach((data) => {
       const {
@@ -1051,17 +1073,17 @@ class CustomPieChart {
       const item = document.createElement("span");
       item.className = "legend-item";
       item.textContent = `${label} ${percent}%`;
-      legendFigcaption.append(item);
+      this.legendFigcaption.append(item);
     });
 
     if (this.pieChartTitle) {
       const titleSpan = document.createElement('span')
       titleSpan.textContent = this.pieChartTitle
       titleSpan.className = "legend-title"
-      legendFigcaption.append(titleSpan)
+      this.legendFigcaption.append(titleSpan)
     }
 
-    this.container.append(legendFigcaption);
+    this.container.append(this.legendFigcaption);
   }
 
   generateCSSForPieChart() {
@@ -2786,6 +2808,23 @@ class UPTPanel {
   }
 
   /** @param {UPT_Task} task */
+  static isTaskAfterDeadline(task) {
+    if (!task.endDate || task.endDate === '') return false
+
+    const dateToCheck = new Date(task.endDate);
+    const currentDate = new Date();
+    const isTaskAfterDeadline = dateToCheck < currentDate
+
+    if (isTaskAfterDeadline) {
+      task.isArchived = true
+      task.status = UPT_TaskStatus.ABANDONED
+      UPTApiService.getInstance().updateTask(task.id, task)
+    }
+
+    return isTaskAfterDeadline;
+  }
+
+  /** @param {UPT_Task} task */
   static async unmarkTaskAsComplete(task) {
     const apiService = UPTApiService.getInstance()
     task.status = UPT_TaskStatus.IN_PROGRESS
@@ -2859,7 +2898,8 @@ class UPTPanel {
     confirmButton.onclick = async (e) => {
       showLoading(e.target);
 
-      const deletedTask = await UPTApiService.getInstance().deleteTask(taskId)
+      const apiService = UPTApiService.getInstance()
+      const deletedTask = await apiService.deleteTask(taskId)
       const taskCards = document.querySelectorAll(`[data-task-card][data-task-id="${taskId}"]`);
 
       taskCards.forEach(card => removeDataCard(card))
@@ -2925,6 +2965,8 @@ class UPTMainPanel extends UPTPanel {
     this.categoriesList = this.panel.querySelector("[data-category-list]");
     this.noDailyTasksCard = this.panel.querySelector("[data-no-daily-tasks-card]");
     this.noMainTasksCard = this.panel.querySelector("[data-no-main-tasks-card]");
+    this.customPieChart = null
+    this.pieChartSelector = UPT_MODULE_ID_SELECTOR + " [data-pie-chart]";
     this.init();
   }
 
@@ -2979,9 +3021,6 @@ class UPTMainPanel extends UPTPanel {
     const updatedTask = e.detail
     const prevTaskCard = this.panel.querySelector(`[data-task-card][data-task-id="${updatedTask.id}"]`)
 
-
-    console.log(prevTaskCard)
-
     if (prevTaskCard) {
       const newTaskCard = this.renderTask(updatedTask)
 
@@ -2992,32 +3031,37 @@ class UPTMainPanel extends UPTPanel {
       } else {
         this.mainTasksList.append(newTaskCard)
       }
-    }
+    } 
   }
 
   /** @param {CustomEvent} e */
   updateCategoryEventHandler(e) {
     const category = e.detail
     const prevCategoryCard = this.categoriesList.querySelector(`[data-category-card][data-category-id="${category.id}"]`)
-    
+
     if (prevCategoryCard) {
       const newCategoryCard = this.renderCategoryCard(category)
 
       prevCategoryCard.remove()
       this.categoriesList.append(newCategoryCard)
-    } 
+    }
   }
 
   /** @param {CustomEvent} e */
-  deleteTaskEventHandler(e) {
-    const taskType = e.detail.type
+  async deleteTaskEventHandler(e) {
+    const task = e.detail
+    const taskType = task.type 
+    const taskId = task.id
+
+    const maintasks = this.tasks.filter(task => task.type === UPT_TaskType.MAIN) 
+    this.updatePieChart(maintasks.filter((task) => task.id !== taskId))
 
     if (taskType === UPT_TaskType.DAILY) {
       this.currentNumberOfTasksDaily--
     } else {
       this.currentNumberOfTasksMain--
     }
-    console.log(this.tasks)
+
     if (this.currentNumberOfTasksMain > 0) {
       this.hideNoMainTasksCard()
     } else {
@@ -3027,7 +3071,6 @@ class UPTMainPanel extends UPTPanel {
     if (this.currentNumberOfTasksDaily > 0) {
       this.hideNoDailyTasksCard()
     } else {
-
       this.showNoDailyTasksCard()
     }
   }
@@ -3057,8 +3100,10 @@ class UPTMainPanel extends UPTPanel {
 
     if (isTypeDaily && this.currentNumberOfTasksDaily < UPTMainPanel.TASKS_DISPLAY_NUMBER) {
       this.dailyTasksList.append(taskElement);
+      this.currentNumberOfTasksDaily++
     } else if (this.currentNumberOfTasksMain < UPTMainPanel.TASKS_DISPLAY_NUMBER) {
       this.mainTasksList.append(taskElement);
+      this.currentNumberOfTasksMain++
     }
 
     if (isTypeDaily) {
@@ -3241,11 +3286,18 @@ class UPTMainPanel extends UPTPanel {
     mainTasksNumberEl.textContent = mainTasksNumber;
   }
 
-  initPieChart() {
-    const mainTasks = this.tasks.filter(task => task.type === UPT_TaskType.MAIN)
-    const pieChartSelector = UPT_MODULE_ID_SELECTOR + " [data-pie-chart]";
-    const pieChartAppearance = this.panel.querySelector(pieChartSelector + " [data-pie-chart-appearance]");
+  /** @param {UPT_Task[]} mainTasks */
+  updatePieChart(mainTasks) { 
+
+    this.customPieChart.reRender(() => {
+      this.showPieChart(mainTasks)
+    })
+  }
+
+  /** @param {UPT_Task[]} mainTasks */
+  showPieChart(mainTasks) {
     const tasksNumber = mainTasks.length;
+    const pieChartAppearance = this.panel.querySelector(this.pieChartSelector + " [data-pie-chart-appearance]");
     const getPercentOfTasksNumber = (number) => Math.round((number * 100) / tasksNumber);
 
     let completedCount = 0,
@@ -3289,8 +3341,13 @@ class UPTMainPanel extends UPTPanel {
         animationSpeed: 1250,
       })
     );
+  }
 
-    new CustomPieChart(pieChartSelector);
+  initPieChart() {
+    const mainTasks = this.tasks.filter(task => task.type === UPT_TaskType.MAIN) 
+  
+    this.showPieChart(mainTasks)
+    this.customPieChart = new CustomPieChart(this.pieChartSelector);
   }
 
   initDateTimeStatisics() {
@@ -3376,23 +3433,75 @@ class UPTCategoryPanel extends UPTPanel {
 
 class UPTTasksPanel extends UPTPanel {
 
+  _currentMainTasksNumber = 0
+  _currentDailyTasksNumber = 0
+
   constructor(selector, data) {
     super(selector, data);
     this.tasksList = this.panel.querySelector("[data-tasks-list]");
     this.currentTypeTitleEl = this.panel.querySelector("[data-current-type-title]")
     this.typeToggleButton = this.panel.querySelector("[data-tasks-type-toggle-btn]")
+    this.noMainTasksMessage = this.panel.querySelector("[data-no-main-tasks-message]")
+    this.noDailyTasksMessage = this.panel.querySelector("[data-no-daily-tasks-message]")
     this.init();
+  }
+
+  get currentMainTasksNumber() {
+    return this._currentMainTasksNumber;
+  }
+
+  set currentMainTasksNumber(value) {
+    this._currentMainTasksNumber = value;
+    this.handleMainTasksNumberChange(value);
+  }
+
+  get currentDailyTasksNumber() {
+    return this._currentDailyTasksNumber;
+  }
+
+  set currentDailyTasksNumber(value) {
+    this._currentDailyTasksNumber = value;
+    this.handleDailyTasksNumberChange(value);
+  }
+
+  handleMainTasksNumberChange(newValue) {
+
+    if (newValue > 0) {
+      this.hideMessage(this.noMainTasksMessage)
+    } else {
+      this.showMessage(this.noMainTasksMessage)
+    }
+  }
+
+  handleDailyTasksNumberChange(newValue) {
+
+    if (newValue > 0) {
+      this.hideMessage(this.noDailyTasksMessage)
+    } else {
+      this.showMessage(this.noDailyTasksMessage)
+    }
+  }
+
+  /**  @param {HTMLElement} messageElement */
+  hideMessage(messageElement) {
+    messageElement.style.visibility = "hidden"
+    messageElement.classList.add("sr-only")
+  }
+
+  /**  @param {HTMLElement} messageElement */
+  showMessage(messageElement) {
+    messageElement.style.removeProperty("visibility")
+    messageElement.classList.remove("sr-only")
   }
 
   init() {
     this.renderTasksList();
+    this.noMainTasksMessage.style.display = "none"
+    this.noMainTasksMessage.setAttribute('data-task-type', UPT_TaskType.MAIN)
+    this.noDailyTasksMessage.setAttribute('data-task-type', UPT_TaskType.DAILY)
     this.typeToggleButton.addEventListener('click', () => this.toggleVisibleTasks())
 
-    document.addEventListener(UPTPanel.TASK_CREATED_EVENT, (e) => {
-      const taskCard = this.renderTask(e.detail)
-
-      this.tasksList.append(taskCard);
-    })
+    document.addEventListener(UPTPanel.TASK_CREATED_EVENT, (e) => this.taskCreatedEventHandler(e))
 
     document.addEventListener(UPTPanel.CHANGE_VISIBLE_TASKS_EVENT, (e) => {
       window.location.hash = "zadania"
@@ -3400,8 +3509,32 @@ class UPTTasksPanel extends UPTPanel {
     })
 
     document.addEventListener(UPTPanel.TASK_UPDATED_EVENT, (e) => this.taskUpdateEventHandler(e))
+    document.addEventListener(UPTPanel.TASK_DELETED_EVENT, (e) => this.taskDeletedEventHandler(e))
 
     this.panel.addEventListener('click', (e) => this.endTaskHandler(e))
+  }
+
+  taskCreatedEventHandler(e) {
+    const task = e.detail
+    const taskCard = this.renderTask(task)
+
+    if (task.type === UPT_TaskType.MAIN) {
+      this.currentMainTasksNumber++
+    } else {
+      this.currentDailyTasksNumber++
+    }
+
+    this.tasksList.append(taskCard);
+  }
+
+  taskDeletedEventHandler(e) {
+    const task = e.detail
+
+    if (task.type === UPT_TaskType.MAIN) {
+      this.currentMainTasksNumber--
+    } else {
+      this.currentDailyTasksNumber--
+    }
   }
 
   taskUpdateEventHandler(e) {
@@ -3471,9 +3604,12 @@ class UPTTasksPanel extends UPTPanel {
     }, this.currentTypeTitleEl, UPTCategoryPanel.TOGGLE_ANIMATION_DURATION)
   }
 
+  getCurrentTaskType() {
+    return this.typeToggleButton.dataset.currentType
+  }
+
   toggleVisibleTasks() {
-    const currentType = this.typeToggleButton.dataset.currentType
-    const isCurrentTypeMain = currentType === UPT_TaskType.MAIN
+    const isCurrentTypeMain = this.getCurrentTaskType() === UPT_TaskType.MAIN
     this.changeVisibleTasks(isCurrentTypeMain ? UPT_TaskType.DAILY : UPT_TaskType.MAIN)
   }
 
@@ -3548,6 +3684,10 @@ class UPTTasksPanel extends UPTPanel {
       </div>                     
     `;
 
+    if (task.type !== this.getCurrentTaskType()) {
+      card.style.display = "none";
+    }
+
     return card
   }
 
@@ -3564,7 +3704,9 @@ class UPTTasksPanel extends UPTPanel {
       const taskCard = this.renderTask(task)
 
       if (task.type === UPT_TaskType.MAIN) {
-        taskCard.style.display = "none";
+        this.currentMainTasksNumber++
+      } else {
+        this.currentDailyTasksNumber++
       }
 
       tasksListFragment.append(taskCard);
@@ -3598,7 +3740,7 @@ class UPTArchivePanel extends UPTPanel {
     document.addEventListener(UPTPanel.TASK_UN_ARCHIVE_EVENT, (e) => {
       const unArchivedTask = e.detail
       const unArchivedTaskCard = this.tasksList.querySelector(`[data-task-card][data-task-id="${unArchivedTask.id}"]`)
-      
+
       unArchivedTaskCard?.remove()
     })
   }
@@ -3645,7 +3787,7 @@ class UPTArchivePanel extends UPTPanel {
     return li
   }
 
-  renderArchivedTasksList() { 
+  renderArchivedTasksList() {
     const tasksListFragment = document.createDocumentFragment();
     const tasksNumber = this.tasks.length;
 
@@ -3657,7 +3799,7 @@ class UPTArchivePanel extends UPTPanel {
       }
       const archivedTask = this.renderArchivedTask(task)
 
-      this.currentArchivedTasks++  
+      this.currentArchivedTasks++
 
       tasksListFragment.append(archivedTask);
     }

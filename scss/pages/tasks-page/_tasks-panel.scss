@@ -68,6 +68,10 @@
       @media (min-width: $content-breakpoint-desktop) {
         gap: $main-content-layout-gap;
       }
+
+      &-message {
+        grid-column: span 3;
+      }
     }
   }
 }
