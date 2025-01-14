@@ -28,8 +28,9 @@
 
     .tasks-archive-list {
       display: flex;
-      flex-direction: column;
-      list-style: none; 
+      flex-direction: column; 
+      transition: all 0.3s ease;
+      list-style: none;
     }
   }
 }

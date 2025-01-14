@@ -64,6 +64,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(toRem(400), 1fr));
       gap: $main-content-layout-gap-small;
+      transition: all 0.3s ease;
 
       @media (min-width: $content-breakpoint-desktop) {
         gap: $main-content-layout-gap;

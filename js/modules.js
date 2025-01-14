@@ -1224,7 +1224,7 @@ class CustomPopover extends HTMLElement {
 
   render() {
     this.innerHTML = `
-      <div class="custom-popover ${this.dataClass}">
+      <div data-custom-popover class="custom-popover ${this.dataClass}">
         <button data-popover-button class="custom-popover-button ${this.dataButtonClass}">
           ${this.buttonTextVal}
         </button>
@@ -1595,6 +1595,75 @@ class CustomCountdown extends HTMLElement {
 }
 
 customElements.define("custom-countdown", CustomCountdown);
+
+class CustomSearchForm extends HTMLElement {
+  static SEARCH_EVENT = "custom-search-form-search-event"
+
+  constructor() {
+    super();
+    this.dataId = null
+    this.forPanel = null
+    this.form = document.createElement('form')
+    this.button = document.createElement('button')
+    this.input = document.createElement('input')
+  }
+
+  connectedCallback() {
+    this.dataId = this.getAttribute("data-id") ?? generateId('input-search-');
+    this.forPanel = this.getAttribute("data-for-panel")
+    this.render();
+    this.init()
+  }
+
+  init() {
+    this.form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      dispatchCustomEvent(CustomSearchForm.SEARCH_EVENT, {
+        value: this.input.value,
+        panel: this.forPanel
+      })
+    })
+
+    this.input.addEventListener('search', (e) => {
+      dispatchCustomEvent(CustomSearchForm.SEARCH_EVENT, {
+        value: this.input.value,
+        panel: this.forPanel
+      })
+    })
+  }
+
+  render() {
+    const inputBox = document.createElement('div')
+    const inputLabel = document.createElement('label')
+
+    inputLabel.className = "floating-label"
+    inputLabel.setAttribute('for', this.dataId)
+    inputLabel.textContent = "Szukaj"
+    inputBox.className = "upt-search-box"
+
+    this.form.className = "upt-search-form"
+
+    this.button.className = "upt-search-btn link variant2"
+    this.button.type = "submit"
+    this.button.innerHTML = `
+      <i class="upt-icon fa-solid fa-magnifying-glass"></i>
+      <span class="sr-only">Szukaj</span>
+    `
+    this.input.id = this.dataId
+    this.input.type = "search"
+    this.input.name = "input-search"
+    this.input.placeholder = "Szukaj"
+    this.input.className = "floating-label-control upt-form-control"
+
+    inputBox.append(this.input)
+    inputBox.append(inputLabel)
+    this.form.append(this.button)
+    this.form.append(inputBox)
+    this.append(this.form)
+  }
+}
+
+customElements.define("custom-search-form", CustomSearchForm);
 
 class CustomModal extends HTMLElement {
   static NAME = "custom-modal";
@@ -2816,6 +2885,12 @@ class UPTTaskDeadlineInterval {
 }
 
 class UPTPanel {
+  static PANEL_BASE = "base"
+  static PANEL_MAIN = "main"
+  static PANEL_TASKS = "tasks"
+  static PANEL_CATEGORY = "category"
+  static PANEL_ARCHIVE = "archive"
+
   static TASK_CREATED_EVENT = "upt-task-created-event"
   static TASK_UPDATED_EVENT = "upt-task-updated-event"
   static TASK_DELETED_EVENT = "upt-task-deleted-event"
@@ -2837,6 +2912,12 @@ class UPTPanel {
   static SORT_CREATED_ASC = "created-date-asc"
   static SORT_CREATED_DESC = "created-date-desc"
 
+  static FILTER_ONLY_IMPORTANT = "only-important"
+  static FILTER_ONLY_UNIMPORTANT = "only-unimportant"
+  static FILTER_ONLY_COMPLETED = "only-completed"
+  static FILTER_ONLY_UNCOMPLETED = "only-uncompleted"
+
+
   /**
    * @param {string} selector
    * @param {{ tasks: UPT_Task[], categories: UPT_TaskCategory[] }}
@@ -2845,6 +2926,7 @@ class UPTPanel {
     tasks,
     categories
   }) {
+    this.panelName = UPTPanel.PANEL_BASE
     this.panel = document.querySelector(selector);
     this.tasks = UPT_Utils.sortTasksByPriority(tasks);
     this.categories = categories;
@@ -2857,38 +2939,120 @@ class UPTPanel {
       console.error("this.panel is null");
       return;
     }
-    // CustomSelect.initAll(selector + " select[data-custom-select]");
+    this.checkboxOnlyImportant = this.panel.querySelector(`input[name="${UPTPanel.FILTER_ONLY_IMPORTANT}"]`)
+    this.checkboxOnlyUnImportant = this.panel.querySelector(`input[name="${UPTPanel.FILTER_ONLY_UNIMPORTANT}"]`)
+    this.checkboxOnlyCompleted = this.panel.querySelector(`input[name="${UPTPanel.FILTER_ONLY_COMPLETED}"]`)
+    this.checkboxOnlyInProgress = this.panel.querySelector(`input[name="${UPTPanel.FILTER_ONLY_UNCOMPLETED}"]`)
     this.setClickEventListeners()
-
-    hideLoading(this.panel);
+    this.setFilterCheckboxEventListeners()
   }
 
-  /** 
-   * @param {CustomEvent} e  
-   * @param {"tasks" | "archive"} forPanel
-   */
-  sortTasks(e, forPanel = "tasks") { 
-    const allTasks = this.apiService.getTasks_LocalStorage() 
+  setFilterCheckboxEventListeners() {
+    const filterMethods = [UPTPanel.FILTER_ONLY_IMPORTANT, UPTPanel.FILTER_ONLY_UNIMPORTANT, UPTPanel.FILTER_ONLY_COMPLETED, UPTPanel.FILTER_ONLY_UNCOMPLETED]
+    const checkboxFilterPairs = new Map([
+      [this.checkboxOnlyImportant, this.checkboxOnlyUnImportant],
+      [this.checkboxOnlyUnImportant, this.checkboxOnlyImportant],
+      [this.checkboxOnlyCompleted, this.checkboxOnlyInProgress],
+      [this.checkboxOnlyInProgress, this.checkboxOnlyCompleted],
+    ]);
+
+    this.panel.addEventListener('change', (e) => {
+      const checkbox = e.target
+      const nameAttribute = checkbox.getAttribute('name')
+
+      if (filterMethods.includes(nameAttribute)) {
+
+        if (checkbox.checked) {
+          const oppositeCheckbox = checkboxFilterPairs.get(checkbox);
+
+          if (oppositeCheckbox) {
+            oppositeCheckbox.checked = false;
+          }
+        }
+
+        const checkedFilterCheckboxes = this.panel.querySelectorAll(`[data-filter-tasks] input[type="checkbox"]:checked`)
+        const checkedFilterMethods = [...checkedFilterCheckboxes].map(checkbox => checkbox.getAttribute('name'))
+
+        this.filterTasks(...checkedFilterMethods)
+      }
+
+    })
+  }
+
+  getTasksForPanel() {
+    const allTasks = this.apiService.getTasks_LocalStorage()
     const tasks = allTasks.filter(task => {
-      if (forPanel === 'tasks') {
+      if (this.panelName === UPTPanel.PANEL_TASKS) {
         return task.isArchived == false
       } else {
         return task.isArchived == true
       }
     })
-    const sortedTasks = UPT_Utils.getSortedDataBy(e.detail.value, tasks)
 
-    console.log(sortedTasks)
- 
-    sortedTasks.forEach((task, index) => { 
-      const taskCard = this.panel.querySelector(`[data-task-id="${task.id}"]`) 
-      taskCard.style.order = index
+    return tasks
+  }
+
+  /** @param {string} searchTerm */
+  searchTasks(searchTerm) {
+    const tasks = this.getTasksForPanel()
+    const allTasksCards = this.getAllTasksCards()
+    const searchedTasks = UPT_Utils.searchTasksByName(searchTerm, tasks)
+
+    allTasksCards.forEach(taskCard => {
+      taskCard.style.visibility = "hidden"
+      taskCard.classList.add('sr-only')
+      taskCard.setAttribute('aria-hidden', 'true')
+    })
+
+    searchedTasks.forEach((task) => {
+      const taskCard = this.panel.querySelector(`[data-task-id="${task.id}"]`)
+      taskCard.style.removeProperty('visibility')
+      taskCard.classList.remove('sr-only')
+      taskCard.removeAttribute('aria-hidden')
+    })
+  }
+
+  /** 
+   * @param {string} filterValue 
+   * @param {string | null} prevFilterValue
+   */
+  filterTasks(filterValue, prevFilterValue = null) {
+    const allTasksCards = this.getAllTasksCards()
+    const tasks = this.getTasksForPanel()
+    const prevFilteredTasks = prevFilterValue ? UPT_Utils.getFilteredDataBy(prevFilterValue, tasks) : tasks
+    const filteredTasks = UPT_Utils.getFilteredDataBy(filterValue, prevFilteredTasks)
+
+    allTasksCards.forEach(taskCard => {
+      // taskCard.style.visibility = "hidden"
+      // taskCard.classList.add('sr-only')
+      taskCard.classList.add('hidden-animation')
+      taskCard.setAttribute('aria-hidden', 'true')
+    })
+
+    filteredTasks.forEach((task) => {
+      const taskCard = this.panel.querySelector(`[data-task-id="${task.id}"]`)
+      // taskCard.style.removeProperty('visibility')
+      // taskCard.classList.remove('sr-only')
+      taskCard.classList.remove('hidden-animation')
+      taskCard.removeAttribute('aria-hidden')
+    })
+  }
+
+  /** @param {CustomEvent} e */
+  sortTasks(e) {
+    const sortedTasks = UPT_Utils.getSortedDataBy(e.detail.value, this.getTasksForPanel()) 
+
+    sortedTasks.forEach((task, index) => {
+      const taskCard = this.panel.querySelector(`[data-task-id="${task.id}"]`)  
+      const order = index + 1
+      // taskCard.style.order = index 
+      fadeAnimation(() => taskCard.style.order = order, taskCard, 300) 
     }) 
   }
 
   getAllTasksCards() {
     return this.panel.querySelectorAll('[data-task-card]')
-  } 
+  }
 
   /** @param {UPT_Task} task */
   static isTaskAfterDeadline(task) {
@@ -3112,6 +3276,7 @@ class UPTMainPanel extends UPTPanel {
 
   constructor(selector, data) {
     super(selector, data);
+    this.panelName = UPTPanel.PANEL_MAIN
     this.dailyTasksList = this.panel.querySelector("[data-daily-tasks-list]");
     this.mainTasksList = this.panel.querySelector("[data-main-tasks-list]");
     this.categoriesList = this.panel.querySelector("[data-category-list]");
@@ -3520,6 +3685,7 @@ class UPTCategoryPanel extends UPTPanel {
 
   constructor(selector, data) {
     super(selector, data);
+    this.panelName = UPTPanel.PANEL_CATEGORY
     this.categoriesList = this.panel.querySelector("[data-category-list]");
     this.sortCategorySelect = new CustomSelect(this.panel.querySelector('[data-sort-category][data-custom-select]'))
     this.init();
@@ -3546,16 +3712,16 @@ class UPTCategoryPanel extends UPTPanel {
 
     this.sortCategorySelect.onChangeSelect((e) => this.sortCategories(e))
   }
-  
+
   /** @param {CustomEvent} e  */
   sortCategories(e) {
-    const allCategories = this.apiService.getCategories_LocalStorage() 
+    const allCategories = this.apiService.getCategories_LocalStorage()
     const sortedCategories = UPT_Utils.getSortedDataBy(e.detail.value, allCategories)
- 
-    sortedCategories.forEach((category, index) => { 
-      const categoryCard = this.categoriesList.querySelector(`[data-category-id="${category.id}"]`) 
+
+    sortedCategories.forEach((category, index) => {
+      const categoryCard = this.categoriesList.querySelector(`[data-category-id="${category.id}"]`)
       categoryCard.style.order = index
-    }) 
+    })
   }
 
   renderCategoriesList() {
@@ -3612,6 +3778,7 @@ class UPTTasksPanel extends UPTPanel {
 
   constructor(selector, data) {
     super(selector, data);
+    this.panelName = UPTPanel.PANEL_TASKS
     this.tasksList = this.panel.querySelector("[data-tasks-list]");
     this.currentTypeTitleEl = this.panel.querySelector("[data-current-type-title]")
     this.typeToggleButton = this.panel.querySelector("[data-tasks-type-toggle-btn]")
@@ -3675,8 +3842,8 @@ class UPTTasksPanel extends UPTPanel {
     this.noMainTasksMessage.setAttribute('data-task-type', UPT_TaskType.MAIN)
     this.noDailyTasksMessage.setAttribute('data-task-type', UPT_TaskType.DAILY)
     this.typeToggleButton.addEventListener('click', () => this.toggleVisibleTasks())
-
-    this.sortTasksSelect.onChangeSelect((e) => this.sortTasks(e, "tasks"))
+    this.sortTasksSelect.onChangeSelect((e) => this.sortTasks(e))
+    this.panel.addEventListener('click', (e) => this.endTaskHandler(e))
 
     document.addEventListener(UPTPanel.TASK_CREATED_EVENT, (e) => this.taskCreatedEventHandler(e))
 
@@ -3690,8 +3857,17 @@ class UPTTasksPanel extends UPTPanel {
     document.addEventListener(UPTPanel.TASK_DELETED_EVENT, (e) => this.taskDeletedEventHandler(e))
     document.addEventListener(UPTPanel.TASK_ARCHIVE_EVENT, (e) => this.currentMainTasksNumber--)
 
-    this.panel.addEventListener('click', (e) => this.endTaskHandler(e))
-  }  
+    document.addEventListener(CustomSearchForm.SEARCH_EVENT, (e) => {
+      const {
+        panel,
+        value
+      } = e.detail
+
+      if (panel === this.panelName) {
+        this.searchTasks(value)
+      }
+    })
+  }
 
   taskCreatedEventHandler(e) {
     const task = e.detail
@@ -3904,24 +4080,36 @@ class UPTArchivePanel extends UPTPanel {
 
   constructor(selector, data) {
     super(selector, data);
+    this.panelName = UPTPanel.PANEL_ARCHIVE
     this.noArchiveTasksMessage = this.panel.querySelector('[data-no-tasks-archive]')
     this.tasksList = this.panel.querySelector("[data-tasks-archive-list]");
     this.sortTasksSelect = new CustomSelect(this.panel.querySelector("[data-sort-tasks][data-custom-select]"))
     this.init();
-  } 
+  }
 
-  init() { 
+  init() {
     this.renderArchivedTasksList();
 
     if (this.currentArchivedTasks > 0) {
       this.noArchiveTasksMessage.style.display = "none"
     }
 
-    this.sortTasksSelect.onChangeSelect((e) => this.sortTasks(e, 'archive'))
+    this.sortTasksSelect.onChangeSelect((e) => this.sortTasks(e))
 
     document.addEventListener(UPTPanel.TASK_ARCHIVE_EVENT, (e) => this.taskArchiveEventHandler(e))
     document.addEventListener(UPTPanel.TASK_UN_ARCHIVE_EVENT, (e) => this.taskRestoreEventHandler(e))
     document.addEventListener(UPTPanel.TASK_RESTORE_EVENT, (e) => this.taskRestoreEventHandler(e))
+
+    document.addEventListener(CustomSearchForm.SEARCH_EVENT, (e) => {
+      const {
+        panel,
+        value
+      } = e.detail
+
+      if (panel === this.panelName) {
+        this.searchTasks(value)
+      }
+    })
   }
 
   /** @param {CustomEvent} e */

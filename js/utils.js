@@ -242,6 +242,46 @@ class UPT_Utils {
   }
 
   /** 
+   * @param {string} searchTerm 
+   * @param {object[]} data
+   * @returns {object[]} 
+   */
+  static searchTasksByName(searchTerm, data) { 
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+    return data.filter(obj =>
+      obj.name.toLowerCase().includes(lowerCaseSearchTerm)
+    );
+  }
+
+  /** 
+   * @param {string} value 
+   * @param {Array<object>} data
+   */
+  static getFilteredDataBy(value, data) {
+    let filteredData
+
+    switch (value) {
+      case UPTPanel.FILTER_ONLY_IMPORTANT:
+        filteredData = data.filter(a => UPT_Utils.getTaskPriorityValue(a) >= 3);
+        break;
+      case UPTPanel.FILTER_ONLY_UNIMPORTANT:
+        filteredData = data.filter(a => UPT_Utils.getTaskPriorityValue(a) < 3);
+        break;
+      case UPTPanel.FILTER_ONLY_COMPLETED:
+        filteredData = data.filter(a => a.status === UPT_TaskStatus.COMPLETED);
+        break;
+      case UPTPanel.FILTER_ONLY_UNCOMPLETED:
+        filteredData = data.filter(a => a.status !== UPT_TaskStatus.COMPLETED)
+        break;
+      default:
+        filteredData = data
+    }
+
+    return filteredData
+  }
+
+  /** 
    * @param {string} value 
    * @param {Array<object>} data
    */
@@ -361,7 +401,7 @@ class UPT_Utils {
 
   /**  @param {UPT_Task[]} tasks */
   static sortTasksByPriority(tasks) {
-    return tasks.sort((a, b) => UPT_Utils.getTaskPriorityValue(a) < UPT_Utils.getTaskPriorityValue(b))
+    return tasks.sort((a, b) => UPT_Utils.getTaskPriorityValue(b) - UPT_Utils.getTaskPriorityValue(a))
   }
 
   /**  @param {UPT_Task[]} tasks */
