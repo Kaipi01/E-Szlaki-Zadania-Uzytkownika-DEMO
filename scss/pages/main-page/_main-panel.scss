@@ -43,20 +43,21 @@
       &-tasks-number {
         color: var(--blue);
         font-weight: bold;
-      }
-
-      &-left-content{}
-      &-right-content{}
+      } 
     }
+
     .start-action-card {
       display: flex;
       flex-direction: column;
+      align-items: center;
+      justify-content: center;
       gap: 1rem;
 
       @media (min-width: $content-breakpoint-tablet) {
         gap: 1.5rem;
       }
     }
+
     .help-informations-card {
       display: flex;
       flex-direction: column;

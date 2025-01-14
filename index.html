@@ -98,10 +98,7 @@
                             </figure>
 
                         </div>
-                        <div class="start-action-card modern-card">
-
-                            <!-- <custom-search-form data-id="upt-search-input-for-main" data-for-panel="main"></custom-search-form> -->
-
+                        <div class="start-action-card modern-card"> 
                             <button data-add-task-button class="link link-100 variant3">
                                 <i class="link-icon fa-solid fa-plus"></i> Dodaj Nowe Zadanie</button>
                             <button data-add-category-button class="link link-100 variant3">
@@ -117,8 +114,9 @@
                                 <a data-show-daily-tasks href="#zadania" class="link variant2 small">Pokaż więcej</a>
                             </div>
                             <ul data-daily-tasks-list class="preview-tasks-list">
-                                <li data-no-daily-tasks-card class="modern-card no-tasks-card">
-                                    <p class="no-tasks-card-info">Obecnie nie masz żadnych zadań dziennych</p>
+                                <li data-no-daily-tasks-card class="modern-card modern-card--info no-tasks-card">
+                                    <i class="fa-solid fa-circle-info"></i> 
+                                    <span class="no-tasks-card-info">Obecnie nie masz żadnych zadań dziennych</span>
                                 </li>
                             </ul>
                         </div>
@@ -128,19 +126,22 @@
                                 <a data-show-main-tasks href="#zadania" class="link variant2 small">Pokaż więcej</a>
                             </div>
                             <ul data-main-tasks-list class="preview-tasks-list">
-                                <li data-no-main-tasks-card class="modern-card no-tasks-card">
-                                    <p class="no-tasks-card-info">Obecnie nie masz żadnych zadań głównych</p>
+                                <li data-no-main-tasks-card class="modern-card modern-card--info no-tasks-card">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    <span class="no-tasks-card-info">Obecnie nie masz żadnych zadań głównych</span>
                                 </li>
                             </ul>
                         </div>
                         <div class="categories-card modern-card">
-                            <div class="upt-header">
+                            <div class="upt-header pb-1">
                                 <p class="upt-small-header">Kategorie zadań</p>
                                 <a href="#kategorie" class="link small variant2">Pokaż więcej</a>
                             </div>
-                            <ul data-category-list class="task-category-list">
-
-                            </ul>
+                            <p data-no-categories class="modern-card modern-card--info">
+                                <i class="fa-solid fa-circle-info"></i> 
+                                Nie posiadasz obecnie żadnych kategorii zadań
+                            </p>
+                            <ul data-category-list class="task-category-list"></ul>
                         </div>
                     </section>
                     <!-- MAIN PANEL PAGE END -->
@@ -205,8 +206,8 @@
 
                                 <select data-sort-tasks data-custom-select data-class-name="custom-select-green">
                                     <option value="hide">Sortuj</option>
-                                    <option value="deadline-asc">Termin wykonania rosnąco</option>
-                                    <option value="deadline-desc">Termin wykonania malejąco</option>
+                                    <option value="deadline-asc">Najbliższy termin</option>
+                                    <option value="deadline-desc">Najdalszy termin</option>
                                     <option value="priority-asc">Priorytet od najniższego</option>
                                     <option value="priority-desc">Priorytet od największego</option>
                                     <option value="name-asc">Nazwa A-Z</option>
@@ -217,15 +218,16 @@
 
                         </div>
                         <div data-tasks-list class="tasks-cards-list">
-                            <div data-no-daily-tasks-message data-task-card
-                                class="modern-card tasks-cards-list-message">
-                                <p>Nie posiadasz obecnie żadnych zadań dziennych. Utwórz je za pomocą przycisku: "Dodaj
-                                    Nowe Zadanie"</p>
-                            </div>
-                            <div data-no-main-tasks-message data-task-card class="modern-card tasks-cards-list-message">
-                                <p>Nie posiadasz obecnie żadnych zadań głównych. Utwórz je za pomocą przycisku: "Dodaj
-                                    Nowe Zadanie"</p>
-                            </div>
+                            <p data-no-daily-tasks-message data-task-card class="modern-card modern-card--info tasks-cards-list-message">
+                                <i class="fa-solid fa-circle-info"></i>
+                                Nie posiadasz obecnie żadnych zadań dziennych. Utwórz je za pomocą przycisku: <b>"Dodaj
+                                    Nowe Zadanie"</b>
+                            </p>
+                            <p data-no-main-tasks-message data-task-card class="modern-card modern-card--info tasks-cards-list-message">
+                                <i class="fa-solid fa-circle-info"></i>
+                                Nie posiadasz obecnie żadnych zadań głównych. Utwórz je za pomocą przycisku: <b>"Dodaj
+                                    Nowe Zadanie"</b>
+                            </p>
                         </div>
                     </section>
                     <!-- TASKS PAGE END -->
@@ -249,10 +251,10 @@
 
                             </div>
                         </div>
-                        <div data-no-categories class="modern-card">
-                            <p>Nie posiadasz obecnie żadnych kategorii zadań. Utwórz je za pomocą przycisku: "Dodaj Nową
-                                Kategorię"</p>
-                        </div>
+                        <p data-no-categories class="modern-card modern-card--info">
+                            <i class="fa-solid fa-circle-info"></i> 
+                            Nie posiadasz obecnie żadnych kategorii zadań. Utwórz je za pomocą przycisku: <b>"Dodaj Nową Kategorię"</b>
+                        </p>
                         <ul data-category-list class="categories-list"></ul>
                     </section>
                     <!-- CATEGORIES PAGE END -->
@@ -297,8 +299,8 @@
 
                             <select data-sort-tasks data-custom-select data-class-name="custom-select-green">
                                 <option value="hide">Sortuj</option>
-                                <option value="deadline-asc">Termin wykonania rosnąco</option>
-                                <option value="deadline-desc">Termin wykonania malejąco</option>
+                                <option value="deadline-asc">Najbliższy termin</option>
+                                <option value="deadline-desc">Najdalszy termin</option>
                                 <option value="priority-asc">Priorytet od najniższego</option>
                                 <option value="priority-desc">Priorytet od największego</option>
                                 <option value="name-asc">Nazwa A-Z</option>
@@ -309,10 +311,11 @@
 
                         </div>
 
-                        <div data-no-tasks-archive class="modern-card">
-                            <p>Tutaj będą sie wyświetlały zadania zarchiwizowane i porzucone, czyli takie, które nie
-                                zostały wykonane na czas</p>
-                        </div>
+                        <p data-no-tasks-archive class="modern-card modern-card--info">
+                            <i class="fa-solid fa-circle-info"></i> 
+                            Tutaj będą sie wyświetlały zadania zarchiwizowane i porzucone, czyli takie, które nie
+                                zostały wykonane na czas
+                        </p>
 
                         <ul data-tasks-archive-list class="tasks-archive-list">
                         </ul>
@@ -357,7 +360,7 @@
                             <select id="upt-task-input-category" name="upt-task-category" data-custom-select
                                 data-class-name="custom-select-green">
                                 <option value="hide">Wybierz Kategorie</option>
-                                <option value="brak">Brak Kategorii</option>
+                                <option value="null">Brak Kategorii</option>
                             </select>
                             <label class="floating-label floating-label--for-select"
                                 for="upt-task-input-category">Kategoria</label>

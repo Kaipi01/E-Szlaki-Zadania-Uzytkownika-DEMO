@@ -272,7 +272,8 @@ class UPTToast {
     let toastIcon;
     this.toast.classList.remove(UPTToast.SUCCESS, UPTToast.WARNING, UPTToast.ERROR, UPTToast.INFO);
     this.toastIcon.classList.remove(UPTToast.SUCCESS_ICON, UPTToast.WARNING_ICON, UPTToast.ERROR_ICON, UPTToast.INFO_ICON);
-    this.toast.style.display = "flex";
+    // this.toast.style.display = "flex";
+    this.toast.style.removeProperty('display')
 
     switch (type) {
       case UPTToast.SUCCESS:
@@ -280,7 +281,7 @@ class UPTToast {
         toastIcon = UPTToast.SUCCESS_ICON;
         break;
       case UPTToast.ERROR:
-        toastTitle = "Błąd!";
+        toastTitle = "Niepowodzenie!";
         toastIcon = UPTToast.ERROR_ICON;
         break;
       case UPTToast.WARNING:
@@ -1053,7 +1054,8 @@ class CustomPieChart {
     this.generateLegendForPieChart();
   }
 
-  renderStylesForPieChart() {
+  renderStylesForPieChart() { 
+
     const stylesPieChart = document.createElement("style");
 
     stylesPieChart.id = CustomPieChart.ID
@@ -1089,11 +1091,9 @@ class CustomPieChart {
 
   generateCSSForPieChart() {
     const pieChartData = this.pieData.data;
-    const {
-      animate,
-      animationSpeed
-    } = this.pieData;
+    const { animate, animationSpeed } = this.pieData;
     const showAnimation = animate && "registerProperty" in CSS;
+    const sumOfPercents = this.pieData.data.reduce((value, obj) => obj.percent + value, 0) 
 
     let pieCharLegendItems = "";
     let pieCharColors = "";
@@ -1146,6 +1146,8 @@ class CustomPieChart {
         `;
     }
 
+    let pieChartConicGradientBg = sumOfPercents === 0 ? '' : `background-image: conic-gradient(from 30deg, ${pieCharConicGradientValues});`
+
     return `
               ${pieCharCSSOpacityProperties}
   
@@ -1153,7 +1155,7 @@ class CustomPieChart {
                   ${pieCharColors} 
               } 
               ${this.pieChartContainerSelector} .pie-chart {
-                  background-image: conic-gradient(from 30deg, ${pieCharConicGradientValues});  
+                  ${pieChartConicGradientBg}  
                   ${pieCharAnimationProperty} 
               } 
               ${pieCharAnimationKeyframes}
@@ -1241,6 +1243,7 @@ customElements.define("custom-popover", CustomPopover);
 
 class CustomSelect {
   static HIDE_VALUE = "hide"
+  static NULL_VALUE = "null"
   static CHANGE_OPTION_EVENT = "upt-custom-select-change-option"
 
   selectElement
@@ -2308,6 +2311,7 @@ class UPTCategoryForm extends UPTForm {
 
       try {
         if (isEditMode) {
+          category.id = categoryId
           await this.apiService.updateCategory(categoryId, category)
           eventName = UPTPanel.CATEGORY_UPDATED_EVENT
         } else {
@@ -2490,10 +2494,7 @@ class UPTTaskForm extends UPTForm {
 
   /** @param {CustomEvent} e */
   changeDateTypeInputs(e) {
-    const {
-      value,
-      prevValue
-    } = e.detail
+    const { value, prevValue } = e.detail
 
     if (value && value !== prevValue) {
       const allSubTaskDateInputs = this.subTaskModule.getAllSubTaskDateInputs()
@@ -2556,7 +2557,7 @@ class UPTTaskForm extends UPTForm {
   renderCategoryOptions(categories, task = null) {
     this.categorySelect.innerHTML = `
       <option value="${CustomSelect.HIDE_VALUE}">Wybierz Kategorie</option>
-      <option value="brak">Brak Kategorii</option>
+      <option value="${CustomSelect.NULL_VALUE}">Brak Kategorii</option>
     `
 
     categories.forEach(category => {
@@ -2595,10 +2596,7 @@ class UPTTaskForm extends UPTForm {
 
     this.resetForm()
 
-    const {
-      task,
-      categories
-    } = await this.loadFormData(taskId)
+    const { task, categories } = await this.loadFormData(taskId)
 
     if (isEditMode) {
       const isTaskMain = task.type === UPT_TaskType.MAIN
@@ -2615,7 +2613,7 @@ class UPTTaskForm extends UPTForm {
       this.prioritySelect = task.priority
       this.priorityCustomSelect.chooseOption(task.priority)
       this.typeCustomSelect.chooseOption(task.type)
-      this.categoryCustomSelect.chooseOption(task.categoryId)
+      this.categoryCustomSelect.chooseOption(task.categoryId ?? CustomSelect.NULL_VALUE)
 
       if (!isTaskMain && task.startDate === UPT_Task.ALL_DAY) {
         this.allDayCheckbox.checked = true
@@ -2637,8 +2635,8 @@ class UPTTaskForm extends UPTForm {
     this.modeInput.value = mode
     this.categoryCustomSelect.reRender(() => this.renderCategoryOptions(categories, task))
 
-    if (task && !task.categoryId) {
-      this.categoryCustomSelect.chooseOption("brak")
+    if (task && (!task.categoryId || task.categoryId === CustomSelect.NULL_VALUE)) {
+      this.categoryCustomSelect.chooseOption(CustomSelect.NULL_VALUE)
     }
 
     if (isEditMode) {
@@ -2752,6 +2750,7 @@ class UPTTaskForm extends UPTForm {
 
   getTaskFromFormData(formData) {
     const taskIsAllDay = formData[UPTTaskForm.FIELD_ALL_DAY]
+    const taskCategoryId = formData[UPTTaskForm.FIELD_CATEGORY]
     let startDateValue, endDateValue;
 
     if (taskIsAllDay) {
@@ -2766,7 +2765,7 @@ class UPTTaskForm extends UPTForm {
 
     const task = new UPT_Task({
       name: formData[UPTTaskForm.FIELD_NAME],
-      categoryId: formData[UPTTaskForm.FIELD_CATEGORY] === "brak" ? null : formData[UPTTaskForm.FIELD_CATEGORY],
+      categoryId: taskCategoryId === CustomSelect.NULL_VALUE ? null : taskCategoryId,
       startDate: startDateValue,
       endDate: endDateValue,
       description: formData[UPTTaskForm.FIELD_DESC].trim(),
@@ -2872,7 +2871,7 @@ class UPTTaskDeadlineInterval {
     for (let i = 0; i < mainTasksNumber; i++) {
       const task = mainTasks[i]
 
-      if (task.isArchived) continue
+      if (task.isArchived || task.status !== UPT_TaskStatus.IN_PROGRESS) continue
 
       const nowDate = new Date()
       const taskEndDate = new Date(task.endDate)
@@ -2891,6 +2890,7 @@ class UPTPanel {
   static PANEL_CATEGORY = "category"
   static PANEL_ARCHIVE = "archive"
 
+  static TASK_STATUS_CHANGE_EVENT = "upt-task-status-change-event"
   static TASK_CREATED_EVENT = "upt-task-created-event"
   static TASK_UPDATED_EVENT = "upt-task-updated-event"
   static TASK_DELETED_EVENT = "upt-task-deleted-event"
@@ -2996,20 +2996,10 @@ class UPTPanel {
   searchTasks(searchTerm) {
     const tasks = this.getTasksForPanel()
     const allTasksCards = this.getAllTasksCards()
-    const searchedTasks = UPT_Utils.searchTasksByName(searchTerm, tasks)
+    const searchedTasks = UPT_Utils.searchByName(searchTerm, tasks)
 
-    allTasksCards.forEach(taskCard => {
-      taskCard.style.visibility = "hidden"
-      taskCard.classList.add('sr-only')
-      taskCard.setAttribute('aria-hidden', 'true')
-    })
-
-    searchedTasks.forEach((task) => {
-      const taskCard = this.panel.querySelector(`[data-task-id="${task.id}"]`)
-      taskCard.style.removeProperty('visibility')
-      taskCard.classList.remove('sr-only')
-      taskCard.removeAttribute('aria-hidden')
-    })
+    allTasksCards.forEach(taskCard => hideElement(taskCard))
+    searchedTasks.forEach((task) => showElement(this.panel.querySelector(`[data-task-id="${task.id}"]`)))
   }
 
   /** 
@@ -3023,16 +3013,12 @@ class UPTPanel {
     const filteredTasks = UPT_Utils.getFilteredDataBy(filterValue, prevFilteredTasks)
 
     allTasksCards.forEach(taskCard => {
-      // taskCard.style.visibility = "hidden"
-      // taskCard.classList.add('sr-only')
       taskCard.classList.add('hidden-animation')
       taskCard.setAttribute('aria-hidden', 'true')
     })
 
     filteredTasks.forEach((task) => {
       const taskCard = this.panel.querySelector(`[data-task-id="${task.id}"]`)
-      // taskCard.style.removeProperty('visibility')
-      // taskCard.classList.remove('sr-only')
       taskCard.classList.remove('hidden-animation')
       taskCard.removeAttribute('aria-hidden')
     })
@@ -3040,18 +3026,18 @@ class UPTPanel {
 
   /** @param {CustomEvent} e */
   sortTasks(e) {
-    const sortedTasks = UPT_Utils.getSortedDataBy(e.detail.value, this.getTasksForPanel()) 
+    const sortedTasks = UPT_Utils.getSortedDataBy(e.detail.value, this.getTasksForPanel())
 
-    sortedTasks.forEach((task, index) => {
-      const taskCard = this.panel.querySelector(`[data-task-id="${task.id}"]`)  
-      const order = index + 1
-      // taskCard.style.order = index 
-      fadeAnimation(() => taskCard.style.order = order, taskCard, 300) 
-    }) 
+    fadeAnimation(() => {
+      sortedTasks.forEach((task, index) => {
+        const taskCard = this.panel.querySelector(`[data-task-id="${task.id}"]`)
+        taskCard.style.order = index
+      })
+    }, this.tasksList, 300)
   }
 
   getAllTasksCards() {
-    return this.panel.querySelectorAll('[data-task-card]')
+    return this.panel.querySelectorAll('[data-task-card][data-task-id]')
   }
 
   /** @param {UPT_Task} task */
@@ -3085,6 +3071,10 @@ class UPTPanel {
 
     UPTPanel.removeAllTasksCards(task.id, "lightblue")
     dispatchCustomEvent(UPTPanel.TASK_ARCHIVE_EVENT, archivedTask)
+    dispatchCustomEvent(UPTPanel.TASK_STATUS_CHANGE_EVENT, {
+      status: UPT_TaskStatus.ABANDONED,
+      type: task.type
+    })
     UPTToast.show(UPTToast.ERROR, `Upłynął czas do wykonania zadania "${task.name}"`)
   }
 
@@ -3096,6 +3086,10 @@ class UPTPanel {
     await apiService.updateTask(task.id, task)
 
     dispatchCustomEvent(UPTPanel.TASK_UPDATED_EVENT, task)
+    dispatchCustomEvent(UPTPanel.TASK_STATUS_CHANGE_EVENT, {
+      status: task.status,
+      type: task.type
+    })
 
     UPTToast.show(UPTToast.SUCCESS, `Cofnięto stan zadania: ${task.name}!`)
   }
@@ -3108,6 +3102,10 @@ class UPTPanel {
     await apiService.updateTask(task.id, task)
 
     dispatchCustomEvent(UPTPanel.TASK_UPDATED_EVENT, task)
+    dispatchCustomEvent(UPTPanel.TASK_STATUS_CHANGE_EVENT, {
+      status: task.status,
+      type: task.type
+    })
 
     UPTToast.show(UPTToast.SUCCESS, `Zakończono zadanie: ${task.name}!`)
   }
@@ -3270,9 +3268,11 @@ class UPTMainPanel extends UPTPanel {
   static TASKS_DISPLAY_NUMBER = 5;
   static CATEGORIES_DISPLAY_NUMBER = 5;
 
-  currentNumberOfCategories = 0
   currentNumberOfTasksDaily = 0
   currentNumberOfTasksMain = 0
+  _currentNumberOfCategories = 0
+  _statisticNumberOfAllDailyTasks = 0
+  _statisticNumberOfAllMainTasks = 0
 
   constructor(selector, data) {
     super(selector, data);
@@ -3282,10 +3282,42 @@ class UPTMainPanel extends UPTPanel {
     this.categoriesList = this.panel.querySelector("[data-category-list]");
     this.noDailyTasksCard = this.panel.querySelector("[data-no-daily-tasks-card]");
     this.noMainTasksCard = this.panel.querySelector("[data-no-main-tasks-card]");
+    this.noCategoriesCard = this.panel.querySelector("[data-no-categories]");
+    this.statisticDailyTasksNumberEl = this.panel.querySelector("[data-statistic-daily-tasks-number]");
+    this.statisticMainTasksNumberEl = this.panel.querySelector("[data-statistic-main-tasks-number]");
     this.customPieChart = null
     this.pieChartSelector = UPT_MODULE_ID_SELECTOR + " [data-pie-chart]";
-    // this.mainTasks = this.tasks.filter(task => task.type === UPT_TaskType.MAIN)
+    this.currentNumberOfCategories = 0
     this.init();
+  }
+
+  get currentNumberOfCategories() {
+    return this._currentNumberOfCategories;
+  } 
+  set currentNumberOfCategories(value) {
+    this._currentNumberOfCategories = value;
+
+    if (value > 0) {
+      this.noCategoriesCard.style.display = "none"
+      this.categoriesList.style.removeProperty('display')
+    } else {
+      this.categoriesList.style.display = "none"
+      this.noCategoriesCard.style.removeProperty('display')
+    }
+  } 
+  get statisticNumberOfAllDailyTasks() {
+    return this._statisticNumberOfAllDailyTasks;
+  }
+  set statisticNumberOfAllDailyTasks(value) {
+    this._statisticNumberOfAllDailyTasks = value;
+    this.statisticDailyTasksNumberEl.textContent = value;
+  }
+  get statisticNumberOfAllMainTasks() {
+    return this._statisticNumberOfAllMainTasks;
+  }
+  set statisticNumberOfAllMainTasks(value) {
+    this._statisticNumberOfAllMainTasks = value;
+    this.statisticMainTasksNumberEl.textContent = value;
   }
 
   showNoMainTasksCard = () => this.noMainTasksCard.style.removeProperty('display')
@@ -3300,7 +3332,7 @@ class UPTMainPanel extends UPTPanel {
     this.renderCategoriesList();
     this.initTimeToEndDayCountdown();
     this.initDateTimeStatisics();
-    this.setEventListeners();
+    this.setEventListeners();  
   }
 
   setEventListeners() {
@@ -3308,6 +3340,12 @@ class UPTMainPanel extends UPTPanel {
     document.addEventListener(UPTPanel.TASK_RESTORE_EVENT, (e) => this.createTaskEventHandler(e))
     document.addEventListener(UPTPanel.TASK_DELETED_EVENT, (e) => this.deleteTaskEventHandler(e))
     document.addEventListener(UPTPanel.TASK_UPDATED_EVENT, (e) => this.updateTaskEventHandler(e))
+
+    document.addEventListener(UPTPanel.TASK_STATUS_CHANGE_EVENT, (e) => {
+      if (e.detail.type === UPT_TaskType.MAIN) {
+        this.updatePieChart()
+      }
+    })
 
     document.addEventListener(UPTPanel.CATEGORY_CREATED_EVENT, (e) => this.createCategoryEventHandler(e))
     document.addEventListener(UPTPanel.CATEGORY_DELETED_EVENT, (e) => this.deleteCategoryEventHandler(e))
@@ -3330,17 +3368,16 @@ class UPTMainPanel extends UPTPanel {
       } else {
         await UPTPanel.unmarkTaskAsComplete(task)
       }
-      if (task.type === UPT_TaskType.MAIN) {
-        this.updatePieChart()
-      }
-
+      dispatchCustomEvent(UPTPanel.TASK_STATUS_CHANGE_EVENT, {
+        status: task.status,
+        type: task.type
+      })
       hideLoading(checkbox.parentElement)
     }
   }
 
   /** @param {CustomEvent} e */
-  updateTaskEventHandler(e) {
-    console.log(e.detail)
+  updateTaskEventHandler(e) { 
     const updatedTask = e.detail
     const updatedTaskIsMain = updatedTask.type === UPT_TaskType.MAIN
     const prevTaskCard = this.panel.querySelector(`[data-task-card][data-task-id="${updatedTask.id}"]`)
@@ -3356,10 +3393,6 @@ class UPTMainPanel extends UPTPanel {
         this.dailyTasksList.append(newTaskCard)
       }
     }
-
-    // if (updatedTaskIsMain && upd) {
-    //   this.updatePieChart()
-    // }
   }
 
   /** @param {CustomEvent} e */
@@ -3383,7 +3416,6 @@ class UPTMainPanel extends UPTPanel {
     if (taskType === UPT_TaskType.DAILY) {
       this.currentNumberOfTasksDaily--
     } else {
-      this.updatePieChart()
       this.currentNumberOfTasksMain--
     }
 
@@ -3398,6 +3430,10 @@ class UPTMainPanel extends UPTPanel {
     } else {
       this.showNoDailyTasksCard()
     }
+    dispatchCustomEvent(UPTPanel.TASK_STATUS_CHANGE_EVENT, {
+      status: task.status,
+      type: taskType
+    })
   }
 
   /** @param {CustomEvent} e */
@@ -3407,7 +3443,7 @@ class UPTMainPanel extends UPTPanel {
 
   /** @param {CustomEvent} e */
   createCategoryEventHandler(e) {
-    const category = e.detail
+    const category = e.detail 
 
     if (this.currentNumberOfCategories < UPTMainPanel.CATEGORIES_DISPLAY_NUMBER) {
       const categoryElement = this.renderCategoryCard(category)
@@ -3433,11 +3469,13 @@ class UPTMainPanel extends UPTPanel {
 
     if (isTypeDaily) {
       this.hideNoDailyTasksCard()
-
     } else {
-      this.updatePieChart()
       this.hideNoMainTasksCard()
     }
+    dispatchCustomEvent(UPTPanel.TASK_STATUS_CHANGE_EVENT, {
+      status: task.status,
+      type: task.type
+    })
   }
 
   /** @param {UPT_TaskCategory} category */
@@ -3602,16 +3640,65 @@ class UPTMainPanel extends UPTPanel {
   }
 
   initStatisticTasks() {
-    const dailyTasksNumber = this.tasks.reduce((value, task) => (task.type === UPT_TaskType.MAIN ? value + 1 : value), 0);
-    const mainTasksNumber = this.tasks.reduce((value, task) => (task.type === UPT_TaskType.DAILY ? value + 1 : value), 0);
-    const dailyTasksNumberEl = this.panel.querySelector("[data-statistic-daily-tasks-number]");
-    const mainTasksNumberEl = this.panel.querySelector("[data-statistic-main-tasks-number]");
+    const statisticTasks = this.tasks.filter(task => {
+      return !task.isArchived && task.status === UPT_TaskStatus.IN_PROGRESS
+    })
+    const countTasksByType = (tasks, type) => {
+      return tasks.reduce((value, task) => (task.type === type ? value + 1 : value), 0);
+    } 
+    this.statisticNumberOfAllDailyTasks = countTasksByType(statisticTasks, UPT_TaskType.DAILY) 
+    this.statisticNumberOfAllMainTasks = countTasksByType(statisticTasks, UPT_TaskType.MAIN) 
 
-    dailyTasksNumberEl.textContent = dailyTasksNumber;
-    mainTasksNumberEl.textContent = mainTasksNumber;
+    document.addEventListener(UPTPanel.TASK_CREATED_EVENT, (e) => {
+      const task = e.detail
+
+      if (task.type === UPT_TaskType.MAIN) {
+        this.statisticNumberOfAllMainTasks++
+      } else {
+        this.statisticNumberOfAllDailyTasks++
+      }
+    })
+
+    document.addEventListener(UPTPanel.TASK_DELETED_EVENT, (e) => {
+      const task = e.detail
+
+      if (task.type === UPT_TaskType.MAIN) {
+        if (task.status === UPT_TaskStatus.IN_PROGRESS) {
+          this.statisticNumberOfAllMainTasks--
+        }
+      } else {
+        if (task.status === UPT_TaskStatus.IN_PROGRESS) {
+          this.statisticNumberOfAllDailyTasks--
+        }
+      }
+    })
+
+    document.addEventListener(UPTPanel.TASK_STATUS_CHANGE_EVENT, (e) => {
+      const {
+        type,
+        status
+      } = e.detail
+
+      if (type === UPT_TaskType.MAIN) {
+        if (status === UPT_TaskStatus.ABANDONED || status === UPT_TaskStatus.COMPLETED) {
+          this.statisticNumberOfAllMainTasks--
+        } else {
+          this.statisticNumberOfAllMainTasks++
+        }
+      } else {
+        if (status === UPT_TaskStatus.ABANDONED || status === UPT_TaskStatus.COMPLETED) {
+          this.statisticNumberOfAllDailyTasks--
+        } else {
+          this.statisticNumberOfAllDailyTasks++
+        }
+
+      }
+    })
   }
 
   updatePieChart() {
+    console.log('call updatePieChart')
+
     const mainTasks = this.apiService.getMainTasks_LocalStorage()
 
     this.customPieChart.reRender(() => {
@@ -3621,7 +3708,7 @@ class UPTMainPanel extends UPTPanel {
 
   /** @param {UPT_Task[]} mainTasks */
   showPieChart(mainTasks) {
-    const tasksNumber = mainTasks.length;
+    const tasksNumber = mainTasks.length === 0 ? 1 : mainTasks.length;
     const pieChartAppearance = this.panel.querySelector(this.pieChartSelector + " [data-pie-chart-appearance]");
     const getPercentOfTasksNumber = (number) => Math.round((number * 100) / tasksNumber);
 
@@ -3683,34 +3770,78 @@ class UPTMainPanel extends UPTPanel {
 class UPTCategoryPanel extends UPTPanel {
   static TOGGLE_ANIMATION_DURATION = 300
 
+  _currentCategoriesNumber = 0
+
   constructor(selector, data) {
     super(selector, data);
     this.panelName = UPTPanel.PANEL_CATEGORY
     this.categoriesList = this.panel.querySelector("[data-category-list]");
     this.sortCategorySelect = new CustomSelect(this.panel.querySelector('[data-sort-category][data-custom-select]'))
+    this.noCategoriesMessage = this.panel.querySelector('[data-no-categories]')
     this.init();
+  }
+
+  get currentCategoriesNumber() {
+    return this._currentCategoriesNumber;
+  }
+
+  set currentCategoriesNumber(value) {
+    this._currentCategoriesNumber = value;
+
+    if (value > 0) {
+      this.noCategoriesMessage.style.display = "none"
+    } else {
+      this.noCategoriesMessage.style.removeProperty('display')
+    }
   }
 
   init() {
     this.renderCategoriesList();
-
-    document.addEventListener(UPTPanel.CATEGORY_CREATED_EVENT, (e) => {
-      const newCategory = e.detail
-      const newCategoryCard = this.renderCategory(newCategory)
-
-      this.categoriesList.append(newCategoryCard);
-    })
-
-    document.addEventListener(UPTPanel.CATEGORY_UPDATED_EVENT, (e) => {
-      const category = e.detail
-      const prevCategoryCard = this.categoriesList.querySelector(`[data-category-card][data-category-id="${category.id}"]`)
-      const newCategoryCard = this.renderCategory(category)
-
-      prevCategoryCard.remove()
-      this.categoriesList.append(newCategoryCard);
-    })
-
     this.sortCategorySelect.onChangeSelect((e) => this.sortCategories(e))
+
+    document.addEventListener(UPTPanel.CATEGORY_CREATED_EVENT, (e) => this.categoryCreatedEventHandler(e))
+    document.addEventListener(UPTPanel.CATEGORY_DELETED_EVENT, (e) => this.categoryDeleteEventHanlder(e))
+    document.addEventListener(UPTPanel.CATEGORY_UPDATED_EVENT, (e) => this.categoryUpdatedEventHandler(e))
+
+    document.addEventListener(CustomSearchForm.SEARCH_EVENT, (e) => {
+      if (e.detail.panel === UPTPanel.PANEL_CATEGORY) {
+        this.searchCategory(e.detail.value)
+      }
+    }) 
+  }
+
+  /**  @param {CustomEvent} e */
+  categoryDeleteEventHanlder(e) {
+    this.currentCategoriesNumber--
+  }
+
+  /**  @param {CustomEvent} e */
+  categoryCreatedEventHandler(e) {
+    const newCategory = e.detail
+    const newCategoryCard = this.renderCategory(newCategory)
+
+    this.categoriesList.append(newCategoryCard);
+    this.currentCategoriesNumber++
+  }
+
+  /**  @param {CustomEvent} e */
+  categoryUpdatedEventHandler(e) {
+    const category = e.detail
+    const prevCategoryCard = this.categoriesList.querySelector(`[data-category-card][data-category-id="${category.id}"]`)
+    const newCategoryCard = this.renderCategory(category)
+
+    prevCategoryCard.remove()
+    this.categoriesList.append(newCategoryCard);
+  }
+
+  /** @param {string} searchTerm */
+  searchCategory(searchTerm) {
+    const allCategories = this.apiService.getCategories_LocalStorage()
+    const allCategoriesCards = this.getAllCategoriesCards()
+    const searchedCategories = UPT_Utils.searchByName(searchTerm, allCategories)
+
+    allCategoriesCards.forEach(card => hideElement(card))
+    searchedCategories.forEach((category) => showElement(this.panel.querySelector(`[data-category-id="${category.id}"]`)))
   }
 
   /** @param {CustomEvent} e  */
@@ -3718,10 +3849,16 @@ class UPTCategoryPanel extends UPTPanel {
     const allCategories = this.apiService.getCategories_LocalStorage()
     const sortedCategories = UPT_Utils.getSortedDataBy(e.detail.value, allCategories)
 
-    sortedCategories.forEach((category, index) => {
-      const categoryCard = this.categoriesList.querySelector(`[data-category-id="${category.id}"]`)
-      categoryCard.style.order = index
-    })
+    fadeAnimation(() => {
+      sortedCategories.forEach((category, index) => {
+        const categoryCard = this.categoriesList.querySelector(`[data-category-id="${category.id}"]`)
+        categoryCard.style.order = index
+      })
+    }, this.categoriesList, 300)
+  }
+
+  getAllCategoriesCards() {
+    return this.categoriesList.querySelectorAll('[data-category-card][data-category-id]')
   }
 
   renderCategoriesList() {
@@ -3731,9 +3868,11 @@ class UPTCategoryPanel extends UPTPanel {
     for (let i = 0; i < categoriesNumber; i++) {
       const category = this.categories[i];
       categoriesListFragment.append(this.renderCategory(category));
+
+      this.currentCategoriesNumber++
     }
 
-    this.categoriesList.append(categoriesListFragment);
+    this.categoriesList.append(categoriesListFragment); 
   }
 
   /** @param {UPT_TaskCategory} category */
@@ -3945,7 +4084,7 @@ class UPTTasksPanel extends UPTPanel {
         taskCard.style.removeProperty("display")
 
         if (taskCard.getAttribute("data-task-type") === toType) {
-          taskCard.style.display = "block"
+          taskCard.style.removeProperty('display')
         } else {
           taskCard.style.display = "none"
         }
@@ -4076,7 +4215,7 @@ class UPTTasksPanel extends UPTPanel {
 
 class UPTArchivePanel extends UPTPanel {
 
-  currentArchivedTasks = 0
+  _currentArchivedTasks = 0
 
   constructor(selector, data) {
     super(selector, data);
@@ -4087,12 +4226,26 @@ class UPTArchivePanel extends UPTPanel {
     this.init();
   }
 
+  get currentArchivedTasks() {
+    return this._currentArchivedTasks;
+  }
+
+  set currentArchivedTasks(value) {
+    this._currentArchivedTasks = value;
+
+    if (value > 0) {
+      this.noArchiveTasksMessage.style.display = "none"
+    } else {
+      this.noArchiveTasksMessage.style.removeProperty('display')
+    }
+  }
+
   init() {
     this.renderArchivedTasksList();
 
-    if (this.currentArchivedTasks > 0) {
-      this.noArchiveTasksMessage.style.display = "none"
-    }
+    // if (this.currentArchivedTasks > 0) {
+    //   this.noArchiveTasksMessage.style.display = "none"
+    // }
 
     this.sortTasksSelect.onChangeSelect((e) => this.sortTasks(e))
 
@@ -4116,6 +4269,7 @@ class UPTArchivePanel extends UPTPanel {
   taskArchiveEventHandler(e) {
     const archivedTask = e.detail
     this.tasksList.append(this.renderArchivedTask(archivedTask))
+    this.currentArchivedTasks++
   }
 
   /** @param {CustomEvent} e */
@@ -4124,6 +4278,8 @@ class UPTArchivePanel extends UPTPanel {
     const unArchivedTaskCard = this.tasksList.querySelector(`[data-task-card][data-task-id="${unArchivedTask.id}"]`)
 
     unArchivedTaskCard?.remove()
+
+    this.currentArchivedTasks--
   }
 
   /** @param {UPT_Task} task */

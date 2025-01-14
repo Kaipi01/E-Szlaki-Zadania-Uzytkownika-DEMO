@@ -17,11 +17,30 @@
     }
 
     @media (min-width: $content-breakpoint-desktop-large) {
-      padding: 2rem;
+      padding-inline: 2rem;
     }
 
     &--opacity {
       background-color: #ffffffc7;
+    }
+
+    &--info {
+      display: inline-flex;
+      align-items: center;
+      padding-block: 1.35rem;
+      border: dashed var(--light-blue) 3px;
+      font-size: 1rem;
+      font-weight: bold; 
+      gap: 0.75rem;
+      
+      i {
+        color: var(--blue);
+        font-size: 1.75rem;
+      }
+
+      b {
+        color: var(--blue);
+      }
     }
   }
 }

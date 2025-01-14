@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   // Załaduj przykładowe dane
   // korzyta z fetch() więc wymaga protokołu http !!!
-  await loadTasksDataFromJSONFile();
+  // await loadTasksDataFromJSONFile();
 
   const apiService = UPTApiService.getInstance();
 

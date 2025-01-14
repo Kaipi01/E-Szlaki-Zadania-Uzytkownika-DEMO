@@ -173,9 +173,9 @@ class UPT_Task {
     this.endDate = value
   }
 
-  /** @param {string} value */
+  /** @param {string | null} value */
   setCategoryId(value) {
-    this.categoryId = String(value);
+    this.categoryId = value;
   }
 
   /** @param {UPT_SubTask[]} value */
@@ -246,7 +246,7 @@ class UPT_Utils {
    * @param {object[]} data
    * @returns {object[]} 
    */
-  static searchTasksByName(searchTerm, data) { 
+  static searchByName(searchTerm, data) { 
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
 
     return data.filter(obj =>
@@ -456,6 +456,20 @@ class UPT_Utils {
 // ---------------------------- FUNCTIONS ----------------------------
 
 
+/** @param {HTMLElement} element */
+function hideElement(element) {
+  element.style.visibility = "hidden"
+  element.classList.add('sr-only')
+  element.setAttribute('aria-hidden', 'true')
+}
+
+/** @param {HTMLElement} element */
+function showElement(element) {
+  element.style.removeProperty('visibility')
+  element.classList.remove('sr-only')
+  element.removeAttribute('aria-hidden')
+}
+
 /**
  * @param {HTMLElement | string} element
  * @param {(element: HTMLElement) => void} callback
@@ -630,13 +644,11 @@ function fadeAnimation(callback, elementsToAnimate, durationInMiliseconds) {
   elements.forEach(el => {
     el.style.transition = `all ${durationInMiliseconds / 1000.0}s ease`
     el.style.opacity = "0"
-  })
+  }) 
 
   setTimeout(() => {
-    callback()
-    elements.forEach(el => {
-      el.style.opacity = "1"
-    })
+    callback() 
+    elements.forEach(el => el.style.opacity = "1")
   }, durationInMiliseconds)
 }
 
