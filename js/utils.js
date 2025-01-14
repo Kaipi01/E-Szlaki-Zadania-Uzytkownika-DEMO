@@ -1,4 +1,3 @@
-
 class UPT_TaskType {
   static DAILY = "Dzienne";
   static MAIN = "Główne";
@@ -243,6 +242,42 @@ class UPT_Utils {
   }
 
   /** 
+   * @param {string} value 
+   * @param {Array<object>} data
+   */
+  static getSortedDataBy(value, data) {
+    let sortedData
+
+    switch (value) {
+      case UPTPanel.SORT_NAME_ASC:
+        sortedData = data.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case UPTPanel.SORT_NAME_DESC:
+        sortedData = data.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case UPTPanel.SORT_CREATED_ASC:
+        sortedData = data.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        break;
+      case UPTPanel.SORT_CREATED_DESC:
+        sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
+      case UPTPanel.SORT_DEADLINE_ASC:
+        sortedData = data.sort((a, b) => new Date(a.endDate) - new Date(b.endDate));
+        break;
+      case UPTPanel.SORT_DEADLINE_DESC:
+        sortedData = data.sort((a, b) => new Date(b.endDate) - new Date(a.endDate));
+        break;
+      case UPTPanel.SORT_PRIORITY_ASC:
+        sortedData = UPT_Utils.sortTasksByPriorityASC(data);
+        break;
+      default:
+        sortedData = UPT_Utils.sortTasksByPriority(data)
+    }
+
+    return sortedData
+  }
+
+  /** 
    * @param {string | null} timeStr 
    * @param {string} taskType 
    * @returns {Date | null}
@@ -267,14 +302,14 @@ class UPT_Utils {
    */
   static getDateFormatForInput(dateStr, dateInputType) {
     if (!dateStr || dateStr === UPT_Task.ALL_DAY) return ''
-    let dateFormatForInput 
+    let dateFormatForInput
 
-    if (dateInputType === "time") { 
+    if (dateInputType === "time") {
       dateFormatForInput = dateStr
     } else {
       const date = new Date(dateStr);
-      dateFormatForInput = date.toISOString().slice(0, 16) 
-    } 
+      dateFormatForInput = date.toISOString().slice(0, 16)
+    }
 
     return dateFormatForInput
   }
@@ -324,9 +359,14 @@ class UPT_Utils {
     return categoryIcons
   }
 
-  /** @param {UPT_Task[]} tasks */
+  /**  @param {UPT_Task[]} tasks */
   static sortTasksByPriority(tasks) {
     return tasks.sort((a, b) => UPT_Utils.getTaskPriorityValue(a) < UPT_Utils.getTaskPriorityValue(b))
+  }
+
+  /**  @param {UPT_Task[]} tasks */
+  static sortTasksByPriorityASC(tasks) {
+    return UPT_Utils.sortTasksByPriority(tasks).reverse()
   }
 
   /** @param {UPT_Task} task */
@@ -410,11 +450,14 @@ function getElementByAttr(attributeName, context = null) {
   return element
 }
 
-/** @param {HTMLElement | string} card */
-function removeDataCard(card) {
+/** 
+ * @param {HTMLElement | string} card 
+ * @param {string} color
+ */
+function removeDataCard(card, color = "red") {
   manipulateDOMElement(card, (card) => {
     card.style.transition = "all 0.3s ease";
-    card.style.backgroundColor = "red";
+    card.style.backgroundColor = color;
 
     setTimeout(() => card.remove(), 400);
   });

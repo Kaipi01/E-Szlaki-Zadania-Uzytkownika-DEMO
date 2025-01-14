@@ -1,8 +1,6 @@
-
 class UPTApiService {
   // Zmień bazowy adres API np. https://https://e-szlaki.com/api/user-private-tasks
   static UPT_API_BASE_URL = "https://example.com/api";
-  // tymaczasowe przechowywanie danych w localStorage
   static UPT_LOCAL_STORAGE_ITEM_NAME = "user-private-tasks-data";
   /** @type {UPTApiService} */
   static instance;
@@ -49,31 +47,42 @@ class UPTApiService {
     }
   }
 
-  async getAllData() {
-    //return this.fetchAPI("/categories-and-tasks");
-    return this.getAllData_LocalStorage();
+  // tylko do testów. Usuń
+  simulateLoadingFromDatabase(value) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(value)
+      }, 600);
+    });
+  }
+
+  getAllData() {
+    // return this.fetchAPI("/categories-and-tasks"); 
+
+    // zasymulowanie ładowania danych z bazy, usuń ten kod i odkomentuj ten wyżej
+    return this.simulateLoadingFromDatabase(this.getAllData_LocalStorage())
   }
 
   async getCategories() {
     // return this.fetchAPI("/categories");
-    return this.getCategories_LocalStorage();
+
+    return this.simulateLoadingFromDatabase(this.getCategories_LocalStorage())
   }
 
   /** @param {string} id */
   async getCategoryById(id) {
     // return this.fetchAPI(`/categories/${id}`);
-    return this.getCategoryById_LocalStorage(id);
+    return this.simulateLoadingFromDatabase(this.getCategoryById_LocalStorage(id))
   }
 
   /** 
    * Musi zwrócić id kategorii wygenerowane przez baze danych
-   * @param {UPT_TaskCategory} category
-   * @returns {string} id
+   * @param {UPT_TaskCategory} category 
    */
   async createCategory(category) {
     // const { id } = this.fetchAPI("/categories", "POST", category);
     // return id
-    return this.createCategory_LocalStorage(category);
+    return this.simulateLoadingFromDatabase(this.createCategory_LocalStorage(category))
   }
 
   /**
@@ -82,35 +91,34 @@ class UPTApiService {
    */
   async updateCategory(id, category) {
     //return this.fetchAPI(`/categories/${id}`, "PUT", category);
-    return this.updateCategory_LocalStorage(id, category);
+    return this.simulateLoadingFromDatabase(this.updateCategory_LocalStorage(id, category))
   }
 
   /** @param {string} id */
   async deleteCategory(id) {
     // return this.fetchAPI(`/categories/${id}`, "DELETE");
-    return this.deleteCategory_LocalStorage(id);
+    return this.simulateLoadingFromDatabase(this.deleteCategory_LocalStorage(id))
   }
 
   async getTasks() {
     // return this.fetchAPI("/tasks");
-    return this.getTasks_LocalStorage();
+    return this.simulateLoadingFromDatabase(this.getTasks_LocalStorage())
   }
 
   /** @param {string} id */
   async getTaskById(id) {
     // return this.fetchAPI(`/tasks/${id}`);
-    return this.getTaskById_LocalStorage(id);
+    return this.simulateLoadingFromDatabase(this.getTaskById_LocalStorage(id))
   }
 
   /** 
    * Musi zwrócić id zadania wygenerowane przez baze danych
-   * @param {UPT_Task} task 
-   * @returns {string} id
+   * @param {UPT_Task} task  
    */
   async createTask(task) {
     // const {id} = this.fetchAPI("/tasks", "POST", task);
     // return id
-    return this.createTask_LocalStorage(task);
+    return this.simulateLoadingFromDatabase(this.createTask_LocalStorage(task))
   }
 
   /**
@@ -119,13 +127,25 @@ class UPTApiService {
    */
   async updateTask(id, task) {
     // return this.fetchAPI(`/tasks/${id}`, "PUT", task);
-    return this.updateTask_LocalStorage(id, task);
+    return this.simulateLoadingFromDatabase(this.updateTask_LocalStorage(id, task))
   }
 
   /** @param {string} id */
   async deleteTask(id) {
     // return this.fetchAPI(`/tasks/${id}`, "DELETE");
-    return this.deleteTask_LocalStorage(id);
+    return this.simulateLoadingFromDatabase(this.deleteTask_LocalStorage(id))
+  }
+
+  /** @param {string} id */
+  async archiveTask(id) {
+    // return this.fetchAPI(`/archive/task/${id}`, "PUT");
+    return this.simulateLoadingFromDatabase(this.archiveTask_LocalStorage(id))
+  }
+
+  /** @param {string} id */
+  async restoreTask(id) {
+    // return this.fetchAPI(`/restore/task/${id}`, "PUT");
+    return this.simulateLoadingFromDatabase(this.restoreTask_LocalStorage(id))
   }
 
   //-------------------- Obsługa localStorage (odpowiada za przechowywanie stanu aplikacji) --------------------
@@ -141,39 +161,37 @@ class UPTApiService {
     }
   }
 
-  async getAllData_LocalStorage() {
-    // const data = localStorage.getItem(this.storageKey);
-    // return data ? JSON.parse(data) : { categories: [], tasks: [] };
-
-    // zasymulowanie ładowania danych z bazy
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const data = localStorage.getItem(this.storageKey);
-        resolve(data ? JSON.parse(data) : { categories: [], tasks: [] });
-      }, 1000);  
-    });
+  getAllData_LocalStorage() {
+    const data = localStorage.getItem(this.storageKey);
+    return data ? JSON.parse(data) : {
+      categories: [],
+      tasks: []
+    };
   }
 
   /** @param {Object} data */
-  async saveAllData_LocalStorage(data) {
+  saveAllData_LocalStorage(data) {
     localStorage.setItem(this.storageKey, JSON.stringify(data));
   }
 
-  async getCategories_LocalStorage() {
-    const data = await this.getAllData_LocalStorage();
+  getCategories_LocalStorage() {
+    const data = this.getAllData_LocalStorage();
     return data.categories;
   }
 
   /** @param {string} id */
-  async getCategoryById_LocalStorage(id) {
-    const categories = await this.getCategories_LocalStorage();
+  getCategoryById_LocalStorage(id) {
+    const categories = this.getCategories_LocalStorage();
     return categories.find((category) => category.id === id);
   }
 
   /** @param {UPT_TaskCategory} category */
-  async createCategory_LocalStorage(category) {
-    const data = await this.getAllData_LocalStorage();
-    const newCategory = { ...category, id: generateId("category") };
+  createCategory_LocalStorage(category) {
+    const data = this.getAllData_LocalStorage();
+    const newCategory = {
+      ...category,
+      id: generateId("category")
+    };
     data.categories.push(newCategory);
     this.saveAllData_LocalStorage(data);
 
@@ -184,8 +202,8 @@ class UPTApiService {
    * @param {string} id
    * @param {UPT_TaskCategory} updatedCategory
    */
-  async updateCategory_LocalStorage(id, updatedCategory) {
-    const data = await this.getAllData_LocalStorage();
+  updateCategory_LocalStorage(id, updatedCategory) {
+    const data = this.getAllData_LocalStorage();
     const index = data.categories.findIndex((category) => category.id === id);
     if (index !== -1) {
       data.categories[index] = {
@@ -199,26 +217,36 @@ class UPTApiService {
   }
 
   /** @param {string} id */
-  async deleteCategory_LocalStorage(id) {
-    const data = await this.getAllData_LocalStorage();
+  deleteCategory_LocalStorage(id) {
+    const data = this.getAllData_LocalStorage();
     data.categories = data.categories.filter((category) => category.id !== id);
     this.saveAllData_LocalStorage(data);
   }
 
-  async getTasks_LocalStorage() {
-    const data = await this.getAllData_LocalStorage();
+  getMainTasks_LocalStorage() {
+    const tasks = this.getTasks_LocalStorage()
+    return tasks.filter(task => task.type === UPT_TaskType.MAIN);
+  }
+
+  getDailyTasks_LocalStorage() {
+    const tasks = this.getTasks_LocalStorage()
+    return tasks.filter(task => task.type === UPT_TaskType.DAILY);
+  }
+
+  getTasks_LocalStorage() {
+    const data = this.getAllData_LocalStorage();
     return data.tasks;
   }
 
   /** @param {string} id */
-  async getTaskById_LocalStorage(id) {
-    const tasks = await this.getTasks_LocalStorage();
+  getTaskById_LocalStorage(id) {
+    const tasks = this.getTasks_LocalStorage();
     return tasks.find((task) => task.id === id);
   }
 
   /** @param {UPT_Task} task */
-  async createTask_LocalStorage(task) {
-    const data = await this.getAllData_LocalStorage();
+  createTask_LocalStorage(task) {
+    const data = this.getAllData_LocalStorage();
     const taskId = generateId("task")
     const newTask = {
       ...task,
@@ -227,7 +255,7 @@ class UPTApiService {
     };
     data.tasks.push(newTask);
     this.saveAllData_LocalStorage(data);
-    
+
     return taskId;
   }
 
@@ -235,8 +263,8 @@ class UPTApiService {
    * @param {string} id
    * @param {UPT_Task} updatedTask
    */
-  async updateTask_LocalStorage(id, updatedTask) {
-    const data = await this.getAllData_LocalStorage();
+  updateTask_LocalStorage(id, updatedTask) {
+    const data = this.getAllData_LocalStorage();
     const index = data.tasks.findIndex((task) => task.id === id);
 
     if (index !== -1) {
@@ -246,7 +274,7 @@ class UPTApiService {
         id,
         updatedAt: new Date().toISOString(),
       };
-      this.saveAllData_LocalStorage(data); 
+      this.saveAllData_LocalStorage(data);
 
       return data.tasks[index];
     }
@@ -254,12 +282,43 @@ class UPTApiService {
   }
 
   /** @param {string} id */
-  async deleteTask_LocalStorage(id) {
-    const data = await this.getAllData_LocalStorage();
+  archiveTask_LocalStorage(id) {
+    const data = this.getAllData_LocalStorage();
+    const archivedTaskIndex = data.tasks.findIndex((task) => task.id === id)
+    data.tasks[archivedTaskIndex].isArchived = true
+    data.tasks[archivedTaskIndex].archivedAt = (new Date()).toISOString()
+    this.saveAllData_LocalStorage(data);
+
+    return data.tasks[archivedTaskIndex]
+  }
+
+  /** @param {string} id */
+  restoreTask_LocalStorage(id) {
+    const data = this.getAllData_LocalStorage();
+    const restoreTaskIndex = data.tasks.findIndex((task) => task.id === id)
+    const task = data.tasks[restoreTaskIndex]
+    const startDate = new Date(task.startDate);
+    const endDate = new Date(task.endDate);
+    const now = new Date();
+    const newEndDate = new Date(now.getTime() + (endDate - startDate));
+
+    task.isArchived = false
+    task.archivedAt = null
+    task.status = UPT_TaskStatus.IN_PROGRESS
+    task.endDate = newEndDate.toISOString();
+
+    this.saveAllData_LocalStorage(data);
+
+    return task
+  }
+
+  /** @param {string} id */
+  deleteTask_LocalStorage(id) {
+    const data = this.getAllData_LocalStorage();
     const deletedTask = data.tasks.find((task) => task.id === id)
     data.tasks = data.tasks.filter((task) => task.id !== id);
     this.saveAllData_LocalStorage(data);
 
     return deletedTask
-  } 
+  }
 }

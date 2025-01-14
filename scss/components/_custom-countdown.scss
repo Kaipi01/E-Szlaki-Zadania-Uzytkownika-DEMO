@@ -50,12 +50,7 @@
         }
         &[data-seconds]::after {
           content: "sek.";
-        }
-
-        &[data-animate-now] {
-          animation: custom-countdown-time-data-animation 1s ease infinite
-            forwards;
-        }
+        } 
       }
     }
 
@@ -63,11 +58,7 @@
       position: relative;
 
       .timer-data {
-        position: relative; 
-
-        &[data-animate-now] {
-          animation: none !important;
-        }
+        position: relative;  
 
         &::after {
           color: var(--gray);
@@ -87,18 +78,6 @@
       }
 
       
-    }
-
-    @keyframes custom-countdown-time-data-animation {
-      0% {
-        background-color: $color;
-      }
-      50% {
-        background-color: $color-animation;
-      }
-      100% {
-        background-color: $color;
-      }
-    }
+    } 
   }
 }

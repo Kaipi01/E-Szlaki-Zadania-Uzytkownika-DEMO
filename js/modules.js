@@ -1036,15 +1036,16 @@ class CustomPieChart {
   }
 
   reRender(callback = () => {}) {
-    const stylesPieChart = document.head.querySelector(`style#${CustomPieChart.ID}`)
-
     callback()
+    const stylesPieChart = document.head.querySelector(`style#${CustomPieChart.ID}`)
     stylesPieChart?.remove()
     this.legendFigcaption?.remove()
     this.pieData = JSON.parse(this.pieChart.getAttribute("data-pie"));
-
     this.renderStylesForPieChart()
     this.generateLegendForPieChart();
+    this.pieChart.style.animation = 'none';
+    this.pieChart.offsetHeight
+    this.pieChart.style.removeProperty('animation')
   }
 
   init() {
@@ -1481,9 +1482,6 @@ class CustomCircularProgressBar extends HTMLElement {
 customElements.define("custom-circular-progress-bar", CustomCircularProgressBar);
 
 class CustomCountdown extends HTMLElement {
-  ANIMATE_ATTRIBUTE_NAME = "data-animate-now";
-  ANIMATION_DURATION = 2000;
-
   dateEnd;
   timeUnitsToShow;
   timer;
@@ -1565,25 +1563,7 @@ class CustomCountdown extends HTMLElement {
     wrapper.append(timer);
     this.append(wrapper);
   }
-
-  animate(unit, newValue) {
-    const unitElement = this.elements[unit];
-
-    if (unitElement && this[unit] !== newValue) {
-      unitElement.setAttribute(this.ANIMATE_ATTRIBUTE_NAME, "");
-
-      setTimeout(() => {
-        unitElement.removeAttribute(this.ANIMATE_ATTRIBUTE_NAME);
-      }, this.ANIMATION_DURATION);
-    }
-  }
-
   display(days, hours, minutes, seconds) {
-    this.animate("days", days);
-    this.animate("hours", hours);
-    this.animate("minutes", minutes);
-    this.animate("seconds", seconds);
-
     if (this.elements.days) this.elements.days.textContent = days;
     if (this.elements.hours) this.elements.hours.textContent = ("0" + hours).slice(-2);
     if (this.elements.minutes) this.elements.minutes.textContent = ("0" + minutes).slice(-2);
@@ -1759,7 +1739,20 @@ class UPTTaskDetails {
       UPTPanel.deleteTask(this.currentTask.id, () => {
         hideModal(this.modalId)
       })
+    })
 
+    this.restoreTaskButton.addEventListener('click', (e) => {
+      UPTPanel.restoreTask(this.currentTask.id, this.restoreTaskButton, () => {
+        hideModal(this.modalId)
+        UPTToast.show(UPTToast.SUCCESS, "Pomyślnie przywrócono zadanie");
+      })
+    })
+
+    this.archiveTaskButton.addEventListener('click', (e) => {
+      UPTPanel.archiveTask(this.currentTask.id, this.archiveTaskButton, () => {
+        hideModal(this.modalId)
+        UPTToast.show(UPTToast.SUCCESS, "Pomyślnie archiwizowano zadanie");
+      })
     })
   }
 
@@ -1909,6 +1902,10 @@ class UPTTaskDetails {
       this.archiveTaskButton.style.display = "none"
     } else {
       this.restoreTaskButton.style.display = "none"
+    }
+
+    if (task.type === UPT_TaskType.DAILY) {
+      this.archiveTaskButton.style.display = "none"
     }
 
     if (task.status === UPT_TaskStatus.COMPLETED) {
@@ -2656,6 +2653,17 @@ class UPTTaskForm extends UPTForm {
 
     if (isTaskMain) {
       checkInputField(UPTTaskForm.FIELD_DATE_END, "Nie podano daty zakończenia")
+
+
+      if (data[UPTTaskForm.FIELD_DATE_START] !== '' && data[UPTTaskForm.FIELD_DATE_END] !== '') {
+        const startDate = new Date(data[UPTTaskForm.FIELD_DATE_START])
+        const endDate = new Date(data[UPTTaskForm.FIELD_DATE_END])
+
+        if (startDate.getTime() > endDate.getTime()) {
+          this.displayInputError(UPTTaskForm.FIELD_DESC, "Data startu nie może być większa od daty zakończenia!")
+          isValid = false
+        }
+      }
     }
 
     if (data[UPTTaskForm.FIELD_DESC].length > 500) {
@@ -2724,6 +2732,7 @@ class UPTTaskForm extends UPTForm {
 
   async handleFormSubmit(e) {
     e.preventDefault()
+    const taskBeforeEdit = this.currentTask
     const formData = this.collectFormData()
     const isEditMode = this.modeInput.value === UPTTaskForm.MODE_EDIT
     const isFormValid = this.validateForm(formData)
@@ -2737,6 +2746,13 @@ class UPTTaskForm extends UPTForm {
         if (isEditMode) {
           await this.apiService.updateTask(this.currentTask.id, task)
 
+          // dispatchCustomEvent(UPTPanel.TASK_UPDATED_EVENT, {
+          //   prevTask: taskBeforeEdit,
+          //   newTask: {
+          //     ...task,
+          //     id: this.currentTask.id
+          //   }
+          // })
           dispatchCustomEvent(UPTPanel.TASK_UPDATED_EVENT, {
             ...task,
             id: this.currentTask.id
@@ -2769,17 +2785,57 @@ class UPTTaskForm extends UPTForm {
 
 // ---------------------------------------- ZAKŁADKI ---------------------------------------------
 
+class UPTTaskDeadlineInterval {
+  constructor() {
+    this.init()
+  }
+
+  init() {
+    this.checkIsTaskAfterDeadline()
+    setInterval(() => this.checkIsTaskAfterDeadline(), 500 * 60) // pół minuty
+  }
+
+  checkIsTaskAfterDeadline() {
+    const apiSerivce = UPTApiService.getInstance()
+    const mainTasks = apiSerivce.getMainTasks_LocalStorage()
+    const mainTasksNumber = mainTasks.length
+
+    for (let i = 0; i < mainTasksNumber; i++) {
+      const task = mainTasks[i]
+
+      if (task.isArchived) continue
+
+      const nowDate = new Date()
+      const taskEndDate = new Date(task.endDate)
+
+      if (nowDate.getTime() > taskEndDate.getTime()) {
+        UPTPanel.abandondTask(task)
+      }
+    }
+  }
+}
 
 class UPTPanel {
   static TASK_CREATED_EVENT = "upt-task-created-event"
   static TASK_UPDATED_EVENT = "upt-task-updated-event"
   static TASK_DELETED_EVENT = "upt-task-deleted-event"
   static TASK_ARCHIVE_EVENT = "upt-task-archive-event"
+  static TASK_RESTORE_EVENT = "upt-task-restore-event"
   static TASK_UN_ARCHIVE_EVENT = "upt-task-un-archive-event"
+
   static CATEGORY_CREATED_EVENT = "upt-category-created-event"
   static CATEGORY_UPDATED_EVENT = "upt-category-updated-event"
   static CATEGORY_DELETED_EVENT = "upt-category-deleted-event"
   static CHANGE_VISIBLE_TASKS_EVENT = "upt-toggle-tasks-event"
+
+  static SORT_DEADLINE_ASC = "deadline-asc"
+  static SORT_DEADLINE_DESC = "deadline-desc"
+  static SORT_PRIORITY_ASC = "priority-asc"
+  static SORT_PRIORITY_DESC = "priority-desc"
+  static SORT_NAME_ASC = "name-asc"
+  static SORT_NAME_DESC = "name-desc"
+  static SORT_CREATED_ASC = "created-date-asc"
+  static SORT_CREATED_DESC = "created-date-desc"
 
   /**
    * @param {string} selector
@@ -2801,11 +2857,38 @@ class UPTPanel {
       console.error("this.panel is null");
       return;
     }
-    CustomSelect.initAll(selector + " select[data-custom-select]");
+    // CustomSelect.initAll(selector + " select[data-custom-select]");
     this.setClickEventListeners()
 
     hideLoading(this.panel);
   }
+
+  /** 
+   * @param {CustomEvent} e  
+   * @param {"tasks" | "archive"} forPanel
+   */
+  sortTasks(e, forPanel = "tasks") { 
+    const allTasks = this.apiService.getTasks_LocalStorage() 
+    const tasks = allTasks.filter(task => {
+      if (forPanel === 'tasks') {
+        return task.isArchived == false
+      } else {
+        return task.isArchived == true
+      }
+    })
+    const sortedTasks = UPT_Utils.getSortedDataBy(e.detail.value, tasks)
+
+    console.log(sortedTasks)
+ 
+    sortedTasks.forEach((task, index) => { 
+      const taskCard = this.panel.querySelector(`[data-task-id="${task.id}"]`) 
+      taskCard.style.order = index
+    }) 
+  }
+
+  getAllTasksCards() {
+    return this.panel.querySelectorAll('[data-task-card]')
+  } 
 
   /** @param {UPT_Task} task */
   static isTaskAfterDeadline(task) {
@@ -2822,6 +2905,23 @@ class UPTPanel {
     }
 
     return isTaskAfterDeadline;
+  }
+
+  /** @param {UPT_Task} task */
+  static async abandondTask(task) {
+    const apiSerivce = UPTApiService.getInstance()
+    const archivedTask = {
+      ...task,
+      isArchived: true,
+      archivedAt: (new Date()).toISOString(),
+      status: UPT_TaskStatus.ABANDONED
+    }
+
+    await apiSerivce.updateTask(task.id, archivedTask)
+
+    UPTPanel.removeAllTasksCards(task.id, "lightblue")
+    dispatchCustomEvent(UPTPanel.TASK_ARCHIVE_EVENT, archivedTask)
+    UPTToast.show(UPTToast.ERROR, `Upłynął czas do wykonania zadania "${task.name}"`)
   }
 
   /** @param {UPT_Task} task */
@@ -2858,6 +2958,8 @@ class UPTPanel {
       "data-edit-task-btn": (e) => this.taskForm.open(UPTTaskForm.MODE_EDIT, e.target.dataset.taskId),
       "data-details-task-btn": (e) => this.taskDetails.show(e.target.dataset.taskId),
       "data-details-task-link": (e) => this.taskDetails.show(e.target.getAttribute("href").substring(1)),
+      "data-archive-task-btn": (e) => this.handleArchiveTaskButton(e.target),
+      "data-restore-task-btn": (e) => this.handleRestoreTaskButton(e.target),
       "data-delete-task-btn": (e) => this.handleDeleteTaskButton(e.target),
       "data-edit-category-btn": (e) => this.categoryForm.open(UPTCategoryForm.MODE_EDIT, e.target.dataset.categoryId),
       "data-delete-category-btn": (e) => this.handleDeleteCategoryButton(e.target),
@@ -2867,11 +2969,6 @@ class UPTPanel {
       "data-show-daily-tasks": (e) => dispatchCustomEvent(UPTPanel.CHANGE_VISIBLE_TASKS_EVENT, {
         type: UPT_TaskType.DAILY
       }),
-      // this.panel.addEventListener('click', (e) => {  
-      //   if (e.target.hasAttribute("data-show-main-tasks")) {
-      //     dispatchCustomEvent(UPTPanel.CHANGE_VISIBLE_TASKS_EVENT, { type: UPT_TaskType.MAIN })
-      //   }
-      // })
     };
 
     this.panel.addEventListener("click", (e) => {
@@ -2883,6 +2980,49 @@ class UPTPanel {
         }
       }
     });
+  }
+
+  /** 
+   * @param {string} taskId 
+   * @param {string} removeAnimationColor 
+   */
+  static removeAllTasksCards(taskId, removeAnimationColor = "red") {
+    const taskCards = document.querySelectorAll(`[data-task-card][data-task-id="${taskId}"]`);
+
+    taskCards.forEach(card => removeDataCard(card, removeAnimationColor))
+  }
+
+  /** 
+   * @param {string} taskId 
+   * @param {HTMLElement | null} target
+   * @param {() => void} successCallback
+   */
+  static async archiveTask(taskId, target = null, successCallback = () => {}) {
+    if (target) showLoading(target);
+
+    const apiService = UPTApiService.getInstance()
+    const archivedTask = await apiService.archiveTask(taskId)
+
+    UPTPanel.removeAllTasksCards(taskId, "lightblue")
+    dispatchCustomEvent(UPTPanel.TASK_ARCHIVE_EVENT, archivedTask)
+    if (target) hideLoading(target);
+    successCallback()
+  }
+
+  /** 
+   * @param {string} taskId 
+   * @param {HTMLElement | null} target
+   * @param {() => void} successCallback
+   */
+  static async restoreTask(taskId, target = null, successCallback = () => {}) {
+    if (target) showLoading(target);
+
+    const apiService = UPTApiService.getInstance()
+    const task = await apiService.restoreTask(taskId)
+
+    dispatchCustomEvent(UPTPanel.TASK_RESTORE_EVENT, task)
+    if (target) hideLoading(target);
+    successCallback()
   }
 
   /** 
@@ -2900,16 +3040,28 @@ class UPTPanel {
 
       const apiService = UPTApiService.getInstance()
       const deletedTask = await apiService.deleteTask(taskId)
-      const taskCards = document.querySelectorAll(`[data-task-card][data-task-id="${taskId}"]`);
 
-      taskCards.forEach(card => removeDataCard(card))
-
+      UPTPanel.removeAllTasksCards(taskId)
       UPTToast.show(UPTToast.SUCCESS, "Pomyślnie usunięto zadanie");
       dispatchCustomEvent(UPTPanel.TASK_DELETED_EVENT, deletedTask)
       hideLoading(e.target);
       hideModal(UPT_CONFIRM_MODAL_ID);
       successCallback()
     };
+  }
+
+  /** @param {HTMLButtonElement} button */
+  async handleRestoreTaskButton(button) {
+    const taskId = button.dataset.taskId;
+    await UPTPanel.restoreTask(taskId, button)
+    UPTToast.show(UPTToast.SUCCESS, "Pomyślnie przywrócono zadanie");
+  }
+
+  /** @param {HTMLButtonElement} button */
+  async handleArchiveTaskButton(button) {
+    const taskId = button.dataset.taskId;
+    await UPTPanel.archiveTask(taskId, button)
+    UPTToast.show(UPTToast.SUCCESS, "Pomyślnie archiwizowano zadanie");
   }
 
   /** @param {HTMLButtonElement} button */
@@ -2967,6 +3119,7 @@ class UPTMainPanel extends UPTPanel {
     this.noMainTasksCard = this.panel.querySelector("[data-no-main-tasks-card]");
     this.customPieChart = null
     this.pieChartSelector = UPT_MODULE_ID_SELECTOR + " [data-pie-chart]";
+    // this.mainTasks = this.tasks.filter(task => task.type === UPT_TaskType.MAIN)
     this.init();
   }
 
@@ -2987,6 +3140,7 @@ class UPTMainPanel extends UPTPanel {
 
   setEventListeners() {
     document.addEventListener(UPTPanel.TASK_CREATED_EVENT, (e) => this.createTaskEventHandler(e))
+    document.addEventListener(UPTPanel.TASK_RESTORE_EVENT, (e) => this.createTaskEventHandler(e))
     document.addEventListener(UPTPanel.TASK_DELETED_EVENT, (e) => this.deleteTaskEventHandler(e))
     document.addEventListener(UPTPanel.TASK_UPDATED_EVENT, (e) => this.updateTaskEventHandler(e))
 
@@ -3007,9 +3161,12 @@ class UPTMainPanel extends UPTPanel {
       const task = await this.apiService.getTaskById(taskId)
 
       if (checkbox.checked) {
-        UPTPanel.markTaskAsComplete(task)
+        await UPTPanel.markTaskAsComplete(task)
       } else {
-        UPTPanel.unmarkTaskAsComplete(task)
+        await UPTPanel.unmarkTaskAsComplete(task)
+      }
+      if (task.type === UPT_TaskType.MAIN) {
+        this.updatePieChart()
       }
 
       hideLoading(checkbox.parentElement)
@@ -3018,7 +3175,9 @@ class UPTMainPanel extends UPTPanel {
 
   /** @param {CustomEvent} e */
   updateTaskEventHandler(e) {
+    console.log(e.detail)
     const updatedTask = e.detail
+    const updatedTaskIsMain = updatedTask.type === UPT_TaskType.MAIN
     const prevTaskCard = this.panel.querySelector(`[data-task-card][data-task-id="${updatedTask.id}"]`)
 
     if (prevTaskCard) {
@@ -3026,12 +3185,16 @@ class UPTMainPanel extends UPTPanel {
 
       prevTaskCard.remove()
 
-      if (updatedTask.type === UPT_TaskType.DAILY) {
-        this.dailyTasksList.append(newTaskCard)
-      } else {
+      if (updatedTaskIsMain) {
         this.mainTasksList.append(newTaskCard)
+      } else {
+        this.dailyTasksList.append(newTaskCard)
       }
-    } 
+    }
+
+    // if (updatedTaskIsMain && upd) {
+    //   this.updatePieChart()
+    // }
   }
 
   /** @param {CustomEvent} e */
@@ -3050,15 +3213,12 @@ class UPTMainPanel extends UPTPanel {
   /** @param {CustomEvent} e */
   async deleteTaskEventHandler(e) {
     const task = e.detail
-    const taskType = task.type 
-    const taskId = task.id
-
-    const maintasks = this.tasks.filter(task => task.type === UPT_TaskType.MAIN) 
-    this.updatePieChart(maintasks.filter((task) => task.id !== taskId))
+    const taskType = task.type
 
     if (taskType === UPT_TaskType.DAILY) {
       this.currentNumberOfTasksDaily--
     } else {
+      this.updatePieChart()
       this.currentNumberOfTasksMain--
     }
 
@@ -3110,9 +3270,9 @@ class UPTMainPanel extends UPTPanel {
       this.hideNoDailyTasksCard()
 
     } else {
+      this.updatePieChart()
       this.hideNoMainTasksCard()
     }
-
   }
 
   /** @param {UPT_TaskCategory} category */
@@ -3286,8 +3446,8 @@ class UPTMainPanel extends UPTPanel {
     mainTasksNumberEl.textContent = mainTasksNumber;
   }
 
-  /** @param {UPT_Task[]} mainTasks */
-  updatePieChart(mainTasks) { 
+  updatePieChart() {
+    const mainTasks = this.apiService.getMainTasks_LocalStorage()
 
     this.customPieChart.reRender(() => {
       this.showPieChart(mainTasks)
@@ -3344,8 +3504,8 @@ class UPTMainPanel extends UPTPanel {
   }
 
   initPieChart() {
-    const mainTasks = this.tasks.filter(task => task.type === UPT_TaskType.MAIN) 
-  
+    const mainTasks = this.tasks.filter(task => task.type === UPT_TaskType.MAIN)
+
     this.showPieChart(mainTasks)
     this.customPieChart = new CustomPieChart(this.pieChartSelector);
   }
@@ -3361,6 +3521,7 @@ class UPTCategoryPanel extends UPTPanel {
   constructor(selector, data) {
     super(selector, data);
     this.categoriesList = this.panel.querySelector("[data-category-list]");
+    this.sortCategorySelect = new CustomSelect(this.panel.querySelector('[data-sort-category][data-custom-select]'))
     this.init();
   }
 
@@ -3382,6 +3543,19 @@ class UPTCategoryPanel extends UPTPanel {
       prevCategoryCard.remove()
       this.categoriesList.append(newCategoryCard);
     })
+
+    this.sortCategorySelect.onChangeSelect((e) => this.sortCategories(e))
+  }
+  
+  /** @param {CustomEvent} e  */
+  sortCategories(e) {
+    const allCategories = this.apiService.getCategories_LocalStorage() 
+    const sortedCategories = UPT_Utils.getSortedDataBy(e.detail.value, allCategories)
+ 
+    sortedCategories.forEach((category, index) => { 
+      const categoryCard = this.categoriesList.querySelector(`[data-category-id="${category.id}"]`) 
+      categoryCard.style.order = index
+    }) 
   }
 
   renderCategoriesList() {
@@ -3443,6 +3617,7 @@ class UPTTasksPanel extends UPTPanel {
     this.typeToggleButton = this.panel.querySelector("[data-tasks-type-toggle-btn]")
     this.noMainTasksMessage = this.panel.querySelector("[data-no-main-tasks-message]")
     this.noDailyTasksMessage = this.panel.querySelector("[data-no-daily-tasks-message]")
+    this.sortTasksSelect = new CustomSelect(this.panel.querySelector("[data-sort-tasks][data-custom-select]"))
     this.init();
   }
 
@@ -3501,6 +3676,8 @@ class UPTTasksPanel extends UPTPanel {
     this.noDailyTasksMessage.setAttribute('data-task-type', UPT_TaskType.DAILY)
     this.typeToggleButton.addEventListener('click', () => this.toggleVisibleTasks())
 
+    this.sortTasksSelect.onChangeSelect((e) => this.sortTasks(e, "tasks"))
+
     document.addEventListener(UPTPanel.TASK_CREATED_EVENT, (e) => this.taskCreatedEventHandler(e))
 
     document.addEventListener(UPTPanel.CHANGE_VISIBLE_TASKS_EVENT, (e) => {
@@ -3509,10 +3686,12 @@ class UPTTasksPanel extends UPTPanel {
     })
 
     document.addEventListener(UPTPanel.TASK_UPDATED_EVENT, (e) => this.taskUpdateEventHandler(e))
+    document.addEventListener(UPTPanel.TASK_RESTORE_EVENT, (e) => this.taskUpdateEventHandler(e))
     document.addEventListener(UPTPanel.TASK_DELETED_EVENT, (e) => this.taskDeletedEventHandler(e))
+    document.addEventListener(UPTPanel.TASK_ARCHIVE_EVENT, (e) => this.currentMainTasksNumber--)
 
     this.panel.addEventListener('click', (e) => this.endTaskHandler(e))
-  }
+  }  
 
   taskCreatedEventHandler(e) {
     const task = e.detail
@@ -3542,7 +3721,7 @@ class UPTTasksPanel extends UPTPanel {
     const prevTaskCard = this.panel.querySelector(`[data-task-card][data-task-id="${updatedTask.id}"]`)
     const newTaskCard = this.renderTask(updatedTask)
 
-    prevTaskCard.remove()
+    prevTaskCard?.remove()
     this.tasksList.append(newTaskCard)
   }
 
@@ -3662,10 +3841,13 @@ class UPTTasksPanel extends UPTPanel {
             <i class="fa-solid fa-pen-to-square"></i>
             <span class="tooltip-content">Edytuj Zadanie</span>
           </button>
-          <button data-archive-task-btn data-task-id="${task.id}" class="category-card-action-btn task-card-action-btn tooltip">
-            <span class="tooltip-content">Archiwizuj Zadanie</span>
-            <i class="fa-regular fa-folder"></i>
-          </button>
+          ${taskIsMain ? `
+             <button data-archive-task-btn data-task-id="${task.id}" class="category-card-action-btn task-card-action-btn tooltip">
+              <span class="tooltip-content">Archiwizuj Zadanie</span>
+              <i class="fa-regular fa-folder"></i>
+            </button>
+            ` : ''}
+         
           <button data-delete-task-btn data-task-id="${task.id}"  class="category-card-action-btn category-card-delete-btn task-card-action-btn tooltip">
             <span class="tooltip-content">Usuń Zadanie</span>
             <i class="fa-solid fa-trash-can"></i>
@@ -3717,32 +3899,43 @@ class UPTTasksPanel extends UPTPanel {
 }
 
 class UPTArchivePanel extends UPTPanel {
-  constructor(selector, data) {
-    super(selector, data);
-    this.init();
-  }
 
   currentArchivedTasks = 0
 
-  init() {
+  constructor(selector, data) {
+    super(selector, data);
     this.noArchiveTasksMessage = this.panel.querySelector('[data-no-tasks-archive]')
     this.tasksList = this.panel.querySelector("[data-tasks-archive-list]");
+    this.sortTasksSelect = new CustomSelect(this.panel.querySelector("[data-sort-tasks][data-custom-select]"))
+    this.init();
+  } 
+
+  init() { 
     this.renderArchivedTasksList();
 
     if (this.currentArchivedTasks > 0) {
       this.noArchiveTasksMessage.style.display = "none"
     }
 
-    document.addEventListener(UPTPanel.TASK_ARCHIVE_EVENT, (e) => {
-      const archivedTask = e.detail
-      this.tasksList.append(this.renderArchivedTask(archivedTask))
-    })
-    document.addEventListener(UPTPanel.TASK_UN_ARCHIVE_EVENT, (e) => {
-      const unArchivedTask = e.detail
-      const unArchivedTaskCard = this.tasksList.querySelector(`[data-task-card][data-task-id="${unArchivedTask.id}"]`)
+    this.sortTasksSelect.onChangeSelect((e) => this.sortTasks(e, 'archive'))
 
-      unArchivedTaskCard?.remove()
-    })
+    document.addEventListener(UPTPanel.TASK_ARCHIVE_EVENT, (e) => this.taskArchiveEventHandler(e))
+    document.addEventListener(UPTPanel.TASK_UN_ARCHIVE_EVENT, (e) => this.taskRestoreEventHandler(e))
+    document.addEventListener(UPTPanel.TASK_RESTORE_EVENT, (e) => this.taskRestoreEventHandler(e))
+  }
+
+  /** @param {CustomEvent} e */
+  taskArchiveEventHandler(e) {
+    const archivedTask = e.detail
+    this.tasksList.append(this.renderArchivedTask(archivedTask))
+  }
+
+  /** @param {CustomEvent} e */
+  taskRestoreEventHandler(e) {
+    const unArchivedTask = e.detail
+    const unArchivedTaskCard = this.tasksList.querySelector(`[data-task-card][data-task-id="${unArchivedTask.id}"]`)
+
+    unArchivedTaskCard?.remove()
   }
 
   /** @param {UPT_Task} task */

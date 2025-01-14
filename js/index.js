@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   new UPTMainNavigation(UPT_MODULE_ID_SELECTOR);
 
   // Załaduj przykładowe dane
+  // korzyta z fetch() więc wymaga protokołu http !!!
   await loadTasksDataFromJSONFile();
 
   const apiService = UPTApiService.getInstance();
@@ -34,6 +35,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Zakładka Archiwum
     new UPTArchivePanel('#archiwum', data)
+
+    // interwał do sprawdzania czy nie upłynął czas na wykonanie zadania
+    new UPTTaskDeadlineInterval()
 
     hideLoading(mainContent)
   }) 

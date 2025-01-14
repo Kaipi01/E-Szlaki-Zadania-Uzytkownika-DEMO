@@ -130,7 +130,7 @@
           "isCompleted": true
         }
       ],
-      "isArchived": true,
+      "isArchived": false,
       "archivedAt": "2023-06-05T18:00:00Z"
     },
     {
@@ -185,7 +185,7 @@
           "isCompleted": true
         }
       ],
-      "isArchived": true,
+      "isArchived": false,
       "archivedAt": "2023-06-05T18:00:00Z"
     },
     {
@@ -240,7 +240,7 @@
           "isCompleted": true
         }
       ],
-      "isArchived": true,
+      "isArchived": false,
       "archivedAt": "2023-06-05T18:00:00Z"
     },
     {
@@ -369,7 +369,7 @@
         { "id": "zzzbbv288989hhg","name": "Rozgrzewka", "startDate": null, "isCompleted": true },
         { "id": "zzzzbbv2332gc88989hhg","name": "Jogging", "startDate": null, "isCompleted": true }
       ],
-      "isArchived": true,
+      "isArchived": false,
       "archivedAt": "2023-06-05T18:00:00Z"
     },
     {
@@ -484,7 +484,7 @@
           "isCompleted": true
         }
       ],
-      "isArchived": true,
+      "isArchived": false,
       "archivedAt": "2023-06-05T18:00:00Z"
     } 
   ]
