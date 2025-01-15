@@ -37,7 +37,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     new UPTArchivePanel('#archiwum', data)
 
     // interwał do sprawdzania czy nie upłynął czas na wykonanie zadania
-    new UPTTaskDeadlineInterval()
+    new UPTTaskDeadlineInterval(20_000)  // dla testów co 20 sekund
 
     UPT_Utils.hideLoading(mainContent)
   }) 

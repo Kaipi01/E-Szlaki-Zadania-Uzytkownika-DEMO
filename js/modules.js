@@ -2799,14 +2799,23 @@ class UPTTaskForm extends UPTForm {
 
       try {
         if (isEditMode) {
-          await this.apiService.updateTask(this.currentTask.id, task)
+          const updatedTask = await this.apiService.updateTask(this.currentTask.id, task)
+
+          if (updatedTask && updatedTask.type !== taskBeforeEdit.type) {  
+            UPT_Utils.dispatchCustomEvent(UPTPanel.TASK_TYPE_CHANGE_EVENT, {
+              status: updatedTask.status,
+              type: updatedTask.type
+            }) 
+          }
+
+          this.currentTask = updatedTask
 
           UPT_Utils.dispatchCustomEvent(UPTPanel.TASK_UPDATED_EVENT, {
             ...task,
             id: this.currentTask.id
           })
         } else {
-          const taskId = await this.apiService.createTask(task)
+          const taskId = await this.apiService.createTask(task) 
 
           UPT_Utils.dispatchCustomEvent(UPTPanel.TASK_CREATED_EVENT, {
             ...task,
@@ -2817,7 +2826,8 @@ class UPTTaskForm extends UPTForm {
         UPTToast.show(UPTToast.SUCCESS, `Zadanie zostało ${isEditMode ? 'zaktualizowane' : 'dodane'}!`)
       } catch (e) {
         UPTToast.show(UPTToast.ERROR, e.message)
-      } finally {
+      } finally { 
+
         if (!isEditMode) {
           this.resetForm()
         }
@@ -2834,13 +2844,16 @@ class UPTTaskForm extends UPTForm {
 // ---------------------------------------- ZAKŁADKI ---------------------------------------------
 
 class UPTTaskDeadlineInterval {
-  constructor() {
+
+  /** @param {number} milliseconds */
+  constructor(milliseconds) {
+    this.milliseconds = milliseconds
     this.init()
   }
 
   init() {
     this.checkIsTaskAfterDeadline()
-    setInterval(() => this.checkIsTaskAfterDeadline(), 500 * 60) // pół minuty
+    setInterval(() => this.checkIsTaskAfterDeadline(), this.milliseconds)
   }
 
   checkIsTaskAfterDeadline() {
@@ -2870,6 +2883,7 @@ class UPTPanel {
   static PANEL_CATEGORY = "category"
   static PANEL_ARCHIVE = "archive"
 
+  static TASK_TYPE_CHANGE_EVENT = "upt-task-type-change-event"
   static TASK_STATUS_CHANGE_EVENT = "upt-task-status-change-event"
   static TASK_CREATED_EVENT = "upt-task-created-event"
   static TASK_UPDATED_EVENT = "upt-task-updated-event"
@@ -3020,24 +3034,7 @@ class UPTPanel {
 
   getAllTasksCards() {
     return this.panel.querySelectorAll('[data-task-card][data-task-id]')
-  }
-
-  /** @param {UPT_Task} task */
-  static isTaskAfterDeadline(task) {
-    if (!task.endDate || task.endDate === '') return false
-
-    const dateToCheck = new Date(task.endDate);
-    const currentDate = new Date();
-    const isTaskAfterDeadline = dateToCheck < currentDate
-
-    if (isTaskAfterDeadline) {
-      task.isArchived = true
-      task.status = UPT_TaskStatus.ABANDONED
-      UPTApiService.getInstance().updateTask(task.id, task)
-    }
-
-    return isTaskAfterDeadline;
-  }
+  } 
 
   /** @param {UPT_Task} task */
   static async abandondTask(task) {
@@ -3073,7 +3070,7 @@ class UPTPanel {
       type: task.type
     })
 
-    UPTToast.show(UPTToast.SUCCESS, `Cofnięto stan zadania: ${task.name}!`)
+    UPTToast.show(UPTToast.INFO, `Cofnięto stan zadania: ${task.name}!`)
   }
 
   /** @param {UPT_Task} task */
@@ -3333,7 +3330,8 @@ class UPTMainPanel extends UPTPanel {
     document.addEventListener(UPTPanel.TASK_ARCHIVE_EVENT, (e) => {
       this.deleteTaskEventHandler(e)
       this.updateStatistics(e.detail, false)
-    })
+    }) 
+    document.addEventListener(UPTPanel.TASK_TYPE_CHANGE_EVENT, (e) => this.taskTypeChangeEventHandler(e)) 
     document.addEventListener(UPTPanel.TASK_UPDATED_EVENT, (e) => this.updateTaskEventHandler(e)) 
     document.addEventListener(UPTPanel.TASK_STATUS_CHANGE_EVENT, (e) => this.taskStatusChangeEventHandler(e)) 
 
@@ -3342,6 +3340,28 @@ class UPTMainPanel extends UPTPanel {
     document.addEventListener(UPTPanel.CATEGORY_UPDATED_EVENT, (e) => this.updateCategoryEventHandler(e))
 
     this.panel.addEventListener('change', (e) => this.markTaskAsDoneCheckBoxHandler(e))
+  }
+
+  /** @param {CustomEvent} e */
+  taskTypeChangeEventHandler(e) {
+    const task = e.detail; 
+
+    if (task.type === UPT_TaskType.MAIN) {
+      this.statisticNumberOfAllMainTasks++;
+      this.statisticNumberOfAllDailyTasks--;
+
+      this.currentNumberOfTasksMain++; // ?? FIXME: sprawdź jeszcze czy na pewno nie będzie powodowało to błędów
+      this.currentNumberOfTasksDaily--;
+    } else {
+      this.statisticNumberOfAllDailyTasks++;
+      this.statisticNumberOfAllMainTasks--;
+
+      this.currentNumberOfTasksMain--;
+      this.currentNumberOfTasksDaily++; // ?? FIXME: sprawdź jeszcze czy na pewno nie będzie powodowało to błędów 
+    }  
+
+    this.updateNoTasksMessageCards() 
+    this.updatePieChart()
   }
 
   /** @param {CustomEvent} e */
@@ -3419,6 +3439,10 @@ class UPTMainPanel extends UPTPanel {
       this.updatePieChart()
     }
 
+    this.updateNoTasksMessageCards() 
+  }
+
+  updateNoTasksMessageCards() {
     if (this.currentNumberOfTasksMain > 0) {
       this.hideNoMainTasksCard()
     } else {
@@ -3535,17 +3559,7 @@ class UPTMainPanel extends UPTPanel {
     this.mainTasksList.append(mainTasksFragment);
     this.dailyTasksList.append(dailyTasksFragment);
 
-    if (this.currentNumberOfTasksMain > 0) {
-      this.hideNoMainTasksCard()
-    } else {
-      this.showNoMainTasksCard()
-    }
-
-    if (this.currentNumberOfTasksDaily > 0) {
-      this.hideNoDailyTasksCard()
-    } else {
-      this.showNoDailyTasksCard()
-    }
+    this.updateNoTasksMessageCards()
   }
 
   renderTask(task) {
@@ -3643,6 +3657,10 @@ class UPTMainPanel extends UPTPanel {
     this.statisticNumberOfAllMainTasks = countTasksByType(statisticTasks, UPT_TaskType.MAIN)  
   }
 
+  /**
+   * @param {UPT_Task} task 
+   * @param {boolean} increment 
+   */
   updateStatistics(task, increment) {
     const { type, status } = task;
 
@@ -3952,17 +3970,14 @@ class UPTTasksPanel extends UPTPanel {
       window.location.hash = "zadania"
       this.changeVisibleTasks(e.detail.type)
     })
-
+    document.addEventListener(UPTPanel.TASK_TYPE_CHANGE_EVENT, (e) => this.taskTypeChangeEventHandler(e)) 
     document.addEventListener(UPTPanel.TASK_UPDATED_EVENT, (e) => this.taskUpdateEventHandler(e))
     document.addEventListener(UPTPanel.TASK_RESTORE_EVENT, (e) => this.taskUpdateEventHandler(e))
     document.addEventListener(UPTPanel.TASK_DELETED_EVENT, (e) => this.taskDeletedEventHandler(e))
     document.addEventListener(UPTPanel.TASK_ARCHIVE_EVENT, (e) => this.currentMainTasksNumber--)
 
     document.addEventListener(CustomSearchForm.SEARCH_EVENT, (e) => {
-      const {
-        panel,
-        value
-      } = e.detail
+      const { panel, value } = e.detail
 
       if (panel === this.panelName) {
         this.searchTasks(value)
@@ -3970,6 +3985,20 @@ class UPTTasksPanel extends UPTPanel {
     })
   }
 
+  /** @param {CustomEvent} e */
+  taskTypeChangeEventHandler(e) {
+    const task = e.detail; 
+
+    if (task.type === UPT_TaskType.MAIN) {
+      this.currentMainTasksNumber++
+      this.currentDailyTasksNumber--
+    } else {
+      this.currentDailyTasksNumber++
+      this.currentMainTasksNumber--
+    }
+  }
+
+  /** @param {CustomEvent} e */
   taskCreatedEventHandler(e) {
     const task = e.detail
     const taskCard = this.renderTask(task)
@@ -3983,6 +4012,7 @@ class UPTTasksPanel extends UPTPanel {
     this.tasksList.append(taskCard);
   }
 
+  /** @param {CustomEvent} e */
   taskDeletedEventHandler(e) {
     const task = e.detail
 
@@ -3993,6 +4023,7 @@ class UPTTasksPanel extends UPTPanel {
     }
   }
 
+  /** @param {CustomEvent} e */
   taskUpdateEventHandler(e) {
     const updatedTask = e.detail
     const prevTaskCard = this.panel.querySelector(`[data-task-card][data-task-id="${updatedTask.id}"]`)
@@ -4002,6 +4033,7 @@ class UPTTasksPanel extends UPTPanel {
     this.tasksList.append(newTaskCard)
   }
 
+  /** @param {CustomEvent} e */
   async endTaskHandler(e) {
     const button = e.target
 

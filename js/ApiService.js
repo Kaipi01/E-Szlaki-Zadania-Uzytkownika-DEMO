@@ -124,6 +124,7 @@ class UPTApiService {
   /**
    * @param {string} id
    * @param {UPT_Task} task
+   * @return {Promise<UPT_Task | null>}
    */
   async updateTask(id, task) {
     // return this.fetchAPI(`/tasks/${id}`, "PUT", task);
@@ -262,6 +263,7 @@ class UPTApiService {
   /**
    * @param {string} id
    * @param {UPT_Task} updatedTask
+   * @return {UPT_Task | null}
    */
   updateTask_LocalStorage(id, updatedTask) {
     const data = this.getAllData_LocalStorage();
@@ -298,14 +300,17 @@ class UPTApiService {
     const restoreTaskIndex = data.tasks.findIndex((task) => task.id === id)
     const task = data.tasks[restoreTaskIndex]
     const startDate = new Date(task.startDate);
-    const endDate = new Date(task.endDate);
-    const now = new Date();
-    const newEndDate = new Date(now.getTime() + (endDate - startDate));
+    const endDate = new Date(task.endDate); 
+    // aby interwał usuwający zadania nie usunął go od razu po przywróceniu
+    // ustawiam mu nowy termin na podstawie poprzedniego czasu potrzebnego na wykonanie zadania
+    const newEndDate = new Date(endDate.getTime() + Math.abs(endDate - startDate)); 
 
     task.isArchived = false
     task.archivedAt = null
     task.status = UPT_TaskStatus.IN_PROGRESS
     task.endDate = newEndDate.toISOString();
+
+    console.log(task.endDate)
 
     this.saveAllData_LocalStorage(data);
 
