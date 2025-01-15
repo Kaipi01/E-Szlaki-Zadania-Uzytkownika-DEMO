@@ -47,7 +47,7 @@ class UPTApiService {
     }
   }
 
-  // tylko do testów. Usuń
+  // tylko do symulacji. Usuń
   simulateLoadingFromDatabase(value) {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -148,7 +148,7 @@ class UPTApiService {
     return this.simulateLoadingFromDatabase(this.restoreTask_LocalStorage(id))
   }
 
-  //-------------------- Obsługa localStorage (odpowiada za przechowywanie stanu aplikacji) --------------------
+  //-------------------- Obsługa localStorage (odpowiada za przechowywanie stanu modułu) --------------------
 
   initializeStorage() {
     if (!localStorage.getItem(this.storageKey)) {
@@ -190,7 +190,7 @@ class UPTApiService {
     const data = this.getAllData_LocalStorage();
     const newCategory = {
       ...category,
-      id: generateId("category")
+      id: UPT_Utils.generateId("category")
     };
     data.categories.push(newCategory);
     this.saveAllData_LocalStorage(data);
@@ -247,7 +247,7 @@ class UPTApiService {
   /** @param {UPT_Task} task */
   createTask_LocalStorage(task) {
     const data = this.getAllData_LocalStorage();
-    const taskId = generateId("task")
+    const taskId = UPT_Utils.generateId("task")
     const newTask = {
       ...task,
       id: taskId,

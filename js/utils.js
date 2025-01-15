@@ -83,7 +83,6 @@ class UPT_SubTask {
   }
 }
 
-
 class UPT_Task {
   static ALL_DAY = "Cały dzień"
 
@@ -229,6 +228,8 @@ class UPT_Task {
   }
 }
 
+// ---------------------------- POMOC ----------------------------
+
 class UPT_Utils {
 
   /** @param {UPT_Task} task */
@@ -246,7 +247,7 @@ class UPT_Utils {
    * @param {object[]} data
    * @returns {object[]} 
    */
-  static searchByName(searchTerm, data) { 
+  static searchByName(searchTerm, data) {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
 
     return data.filter(obj =>
@@ -302,10 +303,20 @@ class UPT_Utils {
         sortedData = data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         break;
       case UPTPanel.SORT_DEADLINE_ASC:
-        sortedData = data.sort((a, b) => new Date(a.endDate) - new Date(b.endDate));
+        sortedData = data.sort((a, b) => {
+          if (a.type === UPT_TaskType.DAILY) {
+            return UPT_Utils.compareTasksByTime(a, b, true)
+          }
+          return new Date(a.endDate) - new Date(b.endDate)
+        });
         break;
       case UPTPanel.SORT_DEADLINE_DESC:
-        sortedData = data.sort((a, b) => new Date(b.endDate) - new Date(a.endDate));
+        sortedData = data.sort((a, b) => {
+          if (a.type === UPT_TaskType.DAILY) {
+            return UPT_Utils.compareTasksByTime(a, b, false)
+          }
+          return new Date(b.endDate) - new Date(a.endDate)
+        });
         break;
       case UPTPanel.SORT_PRIORITY_ASC:
         sortedData = UPT_Utils.sortTasksByPriorityASC(data);
@@ -359,9 +370,9 @@ class UPT_Utils {
       return UPT_Task.ALL_DAY
     }
     if (!task.endDate || task.endDate === task.startDate) {
-      return getHoursAndMinutes(task.startDate)
+      return UPT_Utils.getHoursAndMinutes(task.startDate)
     }
-    return getHoursAndMinutes(task.startDate) + " - " + getHoursAndMinutes(task.endDate)
+    return UPT_Utils.getHoursAndMinutes(task.startDate) + " - " + UPT_Utils.getHoursAndMinutes(task.endDate)
   }
 
   static getCategoryIconClass(category) {
@@ -407,6 +418,19 @@ class UPT_Utils {
   /**  @param {UPT_Task[]} tasks */
   static sortTasksByPriorityASC(tasks) {
     return UPT_Utils.sortTasksByPriority(tasks).reverse()
+  } 
+  
+  /** 
+   * @param {UPT_Task} taskA 
+   * @param {UPT_Task} taskB 
+   * @param {boolean} ascending  
+   * @returns {number} 
+   */
+    static compareTasksByTime(taskA, taskB, ascending = true) {
+    const timeA = UPT_Utils.getMinutesFromIsoDate(taskA.startDate);
+    const timeB = UPT_Utils.getMinutesFromIsoDate(taskB.startDate);
+
+    return ascending ? timeA - timeB : timeB - timeA;
   }
 
   /** @param {UPT_Task} task */
@@ -450,250 +474,259 @@ class UPT_Utils {
   /** @param {UPT_Task} task */
   static getTaskPrioritySubClass(task) {
     return UPT_Utils.getAllTaskPrioritySubClasses().get(task.priority)
-  }
-}
+  }  
 
-// ---------------------------- FUNCTIONS ----------------------------
-
-
-/** @param {HTMLElement} element */
-function hideElement(element) {
-  element.style.visibility = "hidden"
-  element.classList.add('sr-only')
-  element.setAttribute('aria-hidden', 'true')
-}
-
-/** @param {HTMLElement} element */
-function showElement(element) {
-  element.style.removeProperty('visibility')
-  element.classList.remove('sr-only')
-  element.removeAttribute('aria-hidden')
-}
-
-/**
- * @param {HTMLElement | string} element
- * @param {(element: HTMLElement) => void} callback
- */
-function manipulateDOMElement(element, callback) {
-  if (typeof element === "string") {
-    let selector = element;
-    element = document.querySelector(selector);
+  /** @param {HTMLElement} element */
+  static hideElement(element) {
+    element.style.visibility = "hidden"
+    element.classList.add('sr-only')
+    element.setAttribute('aria-hidden', 'true')
   }
 
-  if (element && element instanceof HTMLElement) {
-    callback(element);
-  } else {
-    console.error("element don't exist !")
-  }
-}
-
-/** 
- * @param {string} attributeName 
- * @param {HTMLElement | null} context
- */
-function getElementByAttr(attributeName, context = null) {
-  if (!context || !(context instanceof HTMLElement)) {
-    context = document
-  }
-  const element = context.querySelector(`[${attributeName}]`)
-
-  if (!element) {
-    console.error(`element[${attributeName}] is null`);
-    return null;
-  }
-  return element
-}
-
-/** 
- * @param {HTMLElement | string} card 
- * @param {string} color
- */
-function removeDataCard(card, color = "red") {
-  manipulateDOMElement(card, (card) => {
-    card.style.transition = "all 0.3s ease";
-    card.style.backgroundColor = color;
-
-    setTimeout(() => card.remove(), 400);
-  });
-}
-
-/** @param {HTMLElement | string} element */
-function showLoading(element) {
-  manipulateDOMElement(element, element => element.classList.add("loading"));
-}
-
-/** @param {HTMLElement | string} element */
-function hideLoading(element) {
-  manipulateDOMElement(element, (element) => element.classList.remove("loading"));
-}
-
-/**  @param {string} modalId */
-function showModalLoading(modalId) {
-  dispatchCustomEvent(UPTModal.START_LOADING_EVENT_NAME, {
-    modalId: modalId,
-  });
-}
-
-/**  @param {string} modalId */
-function hideModalLoading(modalId) {
-  dispatchCustomEvent(UPTModal.STOP_LOADING_EVENT_NAME, {
-    modalId: modalId
-  });
-}
-
-/**  @param {string} modalId */
-function hideModal(modalId) {
-  dispatchCustomEvent(UPTModal.HIDE_EVENT_NAME, {
-    modalId: modalId,
-  });
-}
-
-/**
- * @param {string} modalId
- * @param {string | null} title
- */
-function showModal(modalId, title = null) {
-  const modal = document.querySelector(`#${modalId}`);
-  const modalTitleAttr = modal?.querySelector(`[${CustomModal.ATTR_TITLE}]`);
-
-  if (modalTitleAttr && title) {
-    modalTitleAttr.textContent = title;
+  /** @param {HTMLElement} element */
+  static showElement(element) {
+    element.style.removeProperty('visibility')
+    element.classList.remove('sr-only')
+    element.removeAttribute('aria-hidden')
   }
 
-  dispatchCustomEvent(UPTModal.SHOW_EVENT_NAME, {
-    modalId
-  });
-}
+  /**
+   * @param {HTMLElement | string} element
+   * @param {(element: HTMLElement) => void} callback
+   */
+  static manipulateDOMElement(element, callback) {
+    if (typeof element === "string") {
+      let selector = element;
+      element = document.querySelector(selector);
+    }
 
-/**
- * @param {string} eventName
- * @param {object} eventData
- */
-function dispatchCustomEvent(eventName, eventData = {}) {
-  document.dispatchEvent(
-    new CustomEvent(eventName, {
-      detail: eventData,
+    if (element && element instanceof HTMLElement) {
+      callback(element);
+    } else {
+      console.error("element don't exist !")
+    }
+  }
+
+  /** 
+   * @param {string} attributeName 
+   * @param {HTMLElement | null} context
+   */
+  static getElementByAttr(attributeName, context = null) {
+    if (!context || !(context instanceof HTMLElement)) {
+      context = document
+    }
+    const element = context.querySelector(`[${attributeName}]`)
+
+    if (!element) {
+      console.error(`element[${attributeName}] is null`);
+      return null;
+    }
+    return element
+  }
+
+  /** 
+   * @param {HTMLElement | string} card 
+   * @param {string} color
+   */
+  static removeDataCard(card, color = "red") {
+    UPT_Utils.manipulateDOMElement(card, (card) => {
+      card.style.transition = "all 0.3s ease";
+      card.style.backgroundColor = color;
+
+      setTimeout(() => card.remove(), 400);
+    });
+  }
+
+  /** @param {HTMLElement | string} element */
+  static showLoading(element) {
+    UPT_Utils.manipulateDOMElement(element, element => element.classList.add("loading"));
+  }
+
+  /** @param {HTMLElement | string} element */
+  static hideLoading(element) {
+    UPT_Utils.manipulateDOMElement(element, (element) => element.classList.remove("loading"));
+  }
+
+  /**  @param {string} modalId */
+  static showModalLoading(modalId) {
+    UPT_Utils.dispatchCustomEvent(UPTModal.START_LOADING_EVENT_NAME, {
+      modalId: modalId,
+    });
+  }
+
+  /**  @param {string} modalId */
+  static hideModalLoading(modalId) {
+    UPT_Utils.dispatchCustomEvent(UPTModal.STOP_LOADING_EVENT_NAME, {
+      modalId: modalId
+    });
+  }
+
+  /**  @param {string} modalId */
+  static hideModal(modalId) {
+    UPT_Utils.dispatchCustomEvent(UPTModal.HIDE_EVENT_NAME, {
+      modalId: modalId,
+    });
+  }
+
+  /**
+   * @param {string} modalId
+   * @param {string | null} title
+   */
+  static showModal(modalId, title = null) {
+    const modal = document.querySelector(`#${modalId}`);
+    const modalTitleAttr = modal?.querySelector(`[${CustomModal.ATTR_TITLE}]`);
+
+    if (modalTitleAttr && title) {
+      modalTitleAttr.textContent = title;
+    }
+
+    UPT_Utils.dispatchCustomEvent(UPTModal.SHOW_EVENT_NAME, {
+      modalId
+    });
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {object} eventData
+   */
+  static dispatchCustomEvent(eventName, eventData = {}) {
+    document.dispatchEvent(
+      new CustomEvent(eventName, {
+        detail: eventData,
+      })
+    );
+  }
+
+  /** @param {string} dateString */
+  static formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+
+    return `${day}.${month}.${year}`;
+  }
+
+  /** @param {string | null} dateString */
+  static getHoursAndMinutes(dateStr) {
+    if (!dateStr || dateStr === '' || dateStr === UPT_Task.ALL_DAY) return ''
+
+    const date = new Date(dateStr)
+    const hours = date.getHours().toString().padStart(2, "0")
+    const minutes = date.getMinutes().toString().padStart(2, "0")
+    return `${hours}:${minutes}`
+  } 
+
+  /** 
+   * @param {string} isoDate 
+   * @returns {number} 
+   */
+  static getMinutesFromIsoDate(isoDate) {
+    const date = new Date(isoDate);
+    const hours = date.getUTCHours(); 
+    const minutes = date.getUTCMinutes();
+    return hours * 60 + minutes;
+  }
+
+  /** 
+   * @param {string} dateString 
+   * @param {object} options 
+   */
+  static getFriendlyDateFormat(dateString, options = null) {
+    const date = new Date(dateString);
+    const formattedDate = new Intl.DateTimeFormat("pl-PL", options ? options : {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(date);
+
+    return UPT_Utils.capitalizeWords(formattedDate);
+  }
+
+  /** 
+   * @param {string} prefix
+   * @returns {string} Unikalny identyfikator. 
+   */
+  static generateId(prefix = "") {
+    return prefix + Math.random().toString(36);
+  }
+
+  /**
+   * Przekształca każde pierwsze słowo w zdaniu na wielką literę
+   * @param {string} text
+   * @returns {string}
+   */
+  static capitalizeWords(text) {
+    return text
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
+  /**
+   * @param {() => void} callback
+   * @param {HTMLElement | NodeListOf<HTMLElement>} elementsToAnimate
+   * @param {number} durationInMiliseconds
+   */
+  static fadeAnimation(callback, elementsToAnimate, durationInMiliseconds) {
+    const elements = elementsToAnimate instanceof HTMLElement ? [elementsToAnimate] : [...elementsToAnimate];
+
+    elements.forEach(el => {
+      el.style.transition = `all ${durationInMiliseconds / 1000.0}s ease`
+      el.style.opacity = "0"
     })
-  );
-}
-
-/** @param {string} dateString */
-function formatDate(dateString) {
-  const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-
-  return `${day}.${month}.${year}`;
-}
-
-/** @param {string | null} dateString */
-function getHoursAndMinutes(dateStr) {
-  if (!dateStr || dateStr === '' || dateStr === UPT_Task.ALL_DAY) return ''
-
-  const date = new Date(dateStr)
-  const hours = date.getHours().toString().padStart(2, "0")
-  const minutes = date.getMinutes().toString().padStart(2, "0")
-  return `${hours}:${minutes}`
-}
-
-/** 
- * @param {string} dateString 
- * @param {object} options 
- */
-function getFriendlyDateFormat(dateString, options = null) {
-  const date = new Date(dateString);
-  const formattedDate = new Intl.DateTimeFormat("pl-PL", options ? options : {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(date);
-
-  return capitalizeWords(formattedDate);
-}
-
-/** 
- * @param {string} prefix
- * @returns {string} Unikalny identyfikator. 
- */
-function generateId(prefix = "") {
-  return prefix + Math.random().toString(36);
-}
-
-/**
- * Przekształca każde pierwsze słowo w zdaniu na wielką literę
- * @param {string} text
- * @returns {string}
- */
-function capitalizeWords(text) {
-  return text
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-/**
- * @param {() => void} callback
- * @param {HTMLElement | NodeListOf<HTMLElement>} elementsToAnimate
- * @param {number} durationInMiliseconds
- */
-function fadeAnimation(callback, elementsToAnimate, durationInMiliseconds) {
-  const elements = elementsToAnimate instanceof HTMLElement ? [elementsToAnimate] : [...elementsToAnimate];
-
-  elements.forEach(el => {
-    el.style.transition = `all ${durationInMiliseconds / 1000.0}s ease`
-    el.style.opacity = "0"
-  }) 
-
-  setTimeout(() => {
-    callback() 
-    elements.forEach(el => el.style.opacity = "1")
-  }, durationInMiliseconds)
-}
-
-/**
- * Mechanizm throttle do zabezpieczenia animacji
- * @returns {(...args: any[]) => void}
- * @param {Function} callback
- * @param {number} delay
- */
-function throttle(callback, delay) {
-  let shouldWait = false;
-
-  return (...args) => {
-    if (shouldWait) return;
-
-    callback(...args);
-    shouldWait = true;
 
     setTimeout(() => {
-      shouldWait = false;
-    }, delay);
-  };
-};
-
-/**
- * Ładuje dane z pliku example-data.json do pamięcie LocalStorage przeglądarki
- */
-async function loadTasksDataFromJSONFile() {
-  if (localStorage.getItem(UPTApiService.UPT_LOCAL_STORAGE_ITEM_NAME) !== null)
-    return;
-
-  try {
-    const res = await fetch("./example-data.json");
-    if (!res.ok) {
-      throw new Error(
-        `HTTP error! Status: ${res.status}. Message: ${res.statusText}`
-      );
-    }
-    const data = await res.json();
-
-    return localStorage.setItem(
-      UPTApiService.UPT_LOCAL_STORAGE_ITEM_NAME,
-      JSON.stringify(data)
-    );
-  } catch (error) {
-    return console.error("Unable to fetch data:", error);
+      callback()
+      elements.forEach(el => el.style.opacity = "1")
+    }, durationInMiliseconds)
   }
+
+  /**
+   * Mechanizm throttle do zabezpieczenia animacji
+   * @returns {(...args: any[]) => void}
+   * @param {Function} callback
+   * @param {number} delay
+   */
+  static throttle(callback, delay) {
+    let shouldWait = false;
+
+    return (...args) => {
+      if (shouldWait) return;
+
+      callback(...args);
+      shouldWait = true;
+
+      setTimeout(() => {
+        shouldWait = false;
+      }, delay);
+    };
+  };
+
+  /**
+   * Ładuje dane z pliku example-data.json do pamięcie LocalStorage przeglądarki
+   */
+  static async loadTasksDataFromJSONFile() {
+    if (localStorage.getItem(UPTApiService.UPT_LOCAL_STORAGE_ITEM_NAME) !== null)
+      return;
+
+    try {
+      const res = await fetch("./example-data.json");
+      if (!res.ok) {
+        throw new Error(
+          `HTTP error! Status: ${res.status}. Message: ${res.statusText}`
+        );
+      }
+      const data = await res.json();
+
+      return localStorage.setItem(
+        UPTApiService.UPT_LOCAL_STORAGE_ITEM_NAME,
+        JSON.stringify(data)
+      );
+    } catch (error) {
+      return console.error("Unable to fetch data:", error);
+    }
+  }
+
 }

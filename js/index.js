@@ -11,14 +11,14 @@ const UPT_LOCAL_STORAGE_ITEM_NAME = "user-private-tasks-data",
 document.addEventListener("DOMContentLoaded", async function () {
   const mainContent = document.querySelector(`${UPT_MODULE_ID_SELECTOR} [data-main-content]`)
 
-  showLoading(mainContent)
+  UPT_Utils.showLoading(mainContent)
 
   // Główna nawigacja
   new UPTMainNavigation(UPT_MODULE_ID_SELECTOR);
 
   // Załaduj przykładowe dane
   // korzyta z fetch() więc wymaga protokołu http !!!
-  await loadTasksDataFromJSONFile();
+  await UPT_Utils.loadTasksDataFromJSONFile();
 
   const apiService = UPTApiService.getInstance();
 
@@ -39,6 +39,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     // interwał do sprawdzania czy nie upłynął czas na wykonanie zadania
     new UPTTaskDeadlineInterval()
 
-    hideLoading(mainContent)
+    UPT_Utils.hideLoading(mainContent)
   }) 
 });
