@@ -12,6 +12,7 @@
 
       &-header {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         gap: 0.25rem;
       }
@@ -45,9 +46,7 @@
           grid-template-columns: repeat(3, 1fr);
           margin-top: 3rem;
         }
-        @media (min-width: $content-breakpoint-tablet-large) {
-          grid-template-columns: 0.65fr repeat(2, 0.3fr);
-        }
+
         @media (min-width: $content-breakpoint-desktop-large) {
           grid-template-columns: 0.65fr repeat(2, 0.25fr);
         }
@@ -62,9 +61,13 @@
 
     .tasks-cards-list {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(toRem(400), 1fr));
+      grid-template-columns: 1fr;
       gap: $main-content-layout-gap-small;
       transition: all 0.3s ease;
+
+      @media (min-width: $content-breakpoint-phone) {
+        grid-template-columns: repeat(auto-fit, minmax(toRem(400), 1fr));
+      }
 
       @media (min-width: $content-breakpoint-desktop) {
         gap: $main-content-layout-gap;

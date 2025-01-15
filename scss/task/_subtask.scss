@@ -23,9 +23,14 @@
       
       &-header {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
         gap: 1.5rem;
-        align-items: center;
+        
+        @media (min-width: $content-breakpoint-phone) {
+          flex-direction: row;
+          flex-wrap: wrap; 
+          align-items: center;
+        }
 
         @media (min-width: $content-breakpoint-tablet) {
           .upt-form-control {

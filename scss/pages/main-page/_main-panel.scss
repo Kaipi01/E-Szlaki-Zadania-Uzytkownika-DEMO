@@ -21,12 +21,36 @@
       display: grid;
       grid-template-columns: 1fr;
       gap: 1rem;
+      align-items: center;
+      justify-content: center; 
+
+      @media (min-width:  $content-breakpoint-phone-large) {
+        grid-template-columns: toRem(300) 1fr;  
+        gap: 0;
+      }
 
       @media (min-width: $content-breakpoint-tablet) {
-        grid-column: span 2;
-        // grid-template-columns: repeat(2, 1fr);
-        grid-template-columns: toRem(300) 1fr;
-        gap: 2rem;
+        grid-column: span 2;  
+      } 
+
+      &-left-content {
+        
+      }
+
+      .custom-pie-chart {
+        flex-direction: column;
+
+        .pie-chart { 
+          max-width: toRem(150);
+        }
+
+        @media (min-width: $content-breakpoint-tablet) {
+           flex-direction: row;
+
+           .pie-chart { 
+            max-width: toRem(200);
+          }
+        }
       }
       
       .green-list {
@@ -91,10 +115,7 @@
         list-style: none;
         .task {
           margin-bottom: 0.5rem;
-        }
-
-        .no-tasks-card-info { 
-        }
+        } 
       }
 
       .upt-header {

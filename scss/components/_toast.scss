@@ -1,3 +1,4 @@
+@use "../base/variables" as *;
 @use "../functions/toRem" as fun;
 
 #user-private-tasks-module {
@@ -22,10 +23,16 @@
       position: fixed;
       z-index: 110;
       top: 1rem;
-      right: 1.5rem;
+      right: 0.15rem;
       flex-direction: column;
       align-items: flex-end;
+      width: calc(100% - 0.15rem);
       gap: 0.5rem;
+
+      @media(min-width: $content-breakpoint-phone-large) {
+        right: 1.5rem;
+        width: calc(100% - 1.5rem);
+      } 
     }
 
     &.success {

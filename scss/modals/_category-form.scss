@@ -15,16 +15,22 @@
       }
 
       &-actions {
-        display: flex;
-        grid-column: span 2;
+        display: flex; 
         align-items: center;
         justify-content: flex-end;
         gap: 1rem;
+
+        @media (min-width: $content-breakpoint-tablet) {
+          grid-column: span 2;
+        }
       } 
     } 
 
     &-desc {
-      grid-column: span 2;
+      
+      @media (min-width: $content-breakpoint-tablet) {
+        grid-column: span 2;
+      }
     }
   }
 }

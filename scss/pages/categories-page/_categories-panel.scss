@@ -16,7 +16,7 @@
       align-items: start; 
       margin-bottom: $main-content-layout-gap-small; 
 
-      @media (min-width: $content-breakpoint-phone-large) {
+      @media (min-width: $content-breakpoint-tablet-small) {
         grid-template-columns: repeat(2, 1fr);
       }
       @media (min-width: $content-breakpoint-tablet-large) {
@@ -30,7 +30,7 @@
       &-left-content {
         margin-bottom: 1.5rem;
 
-        @media (min-width: $content-breakpoint-phone-large) {
+        @media (min-width: $content-breakpoint-tablet-small) {
           width: fit-content;
           margin-bottom: 0;
         }
