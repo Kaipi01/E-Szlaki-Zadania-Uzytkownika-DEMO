@@ -252,7 +252,7 @@ class UPTApiService {
     const newTask = {
       ...task,
       id: taskId,
-      createdAt: new Date().toISOString(),
+      createdAt: UPT_Utils.toLocalISOString(new Date()),
     };
     data.tasks.push(newTask);
     this.saveAllData_LocalStorage(data);
@@ -274,7 +274,7 @@ class UPTApiService {
         ...data.tasks[index],
         ...updatedTask,
         id,
-        updatedAt: new Date().toISOString(),
+        updatedAt: UPT_Utils.toLocalISOString(new Date()),
       };
       this.saveAllData_LocalStorage(data);
 
@@ -288,7 +288,7 @@ class UPTApiService {
     const data = this.getAllData_LocalStorage();
     const archivedTaskIndex = data.tasks.findIndex((task) => task.id === id)
     data.tasks[archivedTaskIndex].isArchived = true
-    data.tasks[archivedTaskIndex].archivedAt = (new Date()).toISOString()
+    data.tasks[archivedTaskIndex].archivedAt = UPT_Utils.toLocalISOString(new Date())
     this.saveAllData_LocalStorage(data);
 
     return data.tasks[archivedTaskIndex]
@@ -301,14 +301,17 @@ class UPTApiService {
     const task = data.tasks[restoreTaskIndex]
     const startDate = new Date(task.startDate);
     const endDate = new Date(task.endDate); 
+    const dayInMiliseconds = 24 * 60 * 60 * 1000
+    const dateTimeDifference = Math.abs(endDate - startDate)
+    const extraTime = dateTimeDifference < dayInMiliseconds ? dayInMiliseconds : dateTimeDifference
     // aby interwał usuwający zadania nie usunął go od razu po przywróceniu
     // ustawiam mu nowy termin na podstawie poprzedniego czasu potrzebnego na wykonanie zadania
-    const newEndDate = new Date(endDate.getTime() + Math.abs(endDate - startDate)); 
+    const newEndDate = new Date(endDate.getTime() + extraTime); 
 
     task.isArchived = false
     task.archivedAt = null
     task.status = UPT_TaskStatus.IN_PROGRESS
-    task.endDate = newEndDate.toISOString();
+    task.endDate = UPT_Utils.toLocalISOString(newEndDate);
 
     console.log(task.endDate)
 

@@ -27,7 +27,7 @@ class UPT_TaskCategory {
     this.name = name;
     this.desc = desc;
     this.icon = icon;
-    this.createdAt = (new Date()).toISOString();
+    this.createdAt = UPT_Utils.toLocalISOString(new Date());
   }
 
   /** @param {string} icon */
@@ -118,7 +118,7 @@ class UPT_Task {
   /** @param {UPT_TaskInterface} taskProps */
   constructor(taskProps) {
     this.id = String(taskProps.id);
-    this.createdAt = (new Date()).toISOString();
+    this.createdAt = UPT_Utils.toLocalISOString(new Date());
     this.validateTaskProps(taskProps);
   }
 
@@ -153,7 +153,7 @@ class UPT_Task {
 
   /** @param {string} value */
   setUpdatedAt(value) {
-    this.updatedAt = (new Date(value)).toISOString();
+    this.updatedAt = UPT_Utils.toLocalISOString(new Date(value));
   }
 
   /** @param {string | null} value */
@@ -287,7 +287,7 @@ class UPT_Utils {
    * @param {Array<object>} data
    */
   static getSortedDataBy(value, data) {
-    let sortedData
+    let sortedData 
 
     switch (value) {
       case UPTPanel.SORT_NAME_ASC:
@@ -307,15 +307,19 @@ class UPT_Utils {
           if (a.type === UPT_TaskType.DAILY) {
             return UPT_Utils.compareTasksByTime(a, b, true)
           }
-          return new Date(a.endDate) - new Date(b.endDate)
-        });
+          const dateA = new Date(a.endDate).getTime();
+          const dateB = new Date(b.endDate).getTime(); 
+          return dateA - dateB; 
+        }); 
         break;
       case UPTPanel.SORT_DEADLINE_DESC:
         sortedData = data.sort((a, b) => {
           if (a.type === UPT_TaskType.DAILY) {
             return UPT_Utils.compareTasksByTime(a, b, false)
           }
-          return new Date(b.endDate) - new Date(a.endDate)
+          const dateA = new Date(a.endDate).getTime();
+          const dateB = new Date(b.endDate).getTime();
+          return dateB - dateA; 
         });
         break;
       case UPTPanel.SORT_PRIORITY_ASC:
@@ -347,6 +351,18 @@ class UPT_Utils {
     return dateFromTimeStr
   }
 
+  /** @param {Date} date */
+  static toLocalISOString(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+  
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+  }
+
   /** 
    * @param {string | null} dateStr 
    * @param {string} dateInputType
@@ -359,7 +375,7 @@ class UPT_Utils {
       dateFormatForInput = dateStr
     } else {
       const date = new Date(dateStr);
-      dateFormatForInput = date.toISOString().slice(0, 16)
+      dateFormatForInput = UPT_Utils.toLocalISOString(date).slice(0, 16)
     }
 
     return dateFormatForInput
@@ -622,17 +638,19 @@ class UPT_Utils {
    * @returns {number} 
    */
   static getMinutesFromIsoDate(isoDate) {
-    const date = new Date(isoDate);
-    const hours = date.getUTCHours(); 
-    const minutes = date.getUTCMinutes();
+    const date = new Date(isoDate); 
+    const hours = date.getHours(); 
+    const minutes = date.getMinutes(); 
     return hours * 60 + minutes;
   }
 
   /** 
-   * @param {string} dateString 
+   * @param {string | null} dateString 
    * @param {object} options 
    */
   static getFriendlyDateFormat(dateString, options = null) {
+    if (!dateString || dateString.trim() === '') return ''
+
     const date = new Date(dateString);
     const formattedDate = new Intl.DateTimeFormat("pl-PL", options ? options : {
       weekday: "long",
@@ -702,31 +720,5 @@ class UPT_Utils {
         shouldWait = false;
       }, delay);
     };
-  };
-
-  /**
-   * Ładuje dane z pliku example-data.json do pamięcie LocalStorage przeglądarki
-   */
-  static async loadTasksDataFromJSONFile() {
-    if (localStorage.getItem(UPTApiService.UPT_LOCAL_STORAGE_ITEM_NAME) !== null)
-      return;
-
-    try {
-      const res = await fetch("./example-data.json");
-      if (!res.ok) {
-        throw new Error(
-          `HTTP error! Status: ${res.status}. Message: ${res.statusText}`
-        );
-      }
-      const data = await res.json();
-
-      return localStorage.setItem(
-        UPTApiService.UPT_LOCAL_STORAGE_ITEM_NAME,
-        JSON.stringify(data)
-      );
-    } catch (error) {
-      return console.error("Unable to fetch data:", error);
-    }
-  }
-
+  }; 
 }

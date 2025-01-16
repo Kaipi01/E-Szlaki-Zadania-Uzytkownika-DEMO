@@ -25,13 +25,11 @@
       top: 1rem;
       right: 0.15rem;
       flex-direction: column;
-      align-items: flex-end;
-      width: calc(100% - 0.15rem);
+      align-items: flex-end; 
       gap: 0.5rem;
 
       @media(min-width: $content-breakpoint-phone-large) {
-        right: 1.5rem;
-        width: calc(100% - 1.5rem);
+        right: 1.5rem; 
       } 
     }
 

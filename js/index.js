@@ -14,11 +14,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   UPT_Utils.showLoading(mainContent)
 
   // Główna nawigacja
-  new UPTMainNavigation(UPT_MODULE_ID_SELECTOR);
-
-  // Załaduj przykładowe dane
-  // korzyta z fetch() więc wymaga protokołu http !!!
-  await UPT_Utils.loadTasksDataFromJSONFile();
+  new UPTMainNavigation(UPT_MODULE_ID_SELECTOR); 
 
   const apiService = UPTApiService.getInstance();
 

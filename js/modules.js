@@ -248,7 +248,7 @@ class UPTToast {
     return toast;
   }
 
-  close() {
+  close() { 
     this.toast.style.animation = `close ${this.TIMER_ANIMATION_DURATION / 1000.0}s cubic-bezier(.87,-1,.57,.97) forwards`;
     this.toastTimer.classList.remove("timer-animation");
 
@@ -272,7 +272,6 @@ class UPTToast {
     let toastIcon;
     this.toast.classList.remove(UPTToast.SUCCESS, UPTToast.WARNING, UPTToast.ERROR, UPTToast.INFO);
     this.toastIcon.classList.remove(UPTToast.SUCCESS_ICON, UPTToast.WARNING_ICON, UPTToast.ERROR_ICON, UPTToast.INFO_ICON);
-    // this.toast.style.display = "flex";
     this.toast.style.removeProperty('display')
 
     switch (type) {
@@ -404,7 +403,7 @@ class UPTModal {
             return;
           }
           self.selectedTrigger = event.currentTarget;
-          self.UPT_Utils.showModal();
+          self.showModal();
           self.initModalEvents();
         });
       }
@@ -413,7 +412,7 @@ class UPTModal {
     // listen to the openModal event -> open modal without a trigger button
     this.element.addEventListener("upt-open-modal", function (event) {
       if (event.detail) self.selectedTrigger = event.detail;
-      self.UPT_Utils.showModal();
+      self.showModal();
       self.initModalEvents();
     });
 
@@ -1811,10 +1810,7 @@ class UPTTaskDetails {
 
   updateSubTasksList(e) {
     const task = this.currentTask
-    const {
-      id,
-      isCompleted
-    } = e.detail
+    const { id, isCompleted } = e.detail
     const updatedSubTask = task.subTasks.find(subTask => subTask.id === id)
 
     updatedSubTask.isCompleted = isCompleted
@@ -1931,7 +1927,7 @@ class UPTTaskDetails {
       new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
 
     this.deadlineTimerElement.querySelector("custom-countdown")?.remove()
-    timeToEndDayCountdown.setAttribute("data-date-end", deadlineDate.toISOString());
+    timeToEndDayCountdown.setAttribute("data-date-end", UPT_Utils.toLocalISOString(deadlineDate));
     timeToEndDayCountdown.setAttribute("data-time-units-to-show", deadlineTimeUnitsToShow);
 
     if (task.isArchived || task.status === UPT_TaskStatus.COMPLETED || task.status === UPT_TaskStatus.ABANDONED) {
@@ -2072,6 +2068,7 @@ class UPTSubTasksList {
       }
 
       subTaskCard.classList.toggle('subtask--completed')
+      subTaskCard.setAttribute("data-subtask-is-completed", subTaskCheckbox.checked)
 
       this.list.dispatchEvent(new CustomEvent(UPTSubTasksList.SUBTASK_STATE_CHANGE_EVENT, {
         detail: subTaskData
@@ -2114,7 +2111,10 @@ class UPTSubTasksList {
     const isDisabledMode = mode === UPTSubTasksList.MODE_SHOW_DISABLED
     const inputDateType = isTaskMain ? "datetime-local" : "time"
     const subTaskDateForInput = UPT_Utils.getDateFormatForInput(subTask.startDate, inputDateType)
-
+    const startDate = subTask.startDate
+    const startDateHours = UPT_Utils.getHoursAndMinutes(startDate)
+    const startDateFull = new Date(startDate).toLocaleDateString()
+    const startDateFormat  = startDate ? (isTaskMain ? (startDateHours + ', ' + startDateFull) : startDate) : ''
     const li = document.createElement("li")
     const subTaskCompleteInput = !isEditMode ? `
       <span class="task-checkbox custom-checkbox-group" ${isDisabledMode ? 'data-disabled' : ''}>
@@ -2132,7 +2132,7 @@ class UPTSubTasksList {
             <i class="fa-solid fa-trash-can"></i>
           </button>
       </span>  
-    ` : ''
+    ` : '' 
 
     const subTaskHeaderContent = isEditMode ?
       `<span class="upt-form-field">
@@ -2147,15 +2147,16 @@ class UPTSubTasksList {
     ` :
       `
         <span data-subtask-name class="subtask-name">${subTask.name}</span>
-        <span data-subtask-date class="subtask-date">${subTask.endDate ?? ''}</span>
+        <span data-subtask-date class="subtask-date">${startDateFormat}</span>
       `
 
     li.className = `subtask ${subTask.isCompleted ? 'subtask--completed' : ''} task modern-card`
     li.setAttribute("data-subtask-card", "")
     li.setAttribute("data-subtask-id", subTask.id)
+    li.setAttribute("data-subtask-is-completed", subTask.isCompleted)
     li.innerHTML = `
         ${subTaskCompleteInput}
-        <span class="task-content">
+        <span class="task-content subtask-content">
           <span class="task-header subtask-header">${subTaskHeaderContent}</span>
         </span>
         ${deleteSubTaskButton}                        
@@ -2564,8 +2565,7 @@ class UPTTaskForm extends UPTForm {
     this.subTaskModule.clearSubTasksList()
     this.priorityCustomSelect.chooseOption(null)
     this.typeCustomSelect.chooseOption(UPT_TaskType.DAILY)
-    this.categoryCustomSelect.chooseOption(null)
-    // this.dateInputsWrappersForDaily.forEach(wrapper => wrapper.querySelector('input[type="time"]').removeAttribute("disabled"))
+    this.categoryCustomSelect.chooseOption(null) 
     this.dateInputsForDaily.forEach(input => input.removeAttribute("disabled"))
   }
 
@@ -2576,7 +2576,9 @@ class UPTTaskForm extends UPTForm {
   async displayFormData(mode, taskId) {
     const isEditMode = mode === UPTTaskForm.MODE_EDIT
 
-    if (isEditMode) UPT_Utils.showModalLoading(this.modalId)
+    if (isEditMode) {
+      UPT_Utils.showModalLoading(this.modalId) 
+    }
 
     this.resetForm()
 
@@ -2611,7 +2613,7 @@ class UPTTaskForm extends UPTForm {
 
       dateStartInput.value = dateInputType === 'time' ? UPT_Utils.getHoursAndMinutes(task.startDate) : UPT_Utils.getDateFormatForInput(task.startDate, dateInputType)
       dateEndInput.value = dateInputType === 'time' ? UPT_Utils.getHoursAndMinutes(task.endDate) : UPT_Utils.getDateFormatForInput(task.endDate, dateInputType)
-
+  
       allSubTaskDateInputs.forEach(input => {
         input.setAttribute('data-main-value', isTaskMain ? input.value : "")
         input.setAttribute('data-daily-value', isTaskMain ? "" : input.value)
@@ -2746,8 +2748,12 @@ class UPTTaskForm extends UPTForm {
     } else {
       const endDate = UPT_Utils.createTaskDateFromStr(formData[UPTTaskForm.FIELD_DATE_END], formData[UPTTaskForm.FIELD_TYPE])
       const startDate = UPT_Utils.createTaskDateFromStr(formData[UPTTaskForm.FIELD_DATE_START], formData[UPTTaskForm.FIELD_TYPE])
-      startDateValue = startDate.toISOString()
-      endDateValue = endDate ? endDate.toISOString() : startDate.toISOString()
+      startDateValue = UPT_Utils.toLocalISOString(startDate)
+      endDateValue = endDate ?  UPT_Utils.toLocalISOString(endDate) : startDateValue
+
+      console.log("data zakończenia (input datetime-local): ", formData[UPTTaskForm.FIELD_DATE_END])
+      console.log("data zakończenia (wartość jaka będzie zapisana): ", endDateValue)
+      console.log("obiekt endDate: ", endDate)
     }
 
     const task = new UPT_Task({
@@ -2776,9 +2782,10 @@ class UPTTaskForm extends UPTForm {
       const subTaskId = card.dataset.subtaskId
       const subTaskName = card.querySelector("[data-subtask-input-name]")
       const subTaskDate = card.querySelector("[data-subtask-input-date]")
+      const subTaskIsCompleted = card.getAttribute("data-subtask-is-completed") === "true"
 
       formData[UPTTaskForm.FIELD_SUBTASKS].push(
-        new UPT_SubTask(subTaskId, subTaskName.value, subTaskDate.value ?? null)
+        new UPT_SubTask(subTaskId, subTaskName.value, subTaskDate.value ?? null, subTaskIsCompleted)
       )
     })
 
@@ -3023,11 +3030,17 @@ class UPTPanel {
     const value = e.detail.value
     const tasks = this.getTasksForPanel()
     const sortedTasks = UPT_Utils.getSortedDataBy(value, tasks)
+    const isSortByDate = value === UPTPanel.SORT_DEADLINE_DESC || value === UPTPanel.SORT_DEADLINE_ASC
+
+    console.log(tasks.filter(task => task.type === UPT_TaskType.MAIN)) 
+    console.log(sortedTasks.filter(task => task.type === UPT_TaskType.MAIN)) 
 
     UPT_Utils.fadeAnimation(() => {
       sortedTasks.forEach((task, index) => {
         const taskCard = this.panel.querySelector(`[data-task-id="${task.id}"]`)
-        taskCard.style.order = index
+        const order = (task.startDate === UPT_Task.ALL_DAY && isSortByDate) ? 9999 : index
+  
+        taskCard.style.order = order 
       })
     }, this.tasksList, 300)
   }
@@ -3042,7 +3055,7 @@ class UPTPanel {
     const archivedTask = {
       ...task,
       isArchived: true,
-      archivedAt: (new Date()).toISOString(),
+      archivedAt: UPT_Utils.toLocalISOString(new Date()),
       status: UPT_TaskStatus.ABANDONED
     }
 
@@ -3090,7 +3103,10 @@ class UPTPanel {
   }
 
   /** @param {UPT_Task} task */
-  getCategoryByTask = (task) => this.categories.find((cat) => cat.id === task.categoryId)
+  getCategoryByTask(task) {
+    const allCategories = this.apiService.getCategories_LocalStorage()
+    return allCategories.find((cat) => cat.id === task.categoryId)
+  }
 
   setClickEventListeners() {
     const actionsMap = {
@@ -3350,14 +3366,14 @@ class UPTMainPanel extends UPTPanel {
       this.statisticNumberOfAllMainTasks++;
       this.statisticNumberOfAllDailyTasks--;
 
-      this.currentNumberOfTasksMain++; // ?? FIXME: sprawdź jeszcze czy na pewno nie będzie powodowało to błędów
+      this.currentNumberOfTasksMain++; 
       this.currentNumberOfTasksDaily--;
     } else {
       this.statisticNumberOfAllDailyTasks++;
       this.statisticNumberOfAllMainTasks--;
 
       this.currentNumberOfTasksMain--;
-      this.currentNumberOfTasksDaily++; // ?? FIXME: sprawdź jeszcze czy na pewno nie będzie powodowało to błędów 
+      this.currentNumberOfTasksDaily++; 
     }  
 
     this.updateNoTasksMessageCards() 
@@ -3568,12 +3584,12 @@ class UPTMainPanel extends UPTPanel {
     const li = document.createElement("li");
     const category = this.getCategoryByTask(task);
     const taskPrioritySubClass = UPT_Utils.getTaskPrioritySubClass(task);
-    const taskRepeatIcon = !taskIsMain ? '<i class="fa-solid fa-rotate"></i>' : "";
+    const taskRepeatIcon = !taskIsMain ? '<i class="fa-solid fa-rotate"></i>' : ""; 
 
     const taskDateInfo = taskIsMain ? `
       <span class="task-date tooltip">
-        <i class="fa-regular fa-calendar"></i> ${UPT_Utils.getFriendlyDateFormat(task.endDate, { day: "numeric", month: "short" })} 
-        <i class="fa-regular fa-clock"></i> ${UPT_Utils.getHoursAndMinutes(task.endDate)}
+        <i class="fa-regular fa-calendar"></i>${UPT_Utils.getFriendlyDateFormat(task.endDate, { day: "numeric", month: "short" })} 
+        <i class="fa-regular fa-clock"></i>${UPT_Utils.getHoursAndMinutes(task.endDate)}
         <span class="tooltip-content">
           ${UPT_Utils.getFriendlyDateFormat(task.endDate, { weekday: "long" })} <br>
           ${UPT_Utils.getFriendlyDateFormat(task.endDate, { day: "numeric", month: "long", year: "numeric" })} rok
@@ -3583,7 +3599,7 @@ class UPTMainPanel extends UPTPanel {
       </span>
     ` : `
       <span class="task-date">
-        <span class="task-date-hours"><i class="fa-regular fa-clock"></i> ${UPT_Utils.getHoursForDailyTask(task)}</span>                                                                                                                                           
+        <span class="task-date-hours"><i class="fa-regular fa-clock"></i>${UPT_Utils.getHoursForDailyTask(task)}</span>                                                                                                                                           
       </span>
     `
 
@@ -3641,7 +3657,7 @@ class UPTMainPanel extends UPTPanel {
       now.getDate() + 1, 0, 0, 0, 0
     );
 
-    timeToEndDayCountdown.setAttribute("data-date-end", tomorrowDate.toISOString());
+    timeToEndDayCountdown.setAttribute("data-date-end", UPT_Utils.toLocalISOString(tomorrowDate));
     timeToEndDayCountdown.setAttribute("data-time-units-to-show", "['hours', 'minutes', 'seconds']");
     timeToEndDayCard.append(timeToEndDayCountdown);
   }
@@ -3972,7 +3988,7 @@ class UPTTasksPanel extends UPTPanel {
     })
     document.addEventListener(UPTPanel.TASK_TYPE_CHANGE_EVENT, (e) => this.taskTypeChangeEventHandler(e)) 
     document.addEventListener(UPTPanel.TASK_UPDATED_EVENT, (e) => this.taskUpdateEventHandler(e))
-    document.addEventListener(UPTPanel.TASK_RESTORE_EVENT, (e) => this.taskUpdateEventHandler(e))
+    document.addEventListener(UPTPanel.TASK_RESTORE_EVENT, (e) => this.taskCreatedEventHandler(e)) 
     document.addEventListener(UPTPanel.TASK_DELETED_EVENT, (e) => this.taskDeletedEventHandler(e))
     document.addEventListener(UPTPanel.TASK_ARCHIVE_EVENT, (e) => this.currentMainTasksNumber--)
 
@@ -4115,8 +4131,8 @@ class UPTTasksPanel extends UPTPanel {
       "";
     const taskDateInfo = taskIsMain ? `
       <span class="task-date tooltip">
-        <i class="fa-regular fa-calendar"></i> ${UPT_Utils.getFriendlyDateFormat(task.endDate, { day: "numeric", month: "short" })} 
-        <i class="fa-regular fa-clock"></i> ${UPT_Utils.getHoursAndMinutes(task.endDate)}
+        <i class="fa-regular fa-calendar"></i>${UPT_Utils.getFriendlyDateFormat(task.endDate, { day: "numeric", month: "short" })} 
+        <i class="fa-regular fa-clock"></i>${UPT_Utils.getHoursAndMinutes(task.endDate)}
         <span class="tooltip-content">
           ${UPT_Utils.getFriendlyDateFormat(task.endDate, { weekday: "long" })} <br>
           ${UPT_Utils.getFriendlyDateFormat(task.endDate, { day: "numeric", month: "long", year: "numeric" })} rok
@@ -4126,7 +4142,7 @@ class UPTTasksPanel extends UPTPanel {
      </span>
    ` : `
      <span class="task-date">
-       <span class="task-date-hours"><i class="fa-regular fa-clock"></i> ${UPT_Utils.getHoursForDailyTask(task)}</span>                                                                                                                                           
+       <span class="task-date-hours"><i class="fa-regular fa-clock"></i>${UPT_Utils.getHoursForDailyTask(task)}</span>                                                                                                                                           
      </span>
    `
 

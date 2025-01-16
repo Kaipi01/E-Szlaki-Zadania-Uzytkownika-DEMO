@@ -14,14 +14,27 @@
         font-weight: bold; 
       }
 
+      &-date {
+        font-size: 0.85rem;
+        font-weight: bold; 
+      }
+
       &--completed {
         .subtask-name {
           color: var(--gray);
           text-decoration: line-through;
         }
+
+        .subtask-date {
+          color: var(--gray); 
+        }
       } 
+
+      &-content {
+        width: 100%;
+      }
       
-      &-header {
+      &-header { 
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
@@ -29,7 +42,7 @@
         @media (min-width: $content-breakpoint-phone) {
           flex-direction: row;
           flex-wrap: wrap; 
-          align-items: center;
+          align-items: center; 
         }
 
         @media (min-width: $content-breakpoint-tablet) {
@@ -42,11 +55,7 @@
       &-actions {
         margin-left: auto;
         gap: 0.5rem;
-      }
-
-      &-date {
-        font-size: 0.85rem;
-      }
+      } 
 
       &-action-btn {
         padding: 0.75rem;
