@@ -311,9 +311,7 @@ class UPTApiService {
     task.isArchived = false
     task.archivedAt = null
     task.status = UPT_TaskStatus.IN_PROGRESS
-    task.endDate = UPT_Utils.toLocalISOString(newEndDate);
-
-    console.log(task.endDate)
+    task.endDate = UPT_Utils.toLocalISOString(newEndDate); 
 
     this.saveAllData_LocalStorage(data);
 

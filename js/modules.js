@@ -2316,9 +2316,7 @@ class UPTCategoryForm extends UPTForm {
           this.customIconSelect.chooseOption(null)
         }
       }
-    }
-
-    console.log(formData)
+    } 
   }
 
   /** @param {string} categoryId */
@@ -2749,11 +2747,7 @@ class UPTTaskForm extends UPTForm {
       const endDate = UPT_Utils.createTaskDateFromStr(formData[UPTTaskForm.FIELD_DATE_END], formData[UPTTaskForm.FIELD_TYPE])
       const startDate = UPT_Utils.createTaskDateFromStr(formData[UPTTaskForm.FIELD_DATE_START], formData[UPTTaskForm.FIELD_TYPE])
       startDateValue = UPT_Utils.toLocalISOString(startDate)
-      endDateValue = endDate ?  UPT_Utils.toLocalISOString(endDate) : startDateValue
-
-      console.log("data zakończenia (input datetime-local): ", formData[UPTTaskForm.FIELD_DATE_END])
-      console.log("data zakończenia (wartość jaka będzie zapisana): ", endDateValue)
-      console.log("obiekt endDate: ", endDate)
+      endDateValue = endDate ?  UPT_Utils.toLocalISOString(endDate) : startDateValue 
     }
 
     const task = new UPT_Task({
@@ -2841,9 +2835,7 @@ class UPTTaskForm extends UPTForm {
 
         UPT_Utils.hideLoading(e.target)
       }
-    }
-
-    console.log(formData)
+    } 
   }
 }
 
@@ -3032,8 +3024,6 @@ class UPTPanel {
     const sortedTasks = UPT_Utils.getSortedDataBy(value, tasks)
     const isSortByDate = value === UPTPanel.SORT_DEADLINE_DESC || value === UPTPanel.SORT_DEADLINE_ASC
 
-    console.log(tasks.filter(task => task.type === UPT_TaskType.MAIN)) 
-    console.log(sortedTasks.filter(task => task.type === UPT_TaskType.MAIN)) 
 
     UPT_Utils.fadeAnimation(() => {
       sortedTasks.forEach((task, index) => {
